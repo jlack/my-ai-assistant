@@ -10,11 +10,18 @@
             <el-input v-model="queryParams.datasetDesc" placeholder="请输入数据集描述" clearable style="width: 240px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item :label-width="100" label="可视权限" prop="visiblePermission">
-            <el-input v-model="queryParams.visiblePermission" placeholder="请输入可视权限" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-select v-model="queryParams.visiblePermission" placeholder="请选择可视权限" clearable>
+              <el-option
+                v-for="dict in witdock_visible_permission"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
           </el-form-item>
-          <el-form-item :label-width="100" label="是否删除" prop="isDeleted">
-            <el-input v-model="queryParams.isDeleted" placeholder="请输入是否删除" clearable style="width: 240px" @keyup.enter="handleQuery" />
-          </el-form-item>
+<!--          <el-form-item :label-width="100" label="是否删除" prop="isDeleted">-->
+<!--            <el-input v-model="queryParams.isDeleted" placeholder="请输入是否删除" clearable style="width: 240px" @keyup.enter="handleQuery" />-->
+<!--          </el-form-item>-->
           <el-form-item>
             <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
             <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -47,8 +54,12 @@
         <el-table-column label="" align="center" prop="id" v-if="true" />
         <el-table-column label="数据集名称" align="center" prop="datasetName" />
         <el-table-column label="数据集描述" align="center" prop="datasetDesc" />
-        <el-table-column label="可视权限" align="center" prop="visiblePermission" />
-        <el-table-column label="是否删除" align="center" prop="isDeleted" />
+        <el-table-column label="可视权限" align="center" prop="visiblePermission">
+          <template #default="scope">
+            <dict-tag :options="witdock_visible_permission" :value="scope.row.visiblePermission"/>
+          </template>
+        </el-table-column>
+<!--        <el-table-column label="是否删除" align="center" prop="isDeleted" />-->
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
@@ -79,11 +90,18 @@
           <el-input v-model="form.datasetDesc" placeholder="请输入数据集描述" />
         </el-form-item>
         <el-form-item :label-width="100" label="可视权限" prop="visiblePermission">
-          <el-input v-model="form.visiblePermission" placeholder="请输入可视权限" />
+          <el-select v-model="form.visiblePermission" placeholder="请选择可视权限">
+            <el-option
+              v-for="dict in witdock_visible_permission"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item :label-width="100" label="是否删除" prop="isDeleted">
-          <el-input v-model="form.isDeleted" placeholder="请输入是否删除" />
-        </el-form-item>
+<!--        <el-form-item :label-width="100" label="是否删除" prop="isDeleted">-->
+<!--          <el-input v-model="form.isDeleted" placeholder="请输入是否删除" />-->
+<!--        </el-form-item>-->
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -100,6 +118,7 @@ import { listDataset, getDataset, delDataset, addDataset, updateDataset } from '
 import { DatasetVO, DatasetQuery, DatasetForm } from '@/api/dataset/dataset/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { witdock_visible_permission } = toRefs<any>(proxy?.useDict('witdock_visible_permission'));
 
 const datasetList = ref<DatasetVO[]>([]);
 const buttonLoading = ref(false);
@@ -148,11 +167,11 @@ const data = reactive<PageData<DatasetForm, DatasetQuery>>({
       { required: true, message: "数据集描述不能为空", trigger: "blur" }
     ],
     visiblePermission: [
-      { required: true, message: "me,all不能为空", trigger: "blur" }
-    ],
-    isDeleted: [
-      { required: true, message: "是否删除不能为空", trigger: "blur" }
+      { required: true, message: "可视权限不能为空", trigger: "change" }
     ]
+    // isDeleted: [
+    //   { required: true, message: "是否删除不能为空", trigger: "blur" }
+    // ]
   }
 });
 
@@ -252,6 +271,3 @@ onMounted(() => {
   getList();
 });
 </script>
-
-<style>
-</style>
