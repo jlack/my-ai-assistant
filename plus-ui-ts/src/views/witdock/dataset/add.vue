@@ -73,13 +73,13 @@ function handleComplete() {
         await updateDataset(dataSetForm.value).finally(() =>  buttonLoading.value = false);
       } else {
         await addDataset(dataSetForm.value).finally(() =>  buttonLoading.value = false);
-        // await addDocs(docForm.value).then((res) => {
-        //   if (res.code === 200) {
-        //     ElMessage.success("上传数据集成功")
-        //   } else {
-        //     ElMessage.error("上传数据集失败")
-        //   }
-        // })
+        await addDocs(docForm.value).then((res) => {
+          if (res.code === 200) {
+            ElMessage.success("上传数据集成功")
+          } else {
+            ElMessage.error("上传数据集失败")
+          }
+        })
       }
     }
   });
