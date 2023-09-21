@@ -1,107 +1,46 @@
 <template>
-  <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-                :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item :label-width="100" label="数据集名称" prop="datasetName">
-            <el-input v-model="queryParams.datasetName" placeholder="请输入数据集名称" clearable style="width: 240px"
-                      @keyup.enter="handleQuery"/>
-          </el-form-item>
-          <el-form-item :label-width="100" label="数据集描述" prop="datasetDesc">
-            <el-input v-model="queryParams.datasetDesc" placeholder="请输入数据集描述" clearable style="width: 240px"
-                      @keyup.enter="handleQuery"/>
-          </el-form-item>
-          <el-form-item :label-width="100" label="可视权限" prop="visiblePermission">
-            <el-input v-model="queryParams.visiblePermission" placeholder="请输入可视权限" clearable style="width: 240px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item :label-width="100" label="是否删除" prop="isDeleted">
-            <el-input v-model="queryParams.isDeleted" placeholder="请输入是否删除" clearable style="width: 240px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </transition>
-
-    <el-card shadow="never">
-      <template #header>
-        <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['witdock:dataset:add']">新增
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()"
-                       v-hasPermi="['witdock:dataset:edit']">修改
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()"
-                       v-hasPermi="['witdock:dataset:remove']">删除
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport"
-                       v-hasPermi="['witdock:dataset:export']">导出
-            </el-button>
-          </el-col>
-          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-        </el-row>
-      </template>
-
-      <el-space wrap>
-        <el-card class="box-card" style="width: 250px" @click="handleAdd">
-          <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" icon="Plus"></el-button>
-            <span>创建数据集</span>
-          </div>
-          导入自己的文本数据或通过xxxxxxx
+  <div class="app-container">
+    <el-row :gutter="10">
+      <el-col :md="6" class="mt5">
+        <el-card class="box-card link-card" style="height: 100%" @click="handleAdd" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <el-text tag="b">创建数据集</el-text>
+              <el-button style="float: right; " @click.stop="handleAdd"
+                         icon="Plus" plain></el-button>
+            </div>
+          </template>
+          <el-text class="mt20 mx-1" truncated>导入自己的文本数据或通过xxxxxxx</el-text>
         </el-card>
-
-        <el-card class="box-card" style="width: 250px" v-for="item in datasetList" @click="handleUpdate">
-          <div slot="header" class="clearfix" >
-            <span>{{ item.datasetName }}</span>
-            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
-            <el-button style="float: right; padding: 3px 0" type="text" @click="handleDelete">删除</el-button>
+      </el-col>
+      <el-col :md="6" class="mt5" v-for="item in datasetList">
+        <el-card class="box-card link-card" @click="handleUpdate(item)" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <el-image style="width: 20px; height: 20px" :src="cardLogo" fit="fill"/>
+              <el-text tag="b">{{ item.datasetName }}</el-text>
+              <el-button style="float: right; " @click.stop="handleDelete(item)"
+                         icon="Delete" plain></el-button>
+            </div>
+          </template>
+          <el-text class="mt20 mx-1" truncated>{{ item.datasetDesc }}</el-text>
+          <div class="mt10">
+            <el-text class="mt20 mx-1">1 文档</el-text>
+            <el-divider direction="vertical" />
+            <el-text>6 千字符</el-text>
+            <el-divider direction="vertical" border-style="dashed" />
+            <el-text>1 关联应用</el-text>
           </div>
-          {{ item.datasetDesc}}
         </el-card>
-      </el-space>
-
-
-<!--      <el-table v-loading="loading" :data="datasetList" @selection-change="handleSelectionChange">-->
-<!--        <el-table-column type="selection" width="55" align="center"/>-->
-<!--        <el-table-column label="" align="center" prop="id" v-if="true"/>-->
-<!--        <el-table-column label="数据集名称" align="center" prop="datasetName"/>-->
-<!--        <el-table-column label="数据集描述" align="center" prop="datasetDesc"/>-->
-<!--        <el-table-column label="可视权限" align="center" prop="visiblePermission"/>-->
-<!--        <el-table-column label="是否删除" align="center" prop="isDeleted"/>-->
-<!--        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
-<!--          <template #default="scope">-->
-<!--            <el-tooltip content="修改" placement="top">-->
-<!--              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"-->
-<!--                         v-hasPermi="['witdock:dataset:edit']"></el-button>-->
-<!--            </el-tooltip>-->
-<!--            <el-tooltip content="删除" placement="top">-->
-<!--              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"-->
-<!--                         v-hasPermi="['witdock:dataset:remove']"></el-button>-->
-<!--            </el-tooltip>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--      </el-table>-->
-
-      <pagination
-        v-show="total>0"
-        :total="total"
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        @pagination="getList"
-      />
-    </el-card>
-    <!-- 添加或修改数据集对话框 -->
+      </el-col>
+    </el-row>
+    <pagination
+      v-show="total>0"
+      :total="total"
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      @pagination="getList"
+    />
   </div>
 </template>
 
@@ -121,6 +60,8 @@ const ids = ref<Array<string | number>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
+
+const cardLogo = "/src/assets/logo/logo.png";
 
 const queryFormRef = ref<ElFormInstance>();
 const datasetFormRef = ref<ElFormInstance>();
@@ -265,3 +206,15 @@ onMounted(() => {
   getList();
 });
 </script>
+
+<style>
+.link-card {
+  cursor: pointer; /* 将鼠标样式设置为手指形状 */
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  //align-items: center;
+}
+</style>
