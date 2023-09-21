@@ -19,30 +19,34 @@ import jakarta.validation.constraints.*;
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DatasetInfo.class, reverseConvertGenerate = false)
 public class DatasetInfoBo extends BaseEntity {
-
     /**
      *
      */
-    @NotBlank(message = "id不能为空", groups = { EditGroup.class })
+    @NotNull(message = "不能为空", groups = { EditGroup.class })
     private Long id;
 
     /**
-     *
+     * 数据集名称
      */
-    @NotBlank(message = "不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "数据集名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String datasetName;
 
     /**
-     *
+     * 数据集描述
      */
-    @NotBlank(message = "不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "数据集描述不能为空", groups = { AddGroup.class, EditGroup.class })
     private String datasetDesc;
 
     /**
-     *
+     * me\all
      */
-    @NotBlank(message = "不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "me,all不能为空", groups = { AddGroup.class, EditGroup.class })
     private String visiblePermission;
 
+    /**
+     * 是否删除
+     */
+    @NotNull(message = "是否删除不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Integer isDeleted;
 
 }

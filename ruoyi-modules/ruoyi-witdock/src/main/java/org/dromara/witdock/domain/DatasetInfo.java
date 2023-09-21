@@ -22,30 +22,29 @@ public class DatasetInfo extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     *
      */
     @TableId(value = "id")
     private Long id;
 
     /**
-     * 
+     * 数据集名称
      */
     private String datasetName;
 
     /**
-     * 
+     * 数据集描述
      */
     private String datasetDesc;
 
     /**
-     * 
+     * me\all
      */
     private String visiblePermission;
 
     /**
-     * 
+     * 是否删除
      */
     private Integer isDeleted;
-
 
 }

@@ -29,22 +29,33 @@ public class DatasetInfoVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     *
      */
     @ExcelProperty(value = "")
+    private Long id;
+
+    /**
+     * 数据集名称
+     */
+    @ExcelProperty(value = "数据集名称")
     private String datasetName;
 
     /**
-     * 
+     * 数据集描述
      */
-    @ExcelProperty(value = "")
+    @ExcelProperty(value = "数据集描述")
     private String datasetDesc;
 
     /**
-     * 
+     * me\all
      */
-    @ExcelProperty(value = "")
+    @ExcelProperty(value = "me,all")
     private String visiblePermission;
 
+    /**
+     * 是否删除
+     */
+    @ExcelProperty(value = "是否删除")
+    private Integer isDeleted;
 
 }
