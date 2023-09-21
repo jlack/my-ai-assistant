@@ -27,7 +27,22 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="命中测试" name="second"></el-tab-pane>
-      <el-tab-pane label="设置" name="third"></el-tab-pane>
+      <el-tab-pane label="设置" name="third">
+        <el-text tag="b" size="large">数据集设置</el-text>
+        <br>
+        <el-text>在这里您可以修改数据集的工作方式以及其他设置</el-text>
+        <el-form class="mt20" ref="form" :model="datasetInfo" label-width="200px">
+          <el-form-item label="数据集名称">
+            <el-input v-model="datasetInfo.datasetName" style="width: 500px;"></el-input>
+          </el-form-item>
+          <el-form-item label="数据集描述">
+            <el-input type="textarea" v-model="datasetInfo.datasetName" style="width: 500px;"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary">保存</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -38,6 +53,7 @@ import {ref} from 'vue'
 import {Search} from '@element-plus/icons-vue'
 import type {TabsPaneContext} from 'element-plus'
 
+const datasetInfo = ref({})
 const activeName = ref('first')
 const tableData = [
   {
