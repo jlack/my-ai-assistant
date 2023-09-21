@@ -41,7 +41,7 @@ public class DatasetInfoBo extends BaseEntityWithoutDept {
     /**
      * me\all
      */
-    @NotBlank(message = "me,all不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "me,all不能为空", groups = { AddGroup.class, EditGroup.class })
     private String visiblePermission;
 
     /**
