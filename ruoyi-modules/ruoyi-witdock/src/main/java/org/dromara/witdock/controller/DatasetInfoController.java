@@ -31,7 +31,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/dataset/dataset")
+@RequestMapping("/witdock/dataset")
 public class DatasetInfoController extends BaseController {
 
     private final IDatasetInfoService datasetInfoService;
@@ -39,7 +39,7 @@ public class DatasetInfoController extends BaseController {
     /**
      * 查询数据集列表
      */
-    @SaCheckPermission("dataset:dataset:list")
+    @SaCheckPermission("witdock:dataset:list")
     @GetMapping("/list")
     public TableDataInfo<DatasetInfoVo> list(DatasetInfoBo bo, PageQuery pageQuery) {
         return datasetInfoService.queryPageList(bo, pageQuery);
@@ -48,7 +48,7 @@ public class DatasetInfoController extends BaseController {
     /**
      * 导出数据集列表
      */
-    @SaCheckPermission("dataset:dataset:export")
+    @SaCheckPermission("witdock:dataset:export")
     @Log(title = "数据集", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(DatasetInfoBo bo, HttpServletResponse response) {
@@ -61,7 +61,7 @@ public class DatasetInfoController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("dataset:dataset:query")
+    @SaCheckPermission("witdock:dataset:query")
     @GetMapping("/{id}")
     public R<DatasetInfoVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
@@ -71,7 +71,7 @@ public class DatasetInfoController extends BaseController {
     /**
      * 新增数据集
      */
-    @SaCheckPermission("dataset:dataset:add")
+    @SaCheckPermission("witdock:dataset:add")
     @Log(title = "数据集", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -82,7 +82,7 @@ public class DatasetInfoController extends BaseController {
     /**
      * 修改数据集
      */
-    @SaCheckPermission("dataset:dataset:edit")
+    @SaCheckPermission("witdock:dataset:edit")
     @Log(title = "数据集", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -95,7 +95,7 @@ public class DatasetInfoController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("dataset:dataset:remove")
+    @SaCheckPermission("witdock:dataset:remove")
     @Log(title = "数据集", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

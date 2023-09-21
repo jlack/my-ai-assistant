@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { DocVO, DocForm, DocQuery } from '@/api/system/doc/types';
+import { DocVO, DocForm, DocQuery } from '@/api/witdock/doc/types';
 
 /**
  * 查询数据集文档列表
@@ -10,7 +10,7 @@ import { DocVO, DocForm, DocQuery } from '@/api/system/doc/types';
 
 export const listDoc = (query?: DocQuery): AxiosPromise<DocVO[]> => {
   return request({
-    url: '/system/doc/list',
+    url: '/witdock/doc/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listDoc = (query?: DocQuery): AxiosPromise<DocVO[]> => {
  */
 export const getDoc = (id: string | number): AxiosPromise<DocVO> => {
   return request({
-    url: '/system/doc/' + id,
+    url: '/witdock/doc/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getDoc = (id: string | number): AxiosPromise<DocVO> => {
  */
 export const addDoc = (data: DocForm) => {
   return request({
-    url: '/system/doc',
+    url: '/witdock/doc',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addDoc = (data: DocForm) => {
  */
 export const addDocs = (data: DocForm) => {
   return request({
-    url: '/system/doc/addDocs',
+    url: '/witdock/doc/addDocs',
     method: 'post',
     data: data
   });
@@ -57,7 +57,7 @@ export const addDocs = (data: DocForm) => {
  */
 export const updateDoc = (data: DocForm) => {
   return request({
-    url: '/system/doc',
+    url: '/witdock/doc',
     method: 'put',
     data: data
   });
@@ -69,7 +69,7 @@ export const updateDoc = (data: DocForm) => {
  */
 export const delDoc = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/system/doc/' + id,
+    url: '/witdock/doc/' + id,
     method: 'delete'
   });
 };

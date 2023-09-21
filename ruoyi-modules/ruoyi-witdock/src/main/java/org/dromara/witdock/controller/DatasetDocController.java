@@ -39,7 +39,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/system/doc")
+@RequestMapping("/witdock/doc")
 public class DatasetDocController extends BaseController {
 
     private final IDatasetDocService datasetDocService;
@@ -50,7 +50,7 @@ public class DatasetDocController extends BaseController {
     /**
      * 查询数据集文档列表
      */
-    @SaCheckPermission("system:doc:list")
+    @SaCheckPermission("witdock:doc:list")
     @GetMapping("/list")
     public TableDataInfo<DatasetDocVo> list(DatasetDocBo bo, PageQuery pageQuery) {
         return datasetDocService.queryPageList(bo, pageQuery);
@@ -59,7 +59,7 @@ public class DatasetDocController extends BaseController {
     /**
      * 导出数据集文档列表
      */
-    @SaCheckPermission("system:doc:export")
+    @SaCheckPermission("witdock:doc:export")
     @Log(title = "数据集文档", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(DatasetDocBo bo, HttpServletResponse response) {
@@ -72,7 +72,7 @@ public class DatasetDocController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:doc:query")
+    @SaCheckPermission("witdock:doc:query")
     @GetMapping("/{id}")
     public R<DatasetDocVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
@@ -82,7 +82,7 @@ public class DatasetDocController extends BaseController {
     /**
      * 新增数据集文档
      */
-    @SaCheckPermission("system:doc:add")
+    @SaCheckPermission("witdock:doc:add")
     @Log(title = "数据集文档", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -93,7 +93,7 @@ public class DatasetDocController extends BaseController {
     /**
      * 新增数据集文档
      */
-    @SaCheckPermission("system:doc:add")
+    @SaCheckPermission("witdock:doc:add")
     @Log(title = "数据集文档", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/addDocs")
@@ -103,7 +103,7 @@ public class DatasetDocController extends BaseController {
             DatasetDocBo insertBo = new DatasetDocBo();
             BeanUtil.copyProperties(bo, insertBo);
             insertBo.setOssId(Long.parseLong(ossId));
-            insertBo.setDocName(ossVo.getFileName());
+            insertBo.setDocName(ossVo.getOriginalName());
             insertBo.setStatus(DocStatusEnum.STATUS_0.getValue());
             insertBo.setCharNum(1L);
             datasetDocService.insertByBo(insertBo);
@@ -114,7 +114,7 @@ public class DatasetDocController extends BaseController {
     /**
      * 修改数据集文档
      */
-    @SaCheckPermission("system:doc:edit")
+    @SaCheckPermission("witdock:doc:edit")
     @Log(title = "数据集文档", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -127,7 +127,7 @@ public class DatasetDocController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:doc:remove")
+    @SaCheckPermission("witdock:doc:remove")
     @Log(title = "数据集文档", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

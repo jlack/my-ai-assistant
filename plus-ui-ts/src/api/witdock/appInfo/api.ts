@@ -10,7 +10,7 @@ import { InfoVO, InfoForm, InfoQuery } from '@/api/witdock/appInfo/types';
 
 export const listInfo = (query?: InfoQuery): AxiosPromise<InfoVO[]> => {
   return request({
-    url: '/system/info/list',
+    url: '/witdock/info/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listInfo = (query?: InfoQuery): AxiosPromise<InfoVO[]> => {
  */
 export const getInfo = (id: string | number): AxiosPromise<InfoVO> => {
   return request({
-    url: '/system/info/' + id,
+    url: '/witdock/info/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getInfo = (id: string | number): AxiosPromise<InfoVO> => {
  */
 export const addInfo = (data: InfoForm) => {
   return request({
-    url: '/system/info',
+    url: '/witdock/info',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addInfo = (data: InfoForm) => {
  */
 export const updateInfo = (data: InfoForm) => {
   return request({
-    url: '/system/info',
+    url: '/witdock/info',
     method: 'put',
     data: data
   });
@@ -57,7 +57,7 @@ export const updateInfo = (data: InfoForm) => {
  */
 export const delInfo = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/system/info/' + id,
+    url: '/witdock/info/' + id,
     method: 'delete'
   });
 };

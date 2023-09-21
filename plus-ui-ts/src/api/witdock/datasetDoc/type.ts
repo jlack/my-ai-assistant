@@ -1,3 +1,10 @@
+export interface AddDocsBo {
+
+  datasetId: string | number;
+
+  ossIds: string;
+}
+
 export interface DocVO {
   /**
    *

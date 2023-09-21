@@ -8,7 +8,7 @@
 
     <div v-if="active==0">
       {{docForm}}
-      <file-upload :fileType="['txt','html','md','pdf','xlsx','csv','docx']" v-model="docForm.ossId"></file-upload>
+      <file-upload :fileType="['txt','html','md','pdf','xlsx','csv','docx']" v-model="docForm.ossIds"></file-upload>
       <el-button style="margin-top: 12px" @click="next">下一步</el-button>
     </div>
     <div v-if="active==1">
@@ -37,11 +37,11 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
 import {addDoc, addDocs, updateDoc} from "@/api/witdock/datasetDoc/api";
-import {DocForm, DocVO} from "@/api/witdock/datasetDoc/type";
+import {AddDocsBo, DocForm, DocVO} from "@/api/witdock/datasetDoc/type";
 import {addDataset, updateDataset} from "@/api/witdock/dataset";
 import {DatasetForm} from "@/api/witdock/dataset/types";
 
-const docForm = ref<Partial<DocForm>>({});
+const docForm = ref<Partial<AddDocsBo>>({});
 const dataSetForm = ref<Partial<DatasetForm>>({});
 // const docForm = ref<DocVO>()
 const active = ref(0)
