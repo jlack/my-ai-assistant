@@ -71,6 +71,12 @@
             <artifactId>ruoyi-demo</artifactId>
         </dependency>
 
+        <!--  witdock模块  -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-witdock</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
