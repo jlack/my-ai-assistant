@@ -37,8 +37,8 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                     baseEntity.setCreateBy(userId);
                     // 当前已登录 且 更新人为空 则填充
                     baseEntity.setUpdateBy(userId);
-                    baseEntity.setCreateDept(ObjectUtil.isNotNull(baseEntity.getCreateDept())
-                        ? baseEntity.getCreateDept() : loginUser.getDeptId());
+//                    baseEntity.setCreateDept(ObjectUtil.isNotNull(baseEntity.getCreateDept())
+//                        ? baseEntity.getCreateDept() : loginUser.getDeptId());
                 }
             }
         } catch (Exception e) {
