@@ -1,5 +1,6 @@
 package org.dromara.witdock.domain.bo;
 
+import org.dromara.common.mybatis.core.domain.BaseEntityWithoutDept;
 import org.dromara.witdock.domain.DatasetInfo;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -18,7 +19,7 @@ import jakarta.validation.constraints.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DatasetInfo.class, reverseConvertGenerate = false)
-public class DatasetInfoBo extends BaseEntity {
+public class DatasetInfoBo extends BaseEntityWithoutDept {
     /**
      *
      */
@@ -46,7 +47,6 @@ public class DatasetInfoBo extends BaseEntity {
     /**
      * 是否删除
      */
-    @NotNull(message = "是否删除不能为空", groups = { AddGroup.class, EditGroup.class })
     private Integer isDeleted;
 
 }

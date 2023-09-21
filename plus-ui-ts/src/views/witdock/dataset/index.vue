@@ -13,12 +13,10 @@
                       @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item :label-width="100" label="可视权限" prop="visiblePermission">
-            <el-input v-model="queryParams.visiblePermission" placeholder="请输入可视权限" clearable
-                      style="width: 240px" @keyup.enter="handleQuery"/>
+            <el-input v-model="queryParams.visiblePermission" placeholder="请输入可视权限" clearable style="width: 240px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item :label-width="100" label="是否删除" prop="isDeleted">
-            <el-input v-model="queryParams.isDeleted" placeholder="请输入是否删除" clearable style="width: 240px"
-                      @keyup.enter="handleQuery"/>
+            <el-input v-model="queryParams.isDeleted" placeholder="请输入是否删除" clearable style="width: 240px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -267,6 +265,3 @@ onMounted(() => {
   getList();
 });
 </script>
-
-<style>
-</style>
