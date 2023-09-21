@@ -1,19 +1,24 @@
 <template>
   <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+    <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
+                :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
           <el-form-item :label-width="100" label="数据集名称" prop="datasetName">
-            <el-input v-model="queryParams.datasetName" placeholder="请输入数据集名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.datasetName" placeholder="请输入数据集名称" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item :label-width="100" label="数据集描述" prop="datasetDesc">
-            <el-input v-model="queryParams.datasetDesc" placeholder="请输入数据集描述" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.datasetDesc" placeholder="请输入数据集描述" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item :label-width="100" label="可视权限" prop="visiblePermission">
-            <el-input v-model="queryParams.visiblePermission" placeholder="请输入可视权限" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.visiblePermission" placeholder="请输入可视权限" clearable
+                      style="width: 240px" @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item :label-width="100" label="是否删除" prop="isDeleted">
-            <el-input v-model="queryParams.isDeleted" placeholder="请输入是否删除" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.isDeleted" placeholder="请输入是否删除" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -27,39 +32,68 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['witdock:dataset:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['witdock:dataset:add']">新增
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['witdock:dataset:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()"
+                       v-hasPermi="['witdock:dataset:edit']">修改
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['witdock:dataset:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()"
+                       v-hasPermi="['witdock:dataset:remove']">删除
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['witdock:dataset:export']">导出</el-button>
+            <el-button type="warning" plain icon="Download" @click="handleExport"
+                       v-hasPermi="['witdock:dataset:export']">导出
+            </el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="datasetList" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="" align="center" prop="id" v-if="true" />
-        <el-table-column label="数据集名称" align="center" prop="datasetName" />
-        <el-table-column label="数据集描述" align="center" prop="datasetDesc" />
-        <el-table-column label="可视权限" align="center" prop="visiblePermission" />
-        <el-table-column label="是否删除" align="center" prop="isDeleted" />
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-          <template #default="scope">
-            <el-tooltip content="修改" placement="top">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['witdock:dataset:edit']"></el-button>
-            </el-tooltip>
-            <el-tooltip content="删除" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['witdock:dataset:remove']"></el-button>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-      </el-table>
+      <el-space wrap>
+        <el-card class="box-card" style="width: 250px" @click="handleAdd">
+          <div slot="header" class="clearfix">
+            <el-button style="float: right; padding: 3px 0" type="text" icon="Plus"></el-button>
+            <span>创建数据集</span>
+          </div>
+          导入自己的文本数据或通过xxxxxxx
+        </el-card>
+
+        <el-card class="box-card" style="width: 250px" v-for="item in datasetList" @click="handleUpdate">
+          <div slot="header" class="clearfix" >
+            <span>{{ item.datasetName }}</span>
+            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="handleDelete">删除</el-button>
+          </div>
+          {{ item.datasetDesc}}
+        </el-card>
+      </el-space>
+
+
+<!--      <el-table v-loading="loading" :data="datasetList" @selection-change="handleSelectionChange">-->
+<!--        <el-table-column type="selection" width="55" align="center"/>-->
+<!--        <el-table-column label="" align="center" prop="id" v-if="true"/>-->
+<!--        <el-table-column label="数据集名称" align="center" prop="datasetName"/>-->
+<!--        <el-table-column label="数据集描述" align="center" prop="datasetDesc"/>-->
+<!--        <el-table-column label="可视权限" align="center" prop="visiblePermission"/>-->
+<!--        <el-table-column label="是否删除" align="center" prop="isDeleted"/>-->
+<!--        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
+<!--          <template #default="scope">-->
+<!--            <el-tooltip content="修改" placement="top">-->
+<!--              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"-->
+<!--                         v-hasPermi="['witdock:dataset:edit']"></el-button>-->
+<!--            </el-tooltip>-->
+<!--            <el-tooltip content="删除" placement="top">-->
+<!--              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"-->
+<!--                         v-hasPermi="['witdock:dataset:remove']"></el-button>-->
+<!--            </el-tooltip>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--      </el-table>-->
 
       <pagination
         v-show="total>0"
@@ -70,37 +104,17 @@
       />
     </el-card>
     <!-- 添加或修改数据集对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="datasetFormRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item :label-width="100" label="数据集名称" prop="datasetName">
-          <el-input v-model="form.datasetName" placeholder="请输入数据集名称" />
-        </el-form-item>
-        <el-form-item :label-width="100" label="数据集描述" prop="datasetDesc">
-          <el-input v-model="form.datasetDesc" placeholder="请输入数据集描述" />
-        </el-form-item>
-        <el-form-item :label-width="100" label="可视权限" prop="visiblePermission">
-          <el-input v-model="form.visiblePermission" placeholder="请输入可视权限" />
-        </el-form-item>
-        <el-form-item :label-width="100" label="是否删除" prop="isDeleted">
-          <el-input v-model="form.isDeleted" placeholder="请输入是否删除" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup name="Dataset" lang="ts">
-import { listDataset, getDataset, delDataset, addDataset, updateDataset } from '@/api/dataset/dataset';
-import { DatasetVO, DatasetQuery, DatasetForm } from '@/api/dataset/dataset/types';
+import {listDataset, getDataset, delDataset, addDataset, updateDataset} from '@/api/witdock/dataset';
+import {DatasetVO, DatasetQuery, DatasetForm} from '@/api/witdock/dataset/types';
+import {useRouter} from "vue-router";
 
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 
+const router = useRouter();
 const datasetList = ref<DatasetVO[]>([]);
 const buttonLoading = ref(false);
 const loading = ref(true);
@@ -134,29 +148,28 @@ const data = reactive<PageData<DatasetForm, DatasetQuery>>({
     datasetDesc: undefined,
     visiblePermission: undefined,
     isDeleted: undefined,
-    params: {
-    }
+    params: {}
   },
   rules: {
     id: [
-      { required: true, message: "不能为空", trigger: "blur" }
+      {required: true, message: "不能为空", trigger: "blur"}
     ],
     datasetName: [
-      { required: true, message: "数据集名称不能为空", trigger: "blur" }
+      {required: true, message: "数据集名称不能为空", trigger: "blur"}
     ],
     datasetDesc: [
-      { required: true, message: "数据集描述不能为空", trigger: "blur" }
+      {required: true, message: "数据集描述不能为空", trigger: "blur"}
     ],
     visiblePermission: [
-      { required: true, message: "me,all不能为空", trigger: "blur" }
+      {required: true, message: "me,all不能为空", trigger: "blur"}
     ],
     isDeleted: [
-      { required: true, message: "是否删除不能为空", trigger: "blur" }
+      {required: true, message: "是否删除不能为空", trigger: "blur"}
     ]
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const {queryParams, form, rules} = toRefs(data);
 
 /** 查询数据集列表 */
 const getList = async () => {
@@ -200,19 +213,21 @@ const handleSelectionChange = (selection: DatasetVO[]) => {
 
 /** 新增按钮操作 */
 const handleAdd = () => {
-  reset();
-  dialog.visible = true;
-  dialog.title = "添加数据集";
+  // reset();
+  // dialog.visible = true;
+  // dialog.title = "添加数据集";
+  router.push("/dataset/add");
 }
 
 /** 修改按钮操作 */
 const handleUpdate = async (row?: DatasetVO) => {
-  reset();
+  // reset();
   const _id = row?.id || ids.value[0]
-  const res = await getDataset(_id);
-  Object.assign(form.value, res.data);
-  dialog.visible = true;
-  dialog.title = "修改数据集";
+  router.push("dataset/edit/" + _id)
+  // const res = await getDataset(_id);
+  // Object.assign(form.value, res.data);
+  // dialog.visible = true;
+  // dialog.title = "修改数据集";
 }
 
 /** 提交按钮 */
@@ -221,9 +236,9 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateDataset(form.value).finally(() =>  buttonLoading.value = false);
+        await updateDataset(form.value).finally(() => buttonLoading.value = false);
       } else {
-        await addDataset(form.value).finally(() =>  buttonLoading.value = false);
+        await addDataset(form.value).finally(() => buttonLoading.value = false);
       }
       proxy?.$modal.msgSuccess("修改成功");
       dialog.visible = false;

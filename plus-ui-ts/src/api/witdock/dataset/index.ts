@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { DatasetVO, DatasetForm, DatasetQuery } from '@/api/dataset/dataset/types';
+import { DatasetVO, DatasetForm, DatasetQuery } from '@/api/witdock/dataset/types';
 
 /**
  * 查询数据集列表
