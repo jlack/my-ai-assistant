@@ -67,8 +67,8 @@
 </template>
 
 <script setup name="Info" lang="ts">
-import {listInfo, getInfo, delInfo, addInfo, updateInfo} from '@/api/witdock/appInfo/api';
-import {appVO, appQuery, appForm} from '@/api/witdock/appInfo/type';
+import {listApp, getApp, delApp, addApp, updateApp} from '@/api/witdock/app/index';
+import {appVO, appQuery, appForm} from '@/api/witdock/app/type';
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
@@ -123,7 +123,7 @@ const {queryParams, form, rules} = toRefs(data);
 /** 查询构建应用列表 */
 const getList = async () => {
   loading.value = true;
-  const res = await listInfo(queryParams.value);
+  const res = await listApp(queryParams.value);
   appList.value = res.rows;
   total.value = res.total;
   loading.value = false;
@@ -168,13 +168,13 @@ const handleAdd = () => {
 }
 
 const handleDetail = (row?: appVO) => {
-  router.push("/apps/detail/" + row?.id)
+  router.push("/app/detail/" + row?.id)
 }
 /** 修改按钮操作 */
 const handleUpdate = async (row?: appVO) => {
   reset();
   const _id = row?.id || ids.value[0]
-  const res = await getInfo(_id);
+  const res = await getApp(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "WebApp 设置";
@@ -186,9 +186,9 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateInfo(form.value).finally(() => buttonLoading.value = false);
+        await updateApp(form.value).finally(() => buttonLoading.value = false);
       } else {
-        await addInfo(form.value).finally(() => buttonLoading.value = false);
+        await addApp(form.value).finally(() => buttonLoading.value = false);
       }
       proxy?.$modal.msgSuccess("修改成功");
       dialog.visible = false;
@@ -201,7 +201,7 @@ const submitForm = () => {
 const handleDelete = async (row?: appVO) => {
   const _ids = row?.id || ids.value;
   await proxy?.$modal.confirm('是否确认删除构建应用编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
-  await delInfo(_ids);
+  await delApp(_ids);
   proxy?.$modal.msgSuccess("删除成功");
   await getList();
 }
