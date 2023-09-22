@@ -43,5 +43,18 @@ public class AppInfo extends BaseEntity {
     @TableLogic
     private boolean isDeleted;
 
+    /**
+     * 应用Code
+     */
+    private String code;
 
+    /**
+     * 启用webapp
+     */
+    private Boolean enableSite;
+
+    /**
+     * 启用服务API
+     */
+    private Boolean enableApi;
 }

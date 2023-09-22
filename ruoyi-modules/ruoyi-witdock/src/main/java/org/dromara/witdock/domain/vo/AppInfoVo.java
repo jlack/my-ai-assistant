@@ -46,5 +46,21 @@ public class AppInfoVo implements Serializable {
     @ExcelProperty(value = "应用描述")
     private String appDesc;
 
+    /**
+     * 应用Code
+     */
+    @ExcelProperty(value = "应用Code")
+    private String code;
 
+    /**
+     * 启用webapp
+     */
+    @ExcelProperty(value = "启用webapp")
+    private boolean enableSite;
+
+    /**
+     * 启用服务API
+     */
+    @ExcelProperty(value = "启用服务API")
+    private boolean enableApi;
 }

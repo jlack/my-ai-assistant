@@ -29,14 +29,26 @@ public class AppInfoBo extends BaseEntity {
     /**
      * 应用名
      */
-    @NotBlank(message = "应用名不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "应用名不能为空", groups = { AddGroup.class })
     private String appName;
 
     /**
      * 应用描述
      */
-    @NotBlank(message = "应用描述不能为空", groups = { AddGroup.class, EditGroup.class })
     private String appDesc;
 
+    /**
+     * 应用Code
+     */
+    private String code;
 
+    /**
+     * 启用webapp
+     */
+    private Boolean enableSite;
+
+    /**
+     * 启用服务API
+     */
+    private Boolean enableApi;
 }

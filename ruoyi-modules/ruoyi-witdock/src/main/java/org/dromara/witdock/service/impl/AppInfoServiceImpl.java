@@ -1,5 +1,6 @@
 package org.dromara.witdock.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -63,6 +64,9 @@ public class AppInfoServiceImpl implements IAppInfoService {
         LambdaQueryWrapper<AppInfo> lqw = Wrappers.lambdaQuery();
         lqw.like(StringUtils.isNotBlank(bo.getAppName()), AppInfo::getAppName, bo.getAppName());
         lqw.like(StringUtils.isNotBlank(bo.getAppDesc()), AppInfo::getAppDesc, bo.getAppDesc());
+        lqw.eq(StringUtils.isNotBlank(bo.getCode()), AppInfo::getCode, bo.getCode());
+        lqw.eq(bo.getEnableSite() != null, AppInfo::getEnableSite, bo.getEnableSite());
+        lqw.eq(bo.getEnableApi() != null, AppInfo::getEnableApi, bo.getEnableApi());
         return lqw;
     }
 
@@ -73,6 +77,7 @@ public class AppInfoServiceImpl implements IAppInfoService {
     public Boolean insertByBo(AppInfoBo bo) {
         AppInfo add = MapstructUtils.convert(bo, AppInfo.class);
         validEntityBeforeSave(add);
+        add.setCode(IdUtil.simpleUUID());
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());

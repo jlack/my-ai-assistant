@@ -1,4 +1,4 @@
-export interface appVO {
+export interface AppVO {
   /**
    *
    */
@@ -15,13 +15,28 @@ export interface appVO {
   appDesc: string;
 
   /**
-   * 是否删除
+   * 逻辑删除
    */
   isDeleted: number;
 
+  /**
+   * 应用Code
+   */
+  code: string;
+
+  /**
+   * 启用webapp
+   */
+  enableSite: number;
+
+  /**
+   * 启用服务API
+   */
+  enableApi: number;
+
 }
 
-export interface appForm extends BaseEntity {
+export interface AppForm extends BaseEntity {
   /**
    *
    */
@@ -38,13 +53,28 @@ export interface appForm extends BaseEntity {
   appDesc?: string;
 
   /**
-   * 是否删除
+   * 逻辑删除
    */
   isDeleted?: number;
 
+  /**
+   * 应用Code
+   */
+  code?: string;
+
+  /**
+   * 启用webapp
+   */
+  enableSite?: number;
+
+  /**
+   * 启用服务API
+   */
+  enableApi?: number;
+
 }
 
-export interface appQuery extends PageQuery {
+export interface AppQuery extends PageQuery {
 
   /**
    * 应用名
@@ -57,9 +87,24 @@ export interface appQuery extends PageQuery {
   appDesc?: string;
 
   /**
-   * 是否删除
+   * 逻辑删除
    */
   isDeleted?: number;
+
+  /**
+   * 应用Code
+   */
+  code?: string;
+
+  /**
+   * 启用webapp
+   */
+  enableSite?: number;
+
+  /**
+   * 启用服务API
+   */
+  enableApi?: number;
 
   /**
    * 日期范围参数
