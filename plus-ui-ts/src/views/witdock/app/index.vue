@@ -18,11 +18,11 @@
               <el-image style="width: 20px; height: 20px" :src="cardLogo" fit="fill"/>
               <el-text tag="b">{{ item.appName }}</el-text>
               <el-dropdown style="float: right; ">
-                <el-button>
-                  <el-icon class="el-icon--right">
-                    <More/>
-                  </el-icon>
-                </el-button>
+                    <span class="el-dropdown-link">
+                      <el-icon class="el-icon--right">
+                        <More/>
+                      </el-icon>
+                    </span>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item @click.stop="handleUpdate(item)" icon="Setting">设置</el-dropdown-item>
@@ -69,6 +69,7 @@
 <script setup name="Info" lang="ts">
 import {listApp, getApp, delApp, addApp, updateApp} from '@/api/witdock/app/index';
 import {appVO, appQuery, appForm} from '@/api/witdock/app/type';
+import {More} from "@element-plus/icons-vue";
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
