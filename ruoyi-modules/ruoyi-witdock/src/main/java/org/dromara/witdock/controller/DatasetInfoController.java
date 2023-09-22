@@ -1,6 +1,7 @@
 package org.dromara.witdock.controller;
 
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -9,6 +10,20 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.file.FileUtils;
 import org.dromara.common.oss.core.OssClient;
@@ -86,7 +101,7 @@ public class DatasetInfoController extends BaseController {
     @SaCheckPermission("witdock:dataset:query")
     @GetMapping("/{id}")
     public R<DatasetInfoVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+                                    @PathVariable Long id) {
         return R.ok(datasetInfoService.queryById(id));
     }
 
@@ -116,17 +131,93 @@ public class DatasetInfoController extends BaseController {
 
         Long datasetId = insertBo.getId();
 
-
         for (String ossId : bo.getOssIds().split(StringUtils.SEPARATOR)) {
-
             SysOssVo ossVo = ossService.getById(Long.parseLong(ossId));
+
+            OssClient storage = OssFactory.instance(ossVo.getService());
             DatasetDocBo insertDocBo = new DatasetDocBo();
             BeanUtil.copyProperties(bo, insertDocBo);
             insertDocBo.setDatasetId(datasetId);
             insertDocBo.setOssId(Long.parseLong(ossId));
             insertDocBo.setDocName(ossVo.getOriginalName());
             insertDocBo.setStatus(DocStatusEnum.STATUS_0.getValue());
-            insertDocBo.setCharNum();// 文件字符数
+
+            try (InputStream inputStream = storage.getObjectContent(ossVo.getUrl())) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                IOUtils.copy(inputStream, outputStream);
+                byte[] fileBytes = outputStream.toByteArray();
+
+                String fileType = ossVo.getFileSuffix();
+                if (fileType.equalsIgnoreCase(".txt") || fileType.equalsIgnoreCase(".html") || fileType.equalsIgnoreCase(".md")) {
+                    String fileContent = new String(fileBytes, StandardCharsets.UTF_8);
+                    insertDocBo.setCharNum((long) fileContent.length());
+                } else if (fileType.equalsIgnoreCase(".pdf")) {
+                    PDDocument document = PDDocument.load(fileBytes);
+                    PDFTextStripper stripper = new PDFTextStripper();
+                    String text = stripper.getText(document);
+
+                    int charNum;
+                    if (StringUtils.isNotEmpty(text)) {
+                        charNum = text.length();
+                    } else {
+                        charNum = 0;
+                    }
+                    insertDocBo.setCharNum((long) charNum);
+
+                    document.close();
+                } else if (fileType.equalsIgnoreCase(".xlsx")) {
+                    Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(fileBytes));
+                    int charNum = 0;
+                    for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                        Sheet sheet = workbook.getSheetAt(i);
+                        for (Row row : sheet) {
+                            for (Cell cell : row) {
+                                CellType cellType = cell.getCellType();
+                                if (cellType == CellType.STRING) {
+                                    String cellValue = cell.getStringCellValue();
+                                    charNum += cellValue.length();
+                                } else if (cellType == CellType.NUMERIC) {
+                                    double numericCellValue = cell.getNumericCellValue();
+                                    String cellValue = String.valueOf(numericCellValue);
+                                    charNum += cellValue.length();
+                                } else if (cellType == CellType.FORMULA) {
+                                    String formulaValue = cell.getCellFormula();
+                                    charNum += formulaValue.length();
+                                }
+                            }
+                        }
+                    }
+                    workbook.close();
+                    insertDocBo.setCharNum((long) charNum);
+                } else if (fileType.equalsIgnoreCase(".csv")) {
+                    CSVParser csvParser = new CSVParser(new InputStreamReader(inputStream, StandardCharsets.UTF_8), CSVFormat.DEFAULT);
+
+                    int charNum = 0;
+
+                    for (CSVRecord record : csvParser) {
+                        for (String value : record) {
+                            if (StringUtils.isNotEmpty(value)) {
+                                charNum += value.length();
+                            }
+                        }
+                    }
+                    insertDocBo.setCharNum((long) charNum);
+
+                } else if (fileType.equalsIgnoreCase(".docx")) {
+                    XWPFDocument document = new XWPFDocument(new ByteArrayInputStream(fileBytes));
+                    int charNum = 0;
+                    for (XWPFParagraph paragraph : document.getParagraphs()) {
+                        for (XWPFRun run : paragraph.getRuns()) {
+                            charNum += run.getText(0).length();
+                        }
+                    }
+                    document.close();
+                    insertDocBo.setCharNum((long) charNum);
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
             datasetDocService.insertByBo(insertDocBo);
         }
         return R.ok();

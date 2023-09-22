@@ -9,7 +9,7 @@
     <div v-if="active==0">
       {{docForm}}
       <file-upload :fileType="['txt','html','md','pdf','xlsx','csv','docx']" v-model="docForm.ossIds"></file-upload>
-      <el-button style="margin-top: 12px" @click="next">下一步</el-button>
+      <el-button :disabled="docForm.ossIds === undefined || docForm.ossIds.length === 0" style="margin-top: 12px" @click="next">下一步</el-button>
     </div>
     <div v-if="active==1">
       <el-button style="margin-top: 12px" @click="pre">上一步</el-button>
@@ -49,7 +49,8 @@ const buttonLoading = ref(false);
 const datasetFormRef = ref<ElFormInstance>();
 
 const next = () => {
-  if (active.value++ > 2) active.value = 0
+  if (active.value++ > 2)
+    active.value = 0
 }
 
 const pre = () => {
