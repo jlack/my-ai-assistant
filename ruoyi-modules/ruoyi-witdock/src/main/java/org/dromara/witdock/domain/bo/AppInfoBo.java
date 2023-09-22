@@ -1,6 +1,5 @@
 package org.dromara.witdock.domain.bo;
 
-import org.dromara.common.mybatis.core.domain.BaseEntityWithoutDept;
 import org.dromara.witdock.domain.AppInfo;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -19,7 +18,7 @@ import jakarta.validation.constraints.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = AppInfo.class, reverseConvertGenerate = false)
-public class AppInfoBo extends BaseEntityWithoutDept {
+public class AppInfoBo extends BaseEntity {
 
     /**
      *

@@ -58,4 +58,15 @@ public class DatasetInfoVo implements Serializable {
     @ExcelProperty(value = "是否删除")
     private Integer isDeleted;
 
+    /**
+     * 所含文档数
+     */
+    @ExcelProperty(value = "所含文档数")
+    private Integer docNum;
+
+    /**
+     * 总字符数
+     */
+    @ExcelProperty(value = "总字符数")
+    private Integer charNum;
 }

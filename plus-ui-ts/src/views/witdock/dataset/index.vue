@@ -23,9 +23,9 @@
           </template>
           <el-text class="mt20 mx-1" truncated>{{ item.datasetDesc }}</el-text>
           <div class="mt10">
-            <el-text class="mt20 mx-1">1 文档</el-text>
+            <el-text class="mt20 mx-1">{{item.docNum}} 文档</el-text>
             <el-divider direction="vertical" />
-            <el-text>6 千字符</el-text>
+            <el-text>{{ item.charNum }} 字符</el-text>
             <el-divider direction="vertical" border-style="dashed" />
             <el-text>1 关联应用</el-text>
           </div>
@@ -159,7 +159,8 @@ const handleAdd = () => {
 /** 修改按钮操作 */
 const handleUpdate = async (row?: DatasetVO) => {
   // reset();
-  const _id = row?.id || ids.value[0]
+  // const _id = row?.id || ids.value[0]
+  const _id = row?.id
   router.push("dataset/detail/" + _id)
   // const res = await getDataset(_id);
   // Object.assign(form.value, res.data);

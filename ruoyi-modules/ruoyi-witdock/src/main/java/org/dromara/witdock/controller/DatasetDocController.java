@@ -57,6 +57,16 @@ public class DatasetDocController extends BaseController {
     }
 
     /**
+     * 查询数据集文档列表
+     */
+    @SaCheckPermission("witdock:doc:list")
+    @GetMapping("/listDocByDatasetId")
+    public TableDataInfo<DatasetDocVo> listDocByDatasetId(DatasetDocBo bo, PageQuery pageQuery) {
+        return datasetDocService.queryPageList(bo, pageQuery);
+    }
+
+
+    /**
      * 导出数据集文档列表
      */
     @SaCheckPermission("witdock:doc:export")

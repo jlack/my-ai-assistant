@@ -1,5 +1,6 @@
 package org.dromara.witdock.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +9,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.witdock.domain.bo.DatasetDocBo;
+import org.dromara.witdock.domain.vo.DatasetDocVo;
+import org.dromara.witdock.service.IDatasetDocService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.DatasetInfoBo;
 import org.dromara.witdock.domain.vo.DatasetInfoVo;
@@ -31,6 +36,9 @@ public class DatasetInfoServiceImpl implements IDatasetInfoService {
 
     private final DatasetInfoMapper baseMapper;
 
+    @Autowired
+    private IDatasetDocService docService;
+
     /**
      * 查询数据集
      */
@@ -46,6 +54,19 @@ public class DatasetInfoServiceImpl implements IDatasetInfoService {
     public TableDataInfo<DatasetInfoVo> queryPageList(DatasetInfoBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<DatasetInfo> lqw = buildQueryWrapper(bo);
         Page<DatasetInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        for (DatasetInfoVo datasetVo : result.getRecords()) {
+            DatasetDocBo docBo = new DatasetDocBo();
+            docBo.setDatasetId(datasetVo.getId());
+            List<DatasetDocVo> datasetDocVos = docService.queryList(docBo);
+            int totalCharNum = 0;
+            if (CollectionUtil.isNotEmpty(datasetDocVos)) {
+                for(DatasetDocVo docVo : datasetDocVos) {
+                    totalCharNum += docVo.getCharNum();
+                }
+            }
+            datasetVo.setDocNum(datasetDocVos.size());
+            datasetVo.setCharNum(totalCharNum);
+        }
         return TableDataInfo.build(result);
     }
 

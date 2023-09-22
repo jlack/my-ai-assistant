@@ -16,6 +16,14 @@ export const listDoc = (query?: DocQuery): AxiosPromise<DocVO[]> => {
   });
 };
 
+export const listDocByDatasetId = (query?: DocQuery): AxiosPromise<DocVO[]> => {
+  return request({
+    url: '/witdock/doc/listDocByDatasetId',
+    method: 'get',
+    params: query
+  });
+};
+
 /**
  * 查询数据集文档详细
  * @param id

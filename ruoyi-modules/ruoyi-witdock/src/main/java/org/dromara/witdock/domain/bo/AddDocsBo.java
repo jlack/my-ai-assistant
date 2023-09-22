@@ -1,13 +1,11 @@
 package org.dromara.witdock.domain.bo;
 
 import io.github.linpeilie.annotations.AutoMapper;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
-import org.dromara.common.mybatis.core.domain.BaseEntityWithoutDept;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.witdock.domain.DatasetDoc;
 
 /**
@@ -16,7 +14,7 @@ import org.dromara.witdock.domain.DatasetDoc;
 
 @Data
 @AutoMapper(target = DatasetDoc.class, reverseConvertGenerate = false)
-public class AddDocsBo extends BaseEntityWithoutDept {
+public class AddDocsBo extends BaseEntity {
 
     private Long datasetId;
 

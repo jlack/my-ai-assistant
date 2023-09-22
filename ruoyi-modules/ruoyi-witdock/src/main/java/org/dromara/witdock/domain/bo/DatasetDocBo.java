@@ -1,6 +1,6 @@
 package org.dromara.witdock.domain.bo;
 
-import org.dromara.common.mybatis.core.domain.BaseEntityWithoutDept;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -18,7 +18,7 @@ import org.dromara.witdock.domain.DatasetDoc;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DatasetDoc.class, reverseConvertGenerate = false)
-public class DatasetDocBo extends BaseEntityWithoutDept {
+public class DatasetDocBo extends BaseEntity {
 
     /**
      *

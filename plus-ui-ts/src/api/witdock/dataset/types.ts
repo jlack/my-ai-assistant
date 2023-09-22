@@ -24,6 +24,16 @@ export interface DatasetVO {
    */
   isDeleted: number;
 
+  /**
+   * 文档数量
+   */
+  docNum: number;
+
+  /**
+   * 字符数量
+   */
+  charNum: number;
+
 }
 
 export interface DatasetForm extends BaseEntity {

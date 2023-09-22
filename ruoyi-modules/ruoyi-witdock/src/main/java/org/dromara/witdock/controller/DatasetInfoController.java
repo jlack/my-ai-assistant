@@ -23,11 +23,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.dromara.common.core.domain.model.LoginUser;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.file.FileUtils;
 import org.dromara.common.oss.core.OssClient;
 import org.dromara.common.oss.factory.OssFactory;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.domain.vo.SysOssVo;
 import org.dromara.system.service.ISysOssService;
 import org.dromara.witdock.domain.DatasetInfo;
@@ -124,7 +126,6 @@ public class DatasetInfoController extends BaseController {
     @RepeatSubmit()
     @PostMapping("/addWithDocs")
     public R<Void> addWithDocs(@Validated(AddGroup.class) @RequestBody AddDsWithDocsBo bo) {
-
         DatasetInfoBo insertBo = new DatasetInfoBo();
         BeanUtil.copyProperties(bo, insertBo);
         datasetInfoService.insertByBo(insertBo);
@@ -146,7 +147,6 @@ public class DatasetInfoController extends BaseController {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 IOUtils.copy(inputStream, outputStream);
                 byte[] fileBytes = outputStream.toByteArray();
-
                 String fileType = ossVo.getFileSuffix();
                 if (fileType.equalsIgnoreCase(".txt") || fileType.equalsIgnoreCase(".html") || fileType.equalsIgnoreCase(".md")) {
                     String fileContent = new String(fileBytes, StandardCharsets.UTF_8);
@@ -191,7 +191,6 @@ public class DatasetInfoController extends BaseController {
                     insertDocBo.setCharNum((long) charNum);
                 } else if (fileType.equalsIgnoreCase(".csv")) {
                     CSVParser csvParser = new CSVParser(new InputStreamReader(inputStream, StandardCharsets.UTF_8), CSVFormat.DEFAULT);
-
                     int charNum = 0;
 
                     for (CSVRecord record : csvParser) {

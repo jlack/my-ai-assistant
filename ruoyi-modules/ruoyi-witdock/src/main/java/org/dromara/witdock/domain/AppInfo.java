@@ -4,7 +4,6 @@ import org.dromara.common.mybatis.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.dromara.common.mybatis.core.domain.BaseEntityWithoutDept;
 
 import java.io.Serial;
 
@@ -17,7 +16,7 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("app_info")
-public class AppInfo extends BaseEntityWithoutDept {
+public class AppInfo extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

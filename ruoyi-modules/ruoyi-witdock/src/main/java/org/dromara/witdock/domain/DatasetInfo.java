@@ -4,7 +4,6 @@ import org.dromara.common.mybatis.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.dromara.common.mybatis.core.domain.BaseEntityWithoutDept;
 
 import java.io.Serial;
 
@@ -17,7 +16,7 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("dataset_info")
-public class DatasetInfo extends BaseEntityWithoutDept {
+public class DatasetInfo extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -47,6 +46,6 @@ public class DatasetInfo extends BaseEntityWithoutDept {
      * 是否删除
      */
     @TableLogic
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
 }

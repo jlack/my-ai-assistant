@@ -7,7 +7,6 @@
     </el-steps>
 
     <div v-if="active==0">
-      {{docForm}}
       <file-upload :fileType="['txt','html','md','pdf','xlsx','csv','docx']" v-model="docForm.ossIds"></file-upload>
       <el-button :disabled="docForm.ossIds === undefined || docForm.ossIds.length === 0" style="margin-top: 12px" @click="next">下一步</el-button>
     </div>
@@ -16,8 +15,6 @@
       <el-button style="margin-top: 12px" @click="next">下一步</el-button>
     </div>
     <div v-if="active==2">
-      {{docForm}}<br>
-      {{dataSetForm}}
       <el-form ref="datasetFormRef" :model="dataSetForm" title="新增数据集" :rules="rules" label-width="80px">
         <el-form-item label="数据集名称" prop="datasetName">
           <el-input v-model="dataSetForm.datasetName" placeholder="请输入数据集名称" />
@@ -29,8 +26,6 @@
       <el-button style="margin-top: 12px" @click="pre">上一步</el-button>
       <el-button :loading="buttonLoading" style="margin-top: 12px" type="primary" @click="handleComplete">完成</el-button>
     </div>
-
-
   </div>
 </template>
 
@@ -40,6 +35,9 @@ import {addDoc, addDocs, updateDoc} from "@/api/witdock/datasetDoc/api";
 import {AddDocsBo, DocForm, DocVO} from "@/api/witdock/datasetDoc/type";
 import {addDataset, addDatasetWithDocs, updateDataset} from "@/api/witdock/dataset";
 import {DatasetForm} from "@/api/witdock/dataset/types";
+import {Burger} from "@element-plus/icons-vue";
+
+const router = useRouter();
 
 const docForm = ref<Partial<AddDocsBo>>({});
 const dataSetForm = ref<Partial<DatasetForm>>({});
@@ -67,7 +65,6 @@ function addDS() {
 
 function handleComplete() {
   datasetFormRef.value?.validate(async (valid: boolean) => {
-    console.log("into validate")
     if (valid) {
       buttonLoading.value = true;
       if (dataSetForm.value.id) {
@@ -77,6 +74,7 @@ function handleComplete() {
           .then((res) => {
             if (res.code === 200) {
               ElMessage.success("数据集" + dataSetForm.value.datasetName + "新增成功")
+              router.push("/dataset");
             } else {
               ElMessage.error("数据集新增失败")
             }
