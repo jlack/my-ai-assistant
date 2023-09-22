@@ -41,7 +41,8 @@ public class AppInfo extends BaseEntityWithoutDept {
     /**
      * 是否删除
      */
-    private Integer isDeleted;
+    @TableLogic
+    private boolean isDeleted;
 
 
 }

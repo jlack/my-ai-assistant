@@ -46,6 +46,7 @@ public class DatasetInfo extends BaseEntityWithoutDept {
     /**
      * 是否删除
      */
-    private Integer isDeleted;
+    @TableLogic
+    private Boolean isDeleted;
 
 }
