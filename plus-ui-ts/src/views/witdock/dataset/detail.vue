@@ -4,18 +4,20 @@
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="文档" name="first">
         <el-row :gutter="10">
+          {{queryParams}}
           <el-col :span="20">
             <el-input
               style="width: 220px"
-              v-model="queryParams.fileName"
+              v-model="queryParams.docName"
               class="w-50 m-2"
               placeholder="搜索文件名"
               :prefix-icon="Search"
             />
+            <el-button type="primary" @click="handleQuery">搜索</el-button>
           </el-col>
 
           <el-col :span="4">
-            <el-button type="primary" style="float: right">添加文件</el-button>
+            <file-upload :show-file-list="false">添加文件</file-upload>
           </el-col>
         </el-row>
 
@@ -25,10 +27,9 @@
           <el-table-column label="id" align="center" prop="id" v-if="true" />
           <el-table-column label="数据集id" align="center" prop="datasetId" />
           <el-table-column label="文档名称" align="center" prop="docName" />
-          <el-table-column label="对象存储id" align="center" prop="ossId" />
+<!--          <el-table-column label="对象存储id" align="center" prop="ossId" />-->
           <el-table-column label="字符数" align="center" prop="charNum" />
           <el-table-column label="状态" align="center" prop="status" />
-          <el-table-column label="是否删除" align="center" prop="isDeleted" />
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-tooltip content="删除" placement="top">

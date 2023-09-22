@@ -6,6 +6,17 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.util.IOUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.service.OssService;
@@ -33,9 +44,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -172,6 +182,81 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
         return baseMapper.deleteBatchIds(ids) > 0;
     }
 
+    @Override
+    public int calculateCharNum(Long ossId) {
+        SysOssVo ossVo = baseMapper.selectVoById(ossId);
+        int charNum = 0;
+        try {
+            OssClient storage = OssFactory.instance(ossVo.getService());
+            try (InputStream inputStream = storage.getObjectContent(ossVo.getUrl())) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                IOUtils.copy(inputStream, outputStream);
+                byte[] fileBytes = outputStream.toByteArray();
+                String fileType = ossVo.getFileSuffix();
+
+                // 根据文件类型进行字符数计算
+                if (fileType.equalsIgnoreCase(".txt") || fileType.equalsIgnoreCase(".html") || fileType.equalsIgnoreCase(".md")) {
+                    String fileContent = new String(fileBytes, StandardCharsets.UTF_8);
+                    charNum = fileContent.length();
+                } else if (fileType.equalsIgnoreCase(".pdf")) {
+                    PDDocument document = PDDocument.load(fileBytes);
+                    PDFTextStripper stripper = new PDFTextStripper();
+                    String text = stripper.getText(document);
+
+                    if (StringUtils.isNotEmpty(text)) {
+                        charNum = text.length();
+                    }
+
+                    document.close();
+                } else if (fileType.equalsIgnoreCase(".xlsx")) {
+                    Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(fileBytes));
+                    for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                        Sheet sheet = workbook.getSheetAt(i);
+                        for (Row row : sheet) {
+                            for (Cell cell : row) {
+                                CellType cellType = cell.getCellType();
+                                if (cellType == CellType.STRING) {
+                                    String cellValue = cell.getStringCellValue();
+                                    charNum += cellValue.length();
+                                } else if (cellType == CellType.NUMERIC) {
+                                    double numericCellValue = cell.getNumericCellValue();
+                                    String cellValue = String.valueOf(numericCellValue);
+                                    charNum += cellValue.length();
+                                } else if (cellType == CellType.FORMULA) {
+                                    String formulaValue = cell.getCellFormula();
+                                    charNum += formulaValue.length();
+                                }
+                            }
+                        }
+                    }
+                    workbook.close();
+                } else if (fileType.equalsIgnoreCase(".csv")) {
+                    CSVParser csvParser = new CSVParser(new InputStreamReader(inputStream, StandardCharsets.UTF_8), CSVFormat.DEFAULT);
+
+                    for (CSVRecord record : csvParser) {
+                        for (String value : record) {
+                            if (StringUtils.isNotEmpty(value)) {
+                                charNum += value.length();
+                            }
+                        }
+                    }
+                } else if (fileType.equalsIgnoreCase(".docx")) {
+                    XWPFDocument document = new XWPFDocument(new ByteArrayInputStream(fileBytes));
+
+                    for (XWPFParagraph paragraph : document.getParagraphs()) {
+                        for (XWPFRun run : paragraph.getRuns()) {
+                            charNum += run.getText(0).length();
+                        }
+                    }
+                    document.close();
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return charNum;
+    }
+
     /**
      * 匹配Url
      *
@@ -186,4 +271,6 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
         }
         return oss;
     }
+
+
 }
