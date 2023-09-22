@@ -3,13 +3,11 @@
     <el-row :gutter="10">
       <el-col :md="6" class="mt5">
         <el-card class="box-card link-card" style="height: 100%" @click="handleAdd" shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <el-text tag="b">创建数据集</el-text>
-              <el-button style="float: right; " @click.stop="handleAdd"
-                         icon="Plus" plain></el-button>
-            </div>
-          </template>
+          <div class="card-header">
+            <el-text tag="b">创建数据集</el-text>
+            <el-button style="float: right; " @click.stop="handleAdd"
+                       icon="Plus" plain></el-button>
+          </div>
           <el-text class="mt20 mx-1" truncated>导入自己的文本数据或通过xxxxxxx</el-text>
         </el-card>
       </el-col>
@@ -162,7 +160,7 @@ const handleAdd = () => {
 const handleUpdate = async (row?: DatasetVO) => {
   // reset();
   const _id = row?.id || ids.value[0]
-  router.push("dataset/edit/" + _id)
+  router.push("dataset/detail/" + _id)
   // const res = await getDataset(_id);
   // Object.assign(form.value, res.data);
   // dialog.visible = true;

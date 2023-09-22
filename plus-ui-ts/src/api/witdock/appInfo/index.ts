@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { InfoVO, InfoForm, InfoQuery } from '@/api/witdock/appInfo/types';
+import { appVO, appForm, appQuery } from '@/api/witdock/appInfo/type';
 
 /**
  * 查询构建应用列表
@@ -8,7 +8,7 @@ import { InfoVO, InfoForm, InfoQuery } from '@/api/witdock/appInfo/types';
  * @returns {*}
  */
 
-export const listInfo = (query?: InfoQuery): AxiosPromise<InfoVO[]> => {
+export const listInfo = (query?: appQuery): AxiosPromise<appVO[]> => {
   return request({
     url: '/system/info/list',
     method: 'get',
@@ -20,7 +20,7 @@ export const listInfo = (query?: InfoQuery): AxiosPromise<InfoVO[]> => {
  * 查询构建应用详细
  * @param id
  */
-export const getInfo = (id: string | number): AxiosPromise<InfoVO> => {
+export const getInfo = (id: string | number): AxiosPromise<appVO> => {
   return request({
     url: '/system/info/' + id,
     method: 'get'
@@ -31,7 +31,7 @@ export const getInfo = (id: string | number): AxiosPromise<InfoVO> => {
  * 新增构建应用
  * @param data
  */
-export const addInfo = (data: InfoForm) => {
+export const addInfo = (data: appForm) => {
   return request({
     url: '/system/info',
     method: 'post',
@@ -43,7 +43,7 @@ export const addInfo = (data: InfoForm) => {
  * 修改构建应用
  * @param data
  */
-export const updateInfo = (data: InfoForm) => {
+export const updateInfo = (data: appForm) => {
   return request({
     url: '/system/info',
     method: 'put',
