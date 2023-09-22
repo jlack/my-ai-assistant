@@ -1,4 +1,4 @@
-export interface InfoVO {
+export interface appVO {
   /**
    *
    */
@@ -21,7 +21,7 @@ export interface InfoVO {
 
 }
 
-export interface InfoForm extends BaseEntity {
+export interface appForm extends BaseEntity {
   /**
    *
    */
@@ -44,7 +44,7 @@ export interface InfoForm extends BaseEntity {
 
 }
 
-export interface InfoQuery extends PageQuery {
+export interface appQuery extends PageQuery {
 
   /**
    * 应用名
