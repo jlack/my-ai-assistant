@@ -44,8 +44,7 @@ public class DatasetDocController extends BaseController {
 
     private final IDatasetDocService datasetDocService;
 
-    @Autowired
-    private ISysOssService ossService;
+    private final ISysOssService ossService;
 
     /**
      * 查询数据集文档列表
@@ -55,16 +54,6 @@ public class DatasetDocController extends BaseController {
     public TableDataInfo<DatasetDocVo> list(DatasetDocBo bo, PageQuery pageQuery) {
         return datasetDocService.queryPageList(bo, pageQuery);
     }
-
-    /**
-     * 查询数据集文档列表
-     */
-    @SaCheckPermission("witdock:doc:list")
-    @GetMapping("/listDocByDatasetId")
-    public TableDataInfo<DatasetDocVo> listDocByDatasetId(DatasetDocBo bo, PageQuery pageQuery) {
-        return datasetDocService.queryPageList(bo, pageQuery);
-    }
-
 
     /**
      * 导出数据集文档列表

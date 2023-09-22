@@ -9,17 +9,6 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.IOUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.oss.core.OssClient;
 import org.dromara.common.oss.factory.OssFactory;
@@ -60,11 +49,9 @@ public class DatasetInfoController extends BaseController {
 
     private final IDatasetInfoService datasetInfoService;
 
-    @Autowired
-    private IDatasetDocService datasetDocService;
+    private final IDatasetDocService datasetDocService;
 
-    @Autowired
-    private ISysOssService ossService;
+    private final ISysOssService ossService;
 
     /**
      * 查询数据集列表

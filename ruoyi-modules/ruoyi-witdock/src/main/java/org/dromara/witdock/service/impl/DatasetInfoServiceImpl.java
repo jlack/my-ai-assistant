@@ -54,6 +54,7 @@ public class DatasetInfoServiceImpl implements IDatasetInfoService {
     public TableDataInfo<DatasetInfoVo> queryPageList(DatasetInfoBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<DatasetInfo> lqw = buildQueryWrapper(bo);
         Page<DatasetInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        // 遍历result中的每一个数据集的所含文档数量和总字符数量
         for (DatasetInfoVo datasetVo : result.getRecords()) {
             DatasetDocBo docBo = new DatasetDocBo();
             docBo.setDatasetId(datasetVo.getId());
