@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { appVO, appForm, appQuery } from '@/api/witdock/appInfo/type';
+import { appVO, appForm, appQuery } from '@/api/witdock/app/type';
 
 /**
  * 查询构建应用列表
@@ -8,9 +8,9 @@ import { appVO, appForm, appQuery } from '@/api/witdock/appInfo/type';
  * @returns {*}
  */
 
-export const listInfo = (query?: appQuery): AxiosPromise<appVO[]> => {
+export const listApp = (query?: appQuery): AxiosPromise<appVO[]> => {
   return request({
-    url: '/witdock/info/list',
+    url: '/witdock/app/list',
     method: 'get',
     params: query
   });
@@ -20,9 +20,9 @@ export const listInfo = (query?: appQuery): AxiosPromise<appVO[]> => {
  * 查询构建应用详细
  * @param id
  */
-export const getInfo = (id: string | number): AxiosPromise<appVO> => {
+export const getApp = (id: string | number): AxiosPromise<appVO> => {
   return request({
-    url: '/witdock/info/' + id,
+    url: '/witdock/app/' + id,
     method: 'get'
   });
 };
@@ -31,9 +31,9 @@ export const getInfo = (id: string | number): AxiosPromise<appVO> => {
  * 新增构建应用
  * @param data
  */
-export const addInfo = (data: appForm) => {
+export const addApp = (data: appForm) => {
   return request({
-    url: '/witdock/info',
+    url: '/witdock/app',
     method: 'post',
     data: data
   });
@@ -43,9 +43,9 @@ export const addInfo = (data: appForm) => {
  * 修改构建应用
  * @param data
  */
-export const updateInfo = (data: appForm) => {
+export const updateApp = (data: appForm) => {
   return request({
-    url: '/witdock/info',
+    url: '/witdock/app',
     method: 'put',
     data: data
   });
@@ -55,9 +55,9 @@ export const updateInfo = (data: appForm) => {
  * 删除构建应用
  * @param id
  */
-export const delInfo = (id: string | number | Array<string | number>) => {
+export const delApp = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/witdock/info/' + id,
+    url: '/witdock/app/' + id,
     method: 'delete'
   });
 };

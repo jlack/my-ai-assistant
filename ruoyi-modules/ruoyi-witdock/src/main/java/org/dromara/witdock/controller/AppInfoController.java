@@ -31,7 +31,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/witdock/info")
+@RequestMapping("/witdock/app")
 public class AppInfoController extends BaseController {
 
     private final IAppInfoService appInfoService;
@@ -39,7 +39,7 @@ public class AppInfoController extends BaseController {
     /**
      * 查询构建应用列表
      */
-    @SaCheckPermission("witdock:info:list")
+    @SaCheckPermission("witdock:app:list")
     @GetMapping("/list")
     public TableDataInfo<AppInfoVo> list(AppInfoBo bo, PageQuery pageQuery) {
         return appInfoService.queryPageList(bo, pageQuery);
@@ -48,7 +48,7 @@ public class AppInfoController extends BaseController {
     /**
      * 导出构建应用列表
      */
-    @SaCheckPermission("witdock:info:export")
+    @SaCheckPermission("witdock:app:export")
     @Log(title = "构建应用", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(AppInfoBo bo, HttpServletResponse response) {
@@ -61,7 +61,7 @@ public class AppInfoController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("witdock:info:query")
+    @SaCheckPermission("witdock:app:query")
     @GetMapping("/{id}")
     public R<AppInfoVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
@@ -71,7 +71,7 @@ public class AppInfoController extends BaseController {
     /**
      * 新增构建应用
      */
-    @SaCheckPermission("witdock:info:add")
+    @SaCheckPermission("witdock:app:add")
     @Log(title = "构建应用", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -82,7 +82,7 @@ public class AppInfoController extends BaseController {
     /**
      * 修改构建应用
      */
-    @SaCheckPermission("witdock:info:edit")
+    @SaCheckPermission("witdock:app:edit")
     @Log(title = "构建应用", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -95,7 +95,7 @@ public class AppInfoController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("witdock:info:remove")
+    @SaCheckPermission("witdock:app:remove")
     @Log(title = "构建应用", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
