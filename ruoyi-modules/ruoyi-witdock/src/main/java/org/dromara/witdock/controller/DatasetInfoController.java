@@ -1,11 +1,27 @@
 package org.dromara.witdock.controller;
 
+import java.io.InputStream;
 import java.util.List;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.io.IoUtil;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.core.utils.file.FileUtils;
+import org.dromara.common.oss.core.OssClient;
+import org.dromara.common.oss.factory.OssFactory;
+import org.dromara.system.domain.vo.SysOssVo;
+import org.dromara.system.service.ISysOssService;
+import org.dromara.witdock.domain.DatasetInfo;
+import org.dromara.witdock.domain.bo.AddDocsBo;
+import org.dromara.witdock.domain.bo.AddDsWithDocsBo;
+import org.dromara.witdock.domain.bo.DatasetDocBo;
+import org.dromara.witdock.enums.DocStatusEnum;
+import org.dromara.witdock.service.IDatasetDocService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -35,6 +51,12 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class DatasetInfoController extends BaseController {
 
     private final IDatasetInfoService datasetInfoService;
+
+    @Autowired
+    private IDatasetDocService datasetDocService;
+
+    @Autowired
+    private ISysOssService ossService;
 
     /**
      * 查询数据集列表
@@ -77,6 +99,37 @@ public class DatasetInfoController extends BaseController {
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody DatasetInfoBo bo) {
         return toAjax(datasetInfoService.insertByBo(bo));
+    }
+
+    /**
+     * 新增数据集
+     */
+    @SaCheckPermission("witdock:dataset:add")
+    @Log(title = "数据集", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/addWithDocs")
+    public R<Void> addWithDocs(@Validated(AddGroup.class) @RequestBody AddDsWithDocsBo bo) {
+
+        DatasetInfoBo insertBo = new DatasetInfoBo();
+        BeanUtil.copyProperties(bo, insertBo);
+        datasetInfoService.insertByBo(insertBo);
+
+        Long datasetId = insertBo.getId();
+
+
+        for (String ossId : bo.getOssIds().split(StringUtils.SEPARATOR)) {
+
+            SysOssVo ossVo = ossService.getById(Long.parseLong(ossId));
+            DatasetDocBo insertDocBo = new DatasetDocBo();
+            BeanUtil.copyProperties(bo, insertDocBo);
+            insertDocBo.setDatasetId(datasetId);
+            insertDocBo.setOssId(Long.parseLong(ossId));
+            insertDocBo.setDocName(ossVo.getOriginalName());
+            insertDocBo.setStatus(DocStatusEnum.STATUS_0.getValue());
+            insertDocBo.setCharNum();// 文件字符数
+            datasetDocService.insertByBo(insertDocBo);
+        }
+        return R.ok();
     }
 
     /**

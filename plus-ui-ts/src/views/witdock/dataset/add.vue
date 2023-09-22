@@ -38,7 +38,7 @@
 import {ref} from 'vue'
 import {addDoc, addDocs, updateDoc} from "@/api/witdock/datasetDoc/api";
 import {AddDocsBo, DocForm, DocVO} from "@/api/witdock/datasetDoc/type";
-import {addDataset, updateDataset} from "@/api/witdock/dataset";
+import {addDataset, addDatasetWithDocs, updateDataset} from "@/api/witdock/dataset";
 import {DatasetForm} from "@/api/witdock/dataset/types";
 
 const docForm = ref<Partial<AddDocsBo>>({});
@@ -72,14 +72,15 @@ function handleComplete() {
       if (dataSetForm.value.id) {
         await updateDataset(dataSetForm.value).finally(() =>  buttonLoading.value = false);
       } else {
-        await addDataset(dataSetForm.value).finally(() =>  buttonLoading.value = false);
-        await addDocs(docForm.value).then((res) => {
-          if (res.code === 200) {
-            ElMessage.success("上传数据集成功")
-          } else {
-            ElMessage.error("上传数据集失败")
-          }
-        })
+        await addDatasetWithDocs({...dataSetForm.value, ...docForm.value})
+          .then((res) => {
+            if (res.code === 200) {
+              ElMessage.success("数据集" + dataSetForm.value.datasetName + "新增成功")
+            } else {
+              ElMessage.error("数据集新增失败")
+            }
+          })
+          .finally(() =>  buttonLoading.value = false);
       }
     }
   });
@@ -96,7 +97,7 @@ const rules = ref({
     { required: true, message: "数据集描述不能为空", trigger: "blur" }
   ],
   visiblePermission: [
-    { required: true, message: "me\all不能为空", trigger: "change" }
+    { required: true, message: "me,all不能为空", trigger: "change" }
   ],
   isDeleted: [
     { required: true, message: "是否删除不能为空", trigger: "blur" }

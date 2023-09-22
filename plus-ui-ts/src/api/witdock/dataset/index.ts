@@ -40,6 +40,18 @@ export const addDataset = (data: DatasetForm) => {
 };
 
 /**
+ * 新增数据集带文件
+ * @param data
+ */
+export const addDatasetWithDocs = (data: object) => {
+  return request({
+    url: '/witdock/dataset/addWithDocs',
+    method: 'post',
+    data: data
+  });
+};
+
+/**
  * 修改数据集
  * @param data
  */
