@@ -1,5 +1,6 @@
 package org.dromara.witdock.service;
 
+import org.dromara.witdock.domain.AppDataset;
 import org.dromara.witdock.domain.bo.AppDatasetBo;
 import org.dromara.witdock.domain.vo.AppDatasetVo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -16,7 +17,6 @@ import java.util.List;
  * @date 2023-09-22
  */
 public interface IAppDatasetService {
-
 
     /**
      * 查询应用数据集
@@ -49,4 +49,6 @@ public interface IAppDatasetService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     List<DatasetInfoVo> listDatasetVoByAppId(Long appId);
+
+    void delByBothId(AppDatasetBo bo);
 }

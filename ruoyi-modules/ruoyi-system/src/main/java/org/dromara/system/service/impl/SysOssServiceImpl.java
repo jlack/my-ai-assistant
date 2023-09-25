@@ -183,9 +183,9 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
     }
 
     @Override
-    public int calculateCharNum(Long ossId) {
+    public Long calculateCharNum(Long ossId) {
         SysOssVo ossVo = baseMapper.selectVoById(ossId);
-        int charNum = 0;
+        Long charNum = 0L;
         try {
             OssClient storage = OssFactory.instance(ossVo.getService());
             try (InputStream inputStream = storage.getObjectContent(ossVo.getUrl())) {
@@ -197,14 +197,14 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
                 // 根据文件类型进行字符数计算
                 if (fileType.equalsIgnoreCase(".txt") || fileType.equalsIgnoreCase(".html") || fileType.equalsIgnoreCase(".md")) {
                     String fileContent = new String(fileBytes, StandardCharsets.UTF_8);
-                    charNum = fileContent.length();
+                    charNum = Long.valueOf(fileContent.length());
                 } else if (fileType.equalsIgnoreCase(".pdf")) {
                     PDDocument document = PDDocument.load(fileBytes);
                     PDFTextStripper stripper = new PDFTextStripper();
                     String text = stripper.getText(document);
 
                     if (StringUtils.isNotEmpty(text)) {
-                        charNum = text.length();
+                        charNum = Long.valueOf(text.length());
                     }
 
                     document.close();

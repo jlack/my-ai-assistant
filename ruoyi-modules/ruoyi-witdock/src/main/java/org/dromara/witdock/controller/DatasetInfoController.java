@@ -120,7 +120,7 @@ public class DatasetInfoController extends BaseController {
             insertDocBo.setDocName(ossVo.getOriginalName());
             insertDocBo.setStatus(DocStatusEnum.STATUS_0.getValue());
 
-            insertDocBo.setCharNum((long) ossService.calculateCharNum(Long.valueOf(ossId)));
+            insertDocBo.setCharNum(ossService.calculateCharNum(Long.valueOf(ossId)));
 
             datasetDocService.insertByBo(insertDocBo);
         }

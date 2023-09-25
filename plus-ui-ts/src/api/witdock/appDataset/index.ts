@@ -61,3 +61,14 @@ export const delAppDataset = (id: string | number | Array<string | number>) => {
     method: 'delete'
   });
 };
+
+/**
+ * 删除应用数据集
+ * @param id
+ */
+export const delAppDatasetByBothId = (data) => {
+  return request({
+    url: '/witdock/appDataset/delAppDatasetByBothId/' + data.appId + "/" + data.datasetId,
+    method: 'delete'
+  });
+};
