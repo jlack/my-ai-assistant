@@ -4,10 +4,5 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.witdock.mapper.DatasetDocMapper">
 
-    <select id="countCharNumByDatasetId" resultType="java.lang.Integer">
-        select sum(char_num)
-        from dataset_doc
-        where dataset_id = #{datasetId}
-    </select>
 
 </mapper>

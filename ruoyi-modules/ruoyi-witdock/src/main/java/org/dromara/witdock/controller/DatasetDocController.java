@@ -89,7 +89,7 @@ public class DatasetDocController extends BaseController {
         Long ossId = bo.getOssId();
         SysOssVo ossVo = ossService.getById(ossId);
         bo.setDocName(ossVo.getOriginalName());
-        bo.setCharNum((long) ossService.calculateCharNum(ossId));
+        bo.setCharNum(ossService.calculateCharNum(ossId));
         return toAjax(datasetDocService.insertByBo(bo));
     }
 
@@ -108,7 +108,7 @@ public class DatasetDocController extends BaseController {
             insertBo.setOssId(Long.parseLong(ossId));
             insertBo.setDocName(ossVo.getOriginalName());
             insertBo.setStatus(DocStatusEnum.STATUS_0.getValue());
-            insertBo.setCharNum((long) ossService.calculateCharNum(Long.valueOf(ossId)));
+            insertBo.setCharNum(ossService.calculateCharNum(Long.valueOf(ossId)));
             datasetDocService.insertByBo(insertBo);
         }
         return R.ok("数据集文档新增成功");

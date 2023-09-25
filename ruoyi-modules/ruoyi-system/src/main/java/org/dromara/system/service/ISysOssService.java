@@ -37,5 +37,5 @@ public interface ISysOssService {
 
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    public int calculateCharNum(Long ossId);
+    public Long calculateCharNum(Long ossId);
 }
