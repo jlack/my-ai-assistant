@@ -8,11 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
-import org.dromara.witdock.mapper.SessionLogMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.SessionLogBo;
 import org.dromara.witdock.domain.vo.SessionLogVo;
 import org.dromara.witdock.domain.SessionLog;
+import org.dromara.witdock.mapper.SessionLogMapper;
 import org.dromara.witdock.service.ISessionLogService;
 
 import java.util.List;

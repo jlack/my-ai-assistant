@@ -1,9 +1,8 @@
 package org.dromara.witdock.mapper;
 
-
-import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 import org.dromara.witdock.domain.SessionLog;
 import org.dromara.witdock.domain.vo.SessionLogVo;
+import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 
 /**
  * 会话日志表Mapper接口

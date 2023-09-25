@@ -1,4 +1,4 @@
-export interface LogVO {
+export interface SessionLogVO {
   /**
    *
    */
@@ -31,7 +31,7 @@ export interface LogVO {
 
 }
 
-export interface LogForm extends BaseEntity {
+export interface SessionLogForm extends BaseEntity {
   /**
    *
    */
@@ -64,7 +64,7 @@ export interface LogForm extends BaseEntity {
 
 }
 
-export interface LogQuery extends PageQuery {
+export interface SessionLogQuery extends PageQuery {
 
   /**
    * 对话id

@@ -35,22 +35,22 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:log:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['witdock:sessionLog:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:log:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['witdock:sessionLog:edit']">修改</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:log:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['witdock:sessionLog:remove']">删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:log:export']">导出</el-button>
+            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['witdock:sessionLog:export']">导出</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="logList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="sessionLogList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="" align="center" prop="id" v-if="true" />
         <el-table-column label="对话id" align="center" prop="sessionId" />
@@ -65,10 +65,10 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:log:edit']"></el-button>
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['witdock:sessionLog:edit']"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:log:remove']"></el-button>
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['witdock:sessionLog:remove']"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -84,7 +84,7 @@
     </el-card>
     <!-- 添加或修改会话日志表对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="logFormRef" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="sessionLogFormRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="对话id" prop="sessionId">
           <el-input v-model="form.sessionId" placeholder="请输入对话id" />
         </el-form-item>
@@ -116,14 +116,13 @@
   </div>
 </template>
 
-<script setup name="Log" lang="ts">
-import { listLog, getLog, delLog, addLog, updateLog } from '@/api/witdock/sessionLog/api';
-
-import { LogVO, LogQuery, LogForm } from '@/api/witdock/sessionLog/type';
+<script setup name="SessionLog" lang="ts">
+import { listSessionLog, getSessionLog, delSessionLog, addSessionLog, updateSessionLog } from '@/api/witdock/sessionLog/api';
+import { SessionLogVO, SessionLogQuery, SessionLogForm } from '@/api/witdock/sessionLog/type';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
-const logList = ref<LogVO[]>([]);
+const sessionLogList = ref<SessionLogVO[]>([]);
 const buttonLoading = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -133,14 +132,14 @@ const multiple = ref(true);
 const total = ref(0);
 
 const queryFormRef = ref<ElFormInstance>();
-const logFormRef = ref<ElFormInstance>();
+const sessionLogFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
 });
 
-const initFormData: LogForm = {
+const initFormData: SessionLogForm = {
   id: undefined,
   sessionId: undefined,
   query: undefined,
@@ -148,7 +147,7 @@ const initFormData: LogForm = {
   reDatetime: undefined,
   msgToken: undefined,
 }
-const data = reactive<PageData<LogForm, LogQuery>>({
+const data = reactive<PageData<SessionLogForm, SessionLogQuery>>({
   form: {...initFormData},
   queryParams: {
     pageNum: 1,
@@ -188,8 +187,8 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询会话日志表列表 */
 const getList = async () => {
   loading.value = true;
-  const res = await listLog(queryParams.value);
-  logList.value = res.rows;
+  const res = await listSessionLog(queryParams.value);
+  sessionLogList.value = res.rows;
   total.value = res.total;
   loading.value = false;
 }
@@ -203,7 +202,7 @@ const cancel = () => {
 /** 表单重置 */
 const reset = () => {
   form.value = {...initFormData};
-  logFormRef.value?.resetFields();
+  sessionLogFormRef.value?.resetFields();
 }
 
 /** 搜索按钮操作 */
@@ -219,7 +218,7 @@ const resetQuery = () => {
 }
 
 /** 多选框选中数据 */
-const handleSelectionChange = (selection: LogVO[]) => {
+const handleSelectionChange = (selection: SessionLogVO[]) => {
   ids.value = selection.map(item => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
@@ -233,10 +232,10 @@ const handleAdd = () => {
 }
 
 /** 修改按钮操作 */
-const handleUpdate = async (row?: LogVO) => {
+const handleUpdate = async (row?: SessionLogVO) => {
   reset();
   const _id = row?.id || ids.value[0]
-  const res = await getLog(_id);
+  const res = await getSessionLog(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改会话日志表";
@@ -244,13 +243,13 @@ const handleUpdate = async (row?: LogVO) => {
 
 /** 提交按钮 */
 const submitForm = () => {
-  logFormRef.value?.validate(async (valid: boolean) => {
+  sessionLogFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateLog(form.value).finally(() =>  buttonLoading.value = false);
+        await updateSessionLog(form.value).finally(() =>  buttonLoading.value = false);
       } else {
-        await addLog(form.value).finally(() =>  buttonLoading.value = false);
+        await addSessionLog(form.value).finally(() =>  buttonLoading.value = false);
       }
       proxy?.$modal.msgSuccess("修改成功");
       dialog.visible = false;
@@ -260,19 +259,19 @@ const submitForm = () => {
 }
 
 /** 删除按钮操作 */
-const handleDelete = async (row?: LogVO) => {
+const handleDelete = async (row?: SessionLogVO) => {
   const _ids = row?.id || ids.value;
   await proxy?.$modal.confirm('是否确认删除会话日志表编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
-  await delLog(_ids);
+  await delSessionLog(_ids);
   proxy?.$modal.msgSuccess("删除成功");
   await getList();
 }
 
 /** 导出按钮操作 */
 const handleExport = () => {
-  proxy?.download('system/log/export', {
+  proxy?.download('witdock/sessionLog/export', {
     ...queryParams.value
-  }, `log_${new Date().getTime()}.xlsx`)
+  }, `sessionLog_${new Date().getTime()}.xlsx`)
 }
 
 onMounted(() => {
