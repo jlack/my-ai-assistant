@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { LogVO, LogForm, LogQuery } from '@/api/system/log/types';
+import { SessionLogVO, SessionLogForm, SessionLogQuery } from '@/api/witdock/sessionLog/types';
 
 /**
  * 查询会话日志表列表
@@ -8,9 +8,9 @@ import { LogVO, LogForm, LogQuery } from '@/api/system/log/types';
  * @returns {*}
  */
 
-export const listLog = (query?: LogQuery): AxiosPromise<LogVO[]> => {
+export const listSessionLog = (query?: SessionLogQuery): AxiosPromise<SessionLogVO[]> => {
   return request({
-    url: '/system/log/list',
+    url: '/witdock/sessionLog/list',
     method: 'get',
     params: query
   });
@@ -20,9 +20,9 @@ export const listLog = (query?: LogQuery): AxiosPromise<LogVO[]> => {
  * 查询会话日志表详细
  * @param id
  */
-export const getLog = (id: string | number): AxiosPromise<LogVO> => {
+export const getSessionLog = (id: string | number): AxiosPromise<SessionLogVO> => {
   return request({
-    url: '/system/log/' + id,
+    url: '/witdock/sessionLog/' + id,
     method: 'get'
   });
 };
@@ -31,9 +31,9 @@ export const getLog = (id: string | number): AxiosPromise<LogVO> => {
  * 新增会话日志表
  * @param data
  */
-export const addLog = (data: LogForm) => {
+export const addSessionLog = (data: SessionLogForm) => {
   return request({
-    url: '/system/log',
+    url: '/witdock/sessionLog',
     method: 'post',
     data: data
   });
@@ -43,9 +43,9 @@ export const addLog = (data: LogForm) => {
  * 修改会话日志表
  * @param data
  */
-export const updateLog = (data: LogForm) => {
+export const updateSessionLog = (data: SessionLogForm) => {
   return request({
-    url: '/system/log',
+    url: '/witdock/sessionLog',
     method: 'put',
     data: data
   });
@@ -55,9 +55,9 @@ export const updateLog = (data: LogForm) => {
  * 删除会话日志表
  * @param id
  */
-export const delLog = (id: string | number | Array<string | number>) => {
+export const delSessionLog = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/system/log/' + id,
+    url: '/witdock/sessionLog/' + id,
     method: 'delete'
   });
 };

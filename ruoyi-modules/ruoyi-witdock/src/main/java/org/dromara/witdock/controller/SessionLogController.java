@@ -31,7 +31,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/system/log")
+@RequestMapping("/witdock/sessionLog")
 public class SessionLogController extends BaseController {
 
     private final ISessionLogService sessionLogService;
@@ -39,7 +39,7 @@ public class SessionLogController extends BaseController {
     /**
      * 查询会话日志表列表
      */
-    @SaCheckPermission("system:log:list")
+    @SaCheckPermission("witdock:sessionLog:list")
     @GetMapping("/list")
     public TableDataInfo<SessionLogVo> list(SessionLogBo bo, PageQuery pageQuery) {
         return sessionLogService.queryPageList(bo, pageQuery);
@@ -48,7 +48,7 @@ public class SessionLogController extends BaseController {
     /**
      * 导出会话日志表列表
      */
-    @SaCheckPermission("system:log:export")
+    @SaCheckPermission("witdock:sessionLog:export")
     @Log(title = "会话日志表", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(SessionLogBo bo, HttpServletResponse response) {
@@ -61,17 +61,17 @@ public class SessionLogController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("system:log:query")
+    @SaCheckPermission("witdock:sessionLog:query")
     @GetMapping("/{id}")
     public R<SessionLogVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+                                   @PathVariable Long id) {
         return R.ok(sessionLogService.queryById(id));
     }
 
     /**
      * 新增会话日志表
      */
-    @SaCheckPermission("system:log:add")
+    @SaCheckPermission("witdock:sessionLog:add")
     @Log(title = "会话日志表", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -82,7 +82,7 @@ public class SessionLogController extends BaseController {
     /**
      * 修改会话日志表
      */
-    @SaCheckPermission("system:log:edit")
+    @SaCheckPermission("witdock:sessionLog:edit")
     @Log(title = "会话日志表", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -95,7 +95,7 @@ public class SessionLogController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("system:log:remove")
+    @SaCheckPermission("witdock:sessionLog:remove")
     @Log(title = "会话日志表", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
