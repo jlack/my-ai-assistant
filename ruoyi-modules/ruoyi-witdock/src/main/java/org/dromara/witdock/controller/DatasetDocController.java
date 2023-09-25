@@ -86,6 +86,10 @@ public class DatasetDocController extends BaseController {
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody DatasetDocBo bo) {
+        Long ossId = bo.getOssId();
+        SysOssVo ossVo = ossService.getById(ossId);
+        bo.setDocName(ossVo.getOriginalName());
+        bo.setCharNum((long) ossService.calculateCharNum(ossId));
         return toAjax(datasetDocService.insertByBo(bo));
     }
 

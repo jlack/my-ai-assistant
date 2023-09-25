@@ -28,13 +28,13 @@ public class DatasetInfoBo extends BaseEntity {
     /**
      * 数据集名称
      */
-    @NotBlank(message = "数据集名称不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "数据集名称不能为空", groups = { AddGroup.class })
     private String datasetName;
 
     /**
      * 数据集描述
      */
-    @NotBlank(message = "数据集描述不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "数据集描述不能为空", groups = { AddGroup.class })
     private String datasetDesc;
 
     /**
