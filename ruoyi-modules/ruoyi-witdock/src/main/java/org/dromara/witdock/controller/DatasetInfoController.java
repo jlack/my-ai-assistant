@@ -97,7 +97,7 @@ public class DatasetInfoController extends BaseController {
     }
 
     /**
-     * 新增数据集
+     * 新增数据集附带文档
      */
     @SaCheckPermission("witdock:dataset:add")
     @Log(title = "数据集", businessType = BusinessType.INSERT)
@@ -112,7 +112,6 @@ public class DatasetInfoController extends BaseController {
 
         for (String ossId : bo.getOssIds().split(StringUtils.SEPARATOR)) {
             SysOssVo ossVo = ossService.getById(Long.parseLong(ossId));
-            OssClient storage = OssFactory.instance(ossVo.getService());
 
             DatasetDocBo insertDocBo = new DatasetDocBo();
             BeanUtil.copyProperties(bo, insertDocBo);

@@ -108,7 +108,7 @@ public class DatasetDocController extends BaseController {
             insertBo.setOssId(Long.parseLong(ossId));
             insertBo.setDocName(ossVo.getOriginalName());
             insertBo.setStatus(DocStatusEnum.STATUS_0.getValue());
-            insertBo.setCharNum(1L);
+            insertBo.setCharNum((long) ossService.calculateCharNum(Long.valueOf(ossId)));
             datasetDocService.insertByBo(insertBo);
         }
         return R.ok("数据集文档新增成功");

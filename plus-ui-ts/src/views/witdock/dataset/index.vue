@@ -161,7 +161,7 @@ const handleUpdate = async (row?: DatasetVO) => {
   // reset();
   // const _id = row?.id || ids.value[0]
   const _id = row?.id
-  router.push("dataset/detail/" + _id)
+  router.push("/dataset/detail/" + _id)
   // const res = await getDataset(_id);
   // Object.assign(form.value, res.data);
   // dialog.visible = true;

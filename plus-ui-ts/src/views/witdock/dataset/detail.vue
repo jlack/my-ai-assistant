@@ -18,14 +18,15 @@
           </el-col>
 
           <el-col :span="4">
-            <file-upload :show-file-list="false"
-                         :isShowTip="false"
-                         :buttonText="'添加文件'"
-                         :fileType="['txt','html','md','pdf','xlsx','csv','docx']"
-                         v-model="ossIds"
-                         :showFileList="false"
-                         @addDoc="addDocInfo"
-            />
+<!--            <file-upload :show-file-list="false"-->
+<!--                         :isShowTip="false"-->
+<!--                         :buttonText="'添加文件'"-->
+<!--                         :fileType="['txt','html','md','pdf','xlsx','csv','docx']"-->
+<!--                         v-model="ossIds"-->
+<!--                         :showFileList="false"-->
+<!--                         @addDoc="addDocInfo"-->
+<!--            />-->
+            <el-button style="float: right" type="primary" @click="handleUpload">上传文件</el-button>
           </el-col>
         </el-row>
 
@@ -109,6 +110,8 @@ import {delDataset, getDataset, updateDataset} from "@/api/witdock/dataset";
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const { witdock_doc_status } = toRefs<any>(proxy?.useDict("witdock_doc_status"));
 
+
+const router = useRouter();
 const datasetId = useRoute().params.id as string;
 const datasetInfo = ref({});
 const activeName = ref('first');
@@ -174,7 +177,6 @@ const getList = async () => {
 }
 
 const addDocInfo = (ossId: number): void => {
-  console.log("call addDocInfo")
   addDoc({ossId: ossId, datasetId: datasetId} as DocForm).then((res) => {
     if (res.code === 200) {
       ElMessage.success("添加文件成功");
@@ -186,6 +188,10 @@ const addDocInfo = (ossId: number): void => {
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
+}
+
+const handleUpload = () => {
+  router.push("/dataset/add/" + datasetId)
 }
 
 /** 归档按钮操作 */
