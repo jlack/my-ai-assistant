@@ -29,7 +29,6 @@
           </el-col>
         </el-row>
 
-
         <el-table v-loading="loading" :data="docList">
           <el-table-column type="selection" width="55" align="center"/>
           <el-table-column label="id" align="center" prop="id" v-if="true"/>
@@ -37,12 +36,30 @@
           <el-table-column label="文档名称" align="center" prop="docName"/>
           <!--          <el-table-column label="对象存储id" align="center" prop="ossId" />-->
           <el-table-column label="字符数" align="center" prop="charNum"/>
-          <el-table-column label="状态" align="center" prop="status"/>
+          <el-table-column label="状态" align="center" prop="status">
+            <template #default="scope">
+              <dict-tag :options="witdock_doc_status" :value="scope.row.status" />
+            </template>
+          </el-table-column>
+          <el-table-column label="启用" align="center" prop="status">
+            <template #default="scope">
+              <el-switch
+                v-model="scope.row.status"
+                :disabled="scope.row.status === 'archived'"
+                active-value="active"
+                inactive-value="inactive"
+                @change="updateDoc({id: scope.row.id, status: scope.row.status})"
+              />
+            </template>
+          </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-tooltip content="归档" placement="top">
-                <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+                <el-button v-if="scope.row.status !== 'archived'" link type="primary" icon="Delete" @click="handleArchive(scope.row)"
                            v-hasPermi="['witdoc:doc:remove']">归档
+                </el-button>
+                <el-button v-if="scope.row.status === 'archived'" link type="primary" icon="RefreshLeft" @click="handleReArchive(scope.row)"
+                           v-hasPermi="['witdoc:doc:remove']">取消归档
                 </el-button>
               </el-tooltip>
             </template>
@@ -63,7 +80,6 @@
         <br>
         <el-text>在这里您可以修改数据集的工作方式以及其他设置</el-text>
         <el-form class="mt20" ref="datasetFormRef" :model="datasetInfo" label-width="200px">
-          {{ datasetInfo.value }}
           <el-form-item label="数据集名称" prop="datasetName">
             <el-input v-model="datasetInfo.datasetName" placeholder="请输入数据集名称"/>
           </el-form-item>
@@ -83,16 +99,17 @@
 <script setup lang="ts">
 import {DocForm, DocQuery, DocVO} from "@/api/witdock/datasetDoc/type";
 
-
 import {ref} from 'vue'
 import {Search} from '@element-plus/icons-vue'
 import {addDoc, listDoc, listDocByDatasetId, updateDoc} from "@/api/witdock/datasetDoc/api";
 import {TabsPaneContext} from "element-plus";
 import {DatasetVO} from "@/api/witdock/dataset/types";
-import {archiveDataset, delDataset, getDataset, updateDataset} from "@/api/witdock/dataset";
+import {delDataset, getDataset, updateDataset} from "@/api/witdock/dataset";
+
+const {proxy} = getCurrentInstance() as ComponentInternalInstance;
+const { witdock_doc_status } = toRefs<any>(proxy?.useDict("witdock_doc_status"));
 
 const datasetId = useRoute().params.id as string;
-const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const datasetInfo = ref({});
 const activeName = ref('first');
 const docList = ref<DocVO[]>([]);
@@ -171,8 +188,8 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
 
-/** 删除按钮操作 */
-const handleDelete = async (row?: DatasetVO) => {
+/** 归档按钮操作 */
+const handleArchive = async (row?: DatasetVO) => {
   const id = row?.id;
   await proxy?.$modal.confirm('是否确认将数据集编号为"' + id + '"的数据项归档？').finally(() => loading.value = false);
   await updateDoc({
@@ -180,6 +197,18 @@ const handleDelete = async (row?: DatasetVO) => {
     status: 'archived'
   })
   proxy?.$modal.msgSuccess("归档成功");
+  await getList();
+}
+
+/** 取消归档按钮操作 */
+const handleReArchive = async (row?: DatasetVO) => {
+  const id = row?.id;
+  await proxy?.$modal.confirm('是否确认将数据集编号为"' + id + '"的数据项取消归档？').finally(() => loading.value = false);
+  await updateDoc({
+    id: id,
+    status: 'inactive'
+  })
+  proxy?.$modal.msgSuccess("取消归档成功");
   await getList();
 }
 
@@ -210,6 +239,9 @@ const submitForm = () => {
     }
   });
 }
+
+const computedStatus = computed((statusStr) => statusStr === 'active')
+
 
 onMounted(() => {
   getList();
