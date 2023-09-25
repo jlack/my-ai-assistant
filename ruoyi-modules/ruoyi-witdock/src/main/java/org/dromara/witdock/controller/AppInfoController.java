@@ -45,6 +45,38 @@ public class AppInfoController extends BaseController {
         return appInfoService.queryPageList(bo, pageQuery);
     }
 
+    @PutMapping("/resetCode")
+    @SaCheckPermission("witdock:app:edit")
+    public R resetCode(@RequestBody AppInfoBo bo) {
+        return toAjax(appInfoService.resetCode(bo.getId()));
+    }
+
+    /**
+     * 应用配置设置页面 获取初始化数据
+     *
+     * @param appId
+     * @return
+     */
+    @GetMapping("/getConfig/{appId}")
+    @SaCheckPermission("witdock:app:edit")
+    public R getConfig(@PathVariable Long appId) {
+        return R.ok(appInfoService.getConfig(appId));
+    }
+
+    @PostMapping("/addDatasetToApp")
+    @SaCheckPermission("witdock:app:edit")
+    public R addDatasetToApp(@RequestBody AppInfoBo bo) {
+        return R.ok(appInfoService.addDatasetToApp(bo));
+    }
+
+
+    @GetMapping("/listDatasetByAppId")
+    @SaCheckPermission("witdock:app:edit")
+    public R listDatasetByAppId(@RequestBody AppInfoBo bo) {
+        return toAjax(appInfoService.addDatasetToApp(bo));
+    }
+
+
     /**
      * 导出构建应用列表
      */
@@ -64,7 +96,7 @@ public class AppInfoController extends BaseController {
     @SaCheckPermission("witdock:app:query")
     @GetMapping("/{id}")
     public R<AppInfoVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+                                @PathVariable Long id) {
         return R.ok(appInfoService.queryById(id));
     }
 

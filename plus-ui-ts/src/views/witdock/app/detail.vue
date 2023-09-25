@@ -2,10 +2,41 @@
   <div class="app-container">
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" v-if="app">
       <el-tab-pane label="概览" name="first">
-
+        <el-card class="box-card mb10" shadow="never">
+          <el-row>
+            <el-col :span="6">
+              <el-statistic title="全部消息数" :value="268500"/>
+            </el-col>
+            <el-col :span="6">
+              <el-statistic :value="138">
+                <template #title>
+                  <div style="display: inline-flex; align-items: center">
+                    调用次数
+                    <el-icon style="margin-left: 4px" :size="12">
+                      <Male/>
+                    </el-icon>
+                  </div>
+                </template>
+                <template #suffix>/100</template>
+              </el-statistic>
+            </el-col>
+            <el-col :span="6">
+              <el-statistic title="活跃用户数" :value="172000"/>
+            </el-col>
+            <el-col :span="6">
+              <el-statistic title="费用消耗" :value="562">
+                <template #suffix>
+                  <el-icon style="vertical-align: -0.125em">
+                    <ChatLineRound/>
+                  </el-icon>
+                </template>
+              </el-statistic>
+            </el-col>
+          </el-row>
+        </el-card>
         <el-row :gutter="10">
           <el-col :span="12">
-            <el-card class="box-card">
+            <el-card class="box-card" shadow="never">
               <div slot="header" class="clearfix">
                 <span>{{ app.appName }}</span>
                 <el-switch
@@ -15,6 +46,7 @@
                   style=" float: right;--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                   active-text="运行中"
                   inactive-text="已停用"
+                  @change="enableSite(app)"
                 />
               </div>
               <el-text>公开访问URL</el-text>
@@ -25,7 +57,7 @@
                       <el-button :icon="DocumentCopy"/>
                     </el-col>
                     <el-col :span="12">
-                      <el-button :icon="Refresh"/>
+                      <el-button :icon="Refresh" @click="resetUrl(app)"/>
                     </el-col>
                   </el-row>
                 </template>
@@ -33,10 +65,11 @@
             </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card class="box-card">
+            <el-card class="box-card" shadow="never">
               <div slot="header" class="clearfix">
                 <span>后端服务 API</span>
                 <el-switch
+                  @change="enableApi(app)"
                   v-model="app.enableApi"
                   class="ml-2"
                   inline-prompt
@@ -57,28 +90,76 @@
         </el-row>
 
       </el-tab-pane>
-      <el-tab-pane label="提示词编排" name="second"></el-tab-pane>
+      <el-tab-pane label="提示词编排" name="second">
+        <Config :id=id></Config>
+      </el-tab-pane>
       <el-tab-pane label="访问API" name="third"></el-tab-pane>
-      <el-tab-pane label="日志与标注" name="fourth"></el-tab-pane>
+      <el-tab-pane label="日志与标注" name="fourth">
+        <log></log>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 <script lang="ts" setup>
 import {ref} from 'vue'
+import Config from "@/views/witdock/app/component/config.vue";
+import Log from "@/views/witdock/app/component/log.vue";
 import type {TabsPaneContext} from 'element-plus'
-import {getApp} from "@/api/witdock/app";
-import {AppVO} from "@/api/witdock/app/type";
+import {getApp, updateApp, resetCode} from "@/api/witdock/app";
+import {AppVO, AppForm} from "@/api/witdock/app/type";
 import {DocumentCopy, Refresh} from "@element-plus/icons-vue";
 
+const {proxy} = getCurrentInstance() as ComponentInternalInstance
+
 const activeName = ref('first')
-const id = useRoute().params.id;
+const id = (useRoute().params.id || 0) as number;
 const app = ref<AppVO | null>(null)
+
+
+const resetUrl = async (app: AppVO) => {
+  await proxy?.$modal.confirm('确认要重置URL吗?');
+  const res = await resetCode(app.id)
+  init()
+  proxy?.$modal.msgSuccess(res.msg)
+}
+
+const enableSite = async (app: AppVO) => {
+  let text = app.enableSite ? "启用" : "停用"
+  try {
+    await proxy?.$modal.confirm('确认要"' + text + '""' + app.appName + '"吗?');
+    let appForm: AppForm | null
+    appForm = {
+      id: app.id,
+      enableSite: app.enableSite
+    }
+    await updateApp(appForm);
+    proxy?.$modal.msgSuccess(text + "成功");
+  } catch (err) {
+    app.enableSite = !app.enableSite;
+  }
+}
+
+const enableApi = async (app: AppVO) => {
+  let text = app.enableApi ? "启用" : "停用"
+  try {
+    await proxy?.$modal.confirm('确认要"' + text + '""' + app.appName + '"的后端服务API吗?');
+    let appForm: AppForm | null
+    appForm = {
+      id: app.id,
+      enableApi: app.enableApi
+    }
+    await updateApp(appForm);
+    proxy?.$modal.msgSuccess(text + "成功");
+  } catch (err) {
+    app.enableApi = !app.enableApi;
+  }
+}
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
 const init = async () => {
-  const res = await getApp(id as string)
+  const res = await getApp(id as number)
   app.value = res.data
 }
 init()

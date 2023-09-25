@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 
+import java.util.List;
+
 /**
  * 构建应用业务对象 app_info
  *
@@ -23,13 +25,13 @@ public class AppInfoBo extends BaseEntity {
     /**
      *
      */
-    @NotNull(message = "不能为空", groups = { EditGroup.class })
+    @NotNull(message = "不能为空", groups = {EditGroup.class})
     private Long id;
 
     /**
      * 应用名
      */
-    @NotBlank(message = "应用名不能为空", groups = { AddGroup.class })
+    @NotBlank(message = "应用名不能为空", groups = {AddGroup.class})
     private String appName;
 
     /**
@@ -51,4 +53,10 @@ public class AppInfoBo extends BaseEntity {
      * 启用服务API
      */
     private Boolean enableApi;
+
+    /**
+     * 开场白
+     */
+    private String prolog;
+    private List<Long> datasetIds;
 }

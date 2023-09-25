@@ -27,12 +27,19 @@ export interface AppVO {
   /**
    * 启用webapp
    */
-  enableSite: number;
+  enableSite: boolean;
 
   /**
    * 启用服务API
    */
-  enableApi: number;
+  enableApi: boolean;
+
+  datasetIds: string[]
+
+  /**
+   * 开场白
+   */
+  prolog: string;
 
 }
 
@@ -65,12 +72,17 @@ export interface AppForm extends BaseEntity {
   /**
    * 启用webapp
    */
-  enableSite?: number;
+  enableSite?: boolean;
 
   /**
    * 启用服务API
    */
-  enableApi?: number;
+  enableApi?: boolean;
+
+  /**
+   * 开场白
+   */
+  prolog?: string;
 
 }
 
@@ -99,12 +111,12 @@ export interface AppQuery extends PageQuery {
   /**
    * 启用webapp
    */
-  enableSite?: number;
+  enableSite?: boolean;
 
   /**
    * 启用服务API
    */
-  enableApi?: number;
+  enableApi?: boolean;
 
   /**
    * 日期范围参数
