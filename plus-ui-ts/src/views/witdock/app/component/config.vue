@@ -10,7 +10,7 @@
         <el-col :span="12" v-for="item in dataSetList">
           <el-card class="box-card" shadow="never">
             {{ item.datasetName }}
-            <el-button type="text" style="float: right" icon="Delete"></el-button>
+            <el-button type="text" style="float: right" icon="Delete" @click="handleUnRef(appId, item.id)"></el-button>
           </el-card>
         </el-col>
       </el-row>
@@ -68,8 +68,11 @@ import {addDatasetToApp, getConfig, updateApp} from "@/api/witdock/app";
 import {DatasetVO} from "@/api/witdock/dataset/types";
 import {AppForm, AppVO} from "@/api/witdock/app/type";
 import {ElTable} from "element-plus";
+import {delAppDataset, delAppDatasetByBothId, delAppDatasetByData} from "@/api/witdock/appDataset";
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
+const route = useRoute();
+const appId = route.params.id;
 
 const props = defineProps({
   id: {
@@ -118,6 +121,20 @@ const handleAddDatasetToApp = async () => {
 const handleAddDataset = () => {
   dialogVisible.value = true
   fetchDataset()
+}
+
+// 解除app对dataset的引用
+const handleUnRef = (appId, datasetId) => {
+  delAppDatasetByBothId({ appId: appId, datasetId: datasetId })
+    .then((res) => {
+    if (res.code === 200) {
+      ElMessage.success('解除数据集上下文成功');
+      // fetchDataset();
+      init();
+    } else {
+      ElMessage.warning('解除数据集上下文失败')
+    }
+  })
 }
 const fetchDataset = async () => {
   try {

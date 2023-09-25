@@ -1,6 +1,7 @@
 package org.dromara.witdock.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -123,5 +124,10 @@ public class AppDatasetServiceImpl implements IAppDatasetService {
             return BeanUtil.copyToList(list, DatasetInfoVo.class);
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public void delByBothId(AppDatasetBo bo) {
+        baseMapper.delete(buildQueryWrapper(bo));
     }
 }

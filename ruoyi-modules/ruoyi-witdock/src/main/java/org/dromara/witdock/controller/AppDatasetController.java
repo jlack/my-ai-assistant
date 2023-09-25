@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.witdock.domain.AppDataset;
 import org.dromara.witdock.domain.bo.AppDatasetBo;
 import org.dromara.witdock.domain.vo.AppDatasetVo;
 import org.springframework.web.bind.annotation.*;
@@ -101,5 +102,15 @@ public class AppDatasetController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(appDatesetService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+    @SaCheckPermission("witdock:appDataset:remove")
+    @DeleteMapping("delAppDatasetByBothId/{appId}/{datasetId}")
+    public R<Void> delAppDatasetByBothId(@PathVariable String datasetId, @PathVariable String appId) {
+        AppDatasetBo bo = new AppDatasetBo();
+        bo.setAppId(Long.valueOf(appId));
+        bo.setDatasetId(Long.valueOf(datasetId));
+        appDatesetService.delByBothId(bo);
+        return R.ok();
     }
 }
