@@ -11,7 +11,7 @@ import org.dromara.witdock.domain.AppInfo;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -63,4 +63,12 @@ public class AppInfoVo implements Serializable {
      */
     @ExcelProperty(value = "启用服务API")
     private boolean enableApi;
+
+    /**
+     * 开场白
+     */
+    private String prolog;
+
+    private List<DatasetInfoVo> datasetInfoVoList;
+    private List<Long> datasetIds;
 }

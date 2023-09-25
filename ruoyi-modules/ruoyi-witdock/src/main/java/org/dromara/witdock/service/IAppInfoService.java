@@ -46,4 +46,11 @@ public interface IAppInfoService {
      * 校验并批量删除构建应用信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    Boolean resetCode(Long id);
+
+    Boolean addDatasetToApp(AppInfoBo bo);
+
+    //构建APP页面，获取配置信息
+    AppInfoVo getConfig(Long appId);
 }

@@ -66,14 +66,14 @@
   </div>
 </template>
 
-<script setup name="Info" lang="ts">
+<script setup name="App" lang="ts">
 import {listApp, getApp, delApp, addApp, updateApp} from '@/api/witdock/app/index';
-import {appVO, appQuery, appForm} from '@/api/witdock/app/type';
+import {AppVO, AppQuery, AppForm} from '@/api/witdock/app/type';
 import {More} from "@element-plus/icons-vue";
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
-const appList = ref<appVO[]>([]);
+const appList = ref<AppVO[]>([]);
 const buttonLoading = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -90,13 +90,13 @@ const dialog = reactive<DialogOption>({
   title: ''
 });
 
-const initFormData: appForm = {
+const initFormData: AppForm = {
   id: undefined,
   appName: undefined,
   appDesc: undefined,
   isDeleted: undefined
 }
-const data = reactive<PageData<appForm, appQuery>>({
+const data = reactive<PageData<AppForm, AppQuery>>({
   form: {...initFormData},
   queryParams: {
     pageNum: 1,
@@ -155,7 +155,7 @@ const resetQuery = () => {
 }
 
 /** 多选框选中数据 */
-const handleSelectionChange = (selection: appVO[]) => {
+const handleSelectionChange = (selection: AppVO[]) => {
   ids.value = selection.map(item => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
@@ -168,11 +168,11 @@ const handleAdd = () => {
   dialog.title = "开始创建一个新应用";
 }
 
-const handleDetail = (row?: appVO) => {
+const handleDetail = (row?: AppVO) => {
   router.push("/app/detail/" + row?.id)
 }
 /** 修改按钮操作 */
-const handleUpdate = async (row?: appVO) => {
+const handleUpdate = async (row?: AppVO) => {
   reset();
   const _id = row?.id || ids.value[0]
   const res = await getApp(_id);
@@ -199,7 +199,7 @@ const submitForm = () => {
 }
 
 /** 删除按钮操作 */
-const handleDelete = async (row?: appVO) => {
+const handleDelete = async (row?: AppVO) => {
   const _ids = row?.id || ids.value;
   await proxy?.$modal.confirm('是否确认删除构建应用编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
   await delApp(_ids);

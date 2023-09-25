@@ -53,12 +53,6 @@ public class DatasetInfoVo implements Serializable {
     private String visiblePermission;
 
     /**
-     * 是否删除
-     */
-    @ExcelProperty(value = "是否删除")
-    private Integer isDeleted;
-
-    /**
      * 所含文档数
      */
     @ExcelProperty(value = "所含文档数")

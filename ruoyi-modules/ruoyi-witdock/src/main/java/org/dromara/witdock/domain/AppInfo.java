@@ -57,4 +57,9 @@ public class AppInfo extends BaseEntity {
      * 启用服务API
      */
     private Boolean enableApi;
+
+    /**
+     * 开场白
+     */
+    private String prolog;
 }
