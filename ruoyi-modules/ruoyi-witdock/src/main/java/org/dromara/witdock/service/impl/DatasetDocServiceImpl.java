@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.witdock.domain.DatasetDoc;
 import org.dromara.witdock.domain.bo.DatasetDocBo;
 import org.dromara.witdock.domain.vo.DatasetDocVo;
+import org.dromara.witdock.domain.vo.DatasetInfoVo;
 import org.dromara.witdock.mapper.DatasetDocMapper;
 import org.dromara.witdock.service.IDatasetDocService;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,13 @@ import java.util.Collection;
 public class DatasetDocServiceImpl implements IDatasetDocService {
 
     private final DatasetDocMapper baseMapper;
+
+
+    @Override
+    public Integer countCharNumById(Long id) {
+        return baseMapper.countCharNumByDatasetId(id);
+    }
+
 
     /**
      * 查询数据集文档

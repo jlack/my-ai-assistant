@@ -1,6 +1,7 @@
 package org.dromara.witdock.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -54,17 +55,14 @@ public class DatasetInfoServiceImpl implements IDatasetInfoService {
     public TableDataInfo<DatasetInfoVo> queryPageList(DatasetInfoBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<DatasetInfo> lqw = buildQueryWrapper(bo);
         Page<DatasetInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+
         // 遍历result中的每一个数据集的所含文档数量和总字符数量
         for (DatasetInfoVo datasetVo : result.getRecords()) {
             DatasetDocBo docBo = new DatasetDocBo();
             docBo.setDatasetId(datasetVo.getId());
             List<DatasetDocVo> datasetDocVos = docService.queryList(docBo);
-            int totalCharNum = 0;
-            if (CollectionUtil.isNotEmpty(datasetDocVos)) {
-                for(DatasetDocVo docVo : datasetDocVos) {
-                    totalCharNum += docVo.getCharNum();
-                }
-            }
+            Integer charNum = docService.countCharNumById(datasetVo.getId());
+            int totalCharNum = ObjectUtil.isNotNull(charNum) ? charNum : 0;
             datasetVo.setDocNum(datasetDocVos.size());
             datasetVo.setCharNum(totalCharNum);
         }

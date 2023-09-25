@@ -11,5 +11,5 @@ import org.dromara.witdock.domain.vo.DatasetDocVo;
  * @date 2023-09-21
  */
 public interface DatasetDocMapper extends BaseMapperPlus<DatasetDoc, DatasetDocVo> {
-
+    Integer countCharNumByDatasetId(Long datasetId);
 }

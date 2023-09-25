@@ -5,6 +5,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.witdock.domain.bo.DatasetDocBo;
 import org.dromara.witdock.domain.vo.DatasetDocVo;
+import org.dromara.witdock.domain.vo.DatasetInfoVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,12 @@ import java.util.List;
  * @date 2023-09-21
  */
 public interface IDatasetDocService {
+
+
+    /**
+     * 查询数据集中文档总字符数
+     */
+    Integer countCharNumById(Long id);
 
     /**
      * 查询数据集文档
