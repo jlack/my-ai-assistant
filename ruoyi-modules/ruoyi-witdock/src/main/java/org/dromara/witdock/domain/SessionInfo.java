@@ -22,7 +22,7 @@ public class SessionInfo extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     *
      */
     @TableId(value = "id")
     private Long id;
@@ -50,6 +50,7 @@ public class SessionInfo extends BaseEntity {
     /**
      * 是否删除
      */
+    @TableLogic
     private Boolean isDeleted;
 
 

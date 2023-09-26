@@ -29,7 +29,7 @@ public class SessionInfoBo extends BaseEntity {
     /**
      * 应用id
      */
-    @NotNull(message = "应用id不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "应用id不能为空", groups = { AddGroup.class })
     private Long appId;
 
     /**
