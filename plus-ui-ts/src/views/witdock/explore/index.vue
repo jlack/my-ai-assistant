@@ -2,9 +2,7 @@
   <h2 class="mb-2">工作区</h2>
   <el-row :gutter="10">
     <el-col :span="4">
-      <el-menu
-        class="el-menu-vertical-demo"
-      >
+      <el-menu class="el-menu-vertical-demo">
         <el-menu-item :index="appItem.id" v-for="appItem in appList" @click="chooseApp(appItem)">
           <el-icon>
             <icon-menu/>
@@ -14,7 +12,7 @@
       </el-menu>
     </el-col>
     <el-col :span="20">
-      <el-card class="box-card" v-loading="loading">
+      <el-card class="box-card" v-loading="loading" v-if="currentAppId">
         <el-row :gutter="10">
           <el-col :span="4">
             <el-menu class="el-menu-demo">
@@ -55,6 +53,9 @@
               </el-menu-item>
             </el-menu>
           </el-col>
+          <el-col :span="20">
+            <chat v-if="currentSessionId" :session-id="currentSessionId"></chat>
+          </el-col>
         </el-row>
       </el-card>
     </el-col>
@@ -84,6 +85,9 @@ import {addApp, listApp, updateApp} from "@/api/witdock/app";
 import {AppVO} from "@/api/witdock/app/type";
 import {addSession, delSession, listSession, updateSession} from "@/api/witdock/session";
 import {SessionForm, SessionQuery, SessionVO} from "@/api/witdock/session/types";
+import Chat from "@/views/witdock/chat.vue";
+import {listSessionLog} from "@/api/witdock/sessionLog/api";
+import {SessionLogForm, SessionLogVO} from "@/api/witdock/sessionLog/type";
 
 const sessionRenameRef = ref(null);
 const selectedSession = ref({});
@@ -93,6 +97,7 @@ const appList = ref<AppVO[]>([])
 const sessionList = ref<SessionVO[]>([])
 const toppingSessionList = ref<SessionVO[]>([])
 const downSessionList = ref<SessionVO[]>([])
+const sessionLogList = ref<SessionLogVO[]>([])
 const currentAppId = ref('')
 const currentSessionId = ref('')
 const loading = ref(false)
@@ -101,6 +106,8 @@ const renameRules = reactive({
     {required: true, message: "会话名称不能为空", trigger: "blur"}
   ]
 })
+
+
 
 
 const init = async () => {
@@ -124,11 +131,18 @@ const chooseApp = async (item: AppVO) => {
 }
 const chooseSession = async (item: SessionVO) => {
   currentSessionId.value = item.id as string
-  await initSessionLogList()
+  // await initSessionLogList()
 }
 
 const initSessionLogList = async () => {
   loading.value = true
+  let form: SessionLogForm
+  form = {
+    sessionId: currentSessionId.value
+  }
+  const res = await listSessionLog(form);
+  sessionLogList.value = res.rows
+  sessionList.value = res.rows;
   loading.value = false
 }
 const initSessionList = async () => {
@@ -140,8 +154,7 @@ const initSessionList = async () => {
     pageSize: 20
   }
   const res = await listSession(sessionQuery);
-  // sessionList.value = res.rows.sort(compareSessionByTopping);
-  sessionList.value = res.rows;
+  sessionList.value = res.rows
   toppingSessionList.value = res.rows.filter(sessionItem => sessionItem.topping === true);
   downSessionList.value = res.rows.filter(sessionItem => sessionItem.topping === false)
   loading.value = false

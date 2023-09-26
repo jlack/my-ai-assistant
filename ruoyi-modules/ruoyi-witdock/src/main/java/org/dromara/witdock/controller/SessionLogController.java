@@ -2,10 +2,13 @@ package org.dromara.witdock.controller;
 
 import java.util.List;
 
+import cn.hutool.core.thread.ThreadUtil;
+import com.dtflys.forest.utils.AsyncUtil;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.glassfish.jaxb.core.v2.TODO;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -42,7 +45,12 @@ public class SessionLogController extends BaseController {
     @SaCheckPermission("witdock:sessionLog:list")
     @GetMapping("/list")
     public TableDataInfo<SessionLogVo> list(SessionLogBo bo, PageQuery pageQuery) {
-        return sessionLogService.queryPageList(bo, pageQuery);
+        TableDataInfo<SessionLogVo> sessionLogVoTableDataInfo = sessionLogService.queryPageList(bo, pageQuery);
+        //测试用 异步2秒后回复
+        AsyncUtil.execute(() -> {
+            ThreadUtil.sleep(3000L);
+        });
+        return sessionLogVoTableDataInfo;
     }
 
     /**

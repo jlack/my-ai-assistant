@@ -44,19 +44,16 @@ public class SessionLogBo extends BaseEntity {
     /**
      * 回答内容
      */
-    @NotBlank(message = "回答内容不能为空", groups = { AddGroup.class, EditGroup.class })
     private String answer;
 
     /**
      * 回答时间
      */
-    @NotNull(message = "回答时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private Date reDatetime;
 
     /**
      * 花费token
      */
-    @NotNull(message = "花费token不能为空", groups = { AddGroup.class, EditGroup.class })
     private BigDecimal msgToken;
 
 

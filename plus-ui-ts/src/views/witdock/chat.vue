@@ -1,12 +1,23 @@
 <template>
   <div class="chat-container">
     <div class="chat-header">
-      <h2>应用名称</h2>
+      <h2>会话标题</h2>
     </div>
     <div class="chat-messages">
-      <div v-for="(message, index) in messages" :key="index" class="message"
-           :class="{ 'message-sent': message.sentByUser }">
-        <div class="message-content">{{ message.text }}</div>
+      <div v-for="(message, index) in sessionLogList" :key="index" class="message">
+        <div class="message-query">
+          <div class="message-content">{{ message.query }}</div>
+          <div class="avatar">
+            <el-avatar :icon="UserFilled"/>
+          </div>
+        </div>
+
+        <div class="message-answer" v-if="message.answer">
+          <div class="avatar">
+            <el-avatar :icon="UserFilled"/>
+          </div>
+          <div class="message-content">{{ message.answer }}</div>
+        </div>
       </div>
     </div>
     <div class="chat-input">
@@ -16,26 +27,61 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref} from 'vue';
+import {SessionLogForm, SessionLogVO} from "@/api/witdock/sessionLog/type";
+import {addSessionLog, listSessionLog} from "@/api/witdock/sessionLog/api";
+import {UserFilled} from '@element-plus/icons-vue'
 
-const messages = ref([
-  {text: '你好！', sentByUser: false},
-  {text: '你好！有什么新鲜事吗？', sentByUser: true},
-]);
+// const webSocket = useWebSocket("")
+
+const sessionLogList = ref<SessionLogVO[]>([])
+
+const props = defineProps({
+  sessionId: {
+    type: String
+  }
+})
+
+watch(() => props.sessionId, (newSessionId, oldSessionId) => {
+  initSessionLogList()
+});
+
+// const sessionLogList = ref([
+//   {text: '你好！', sentByUser: false},
+//   {text: '你好！有什么新鲜事吗？', sentByUser: true},
+// ]);
 
 const newMessage = ref('');
 
-const sendMessage = () => {
+
+const initSessionLogList = async () => {
+
+  let form: SessionLogForm
+  form = {
+    sessionId: props.sessionId
+  }
+  const res = await listSessionLog(form);
+  sessionLogList.value = res.rows
+}
+
+const sendMessage = async () => {
   if (newMessage.value === '') return;
-  messages.value.push({text: newMessage.value, sentByUser: true});
+  // sessionLogList.value.push({text: newMessage.value, sentByUser: true});
+  let form: SessionLogForm
+  form = {
+    sessionId: props.sessionId,
+    query: newMessage.value
+  }
+  let res = await addSessionLog(form);
   newMessage.value = '';
+  initSessionLogList()
 };
 </script>
 
 <style scoped>
 .chat-container {
-  max-width: 400px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #e0e0e0;
@@ -56,24 +102,36 @@ const sendMessage = () => {
   overflow-y: auto;
 }
 
-.message {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 10px;
-  font-size: 14px;
+
+.avatar {
+  width: 50px; /* 头像的宽度 */
+  height: 50px; /* 头像的高度 */
+  border-radius: 50%; /* 圆形头像 */
+  overflow: hidden;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
-.message-sent {
-  background-color: #0078d4;
-  color: white;
-  align-self: flex-end;
+.message-query {
+  display: flex;
+  color: white; /* 发送消息的文字颜色 */
+  border-top-right-radius: 0; /* 右上角不设为圆角 */
+  justify-content: flex-end; /* 靠右显示 */
+}
+
+.message-answer {
+  display: flex;
+  justify-content: flex-start; /* 靠左显示 */
+  color: white; /* 发送消息的文字颜色 */
+  border-top-right-radius: 0; /* 右上角不设为圆角 */
 }
 
 .message-content {
-  word-wrap: break-word;
+  background-color: #409eff;
+  padding: 10px;
+  border-radius: 8px;
 }
+
 
 .chat-input {
   display: flex;
