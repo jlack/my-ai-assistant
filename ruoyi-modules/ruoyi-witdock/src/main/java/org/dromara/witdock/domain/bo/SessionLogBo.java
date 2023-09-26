@@ -32,13 +32,11 @@ public class SessionLogBo extends BaseEntity {
     /**
      * 对话id
      */
-    @NotNull(message = "对话id不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long sessionId;
 
     /**
      * 提问内容
      */
-    @NotBlank(message = "提问内容不能为空", groups = { AddGroup.class, EditGroup.class })
     private String query;
 
     /**
