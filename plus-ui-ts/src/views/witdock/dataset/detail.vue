@@ -18,24 +18,17 @@
           </el-col>
 
           <el-col :span="4">
-<!--            <file-upload :show-file-list="false"-->
-<!--                         :isShowTip="false"-->
-<!--                         :buttonText="'添加文件'"-->
-<!--                         :fileType="['txt','html','md','pdf','xlsx','csv','docx']"-->
-<!--                         v-model="ossIds"-->
-<!--                         :showFileList="false"-->
-<!--                         @addDoc="addDocInfo"-->
-<!--            />-->
             <el-button style="float: right" type="primary" @click="handleUpload">上传文件</el-button>
           </el-col>
         </el-row>
 
         <el-table v-loading="loading" :data="docList">
-          <el-table-column type="selection" width="55" align="center"/>
-          <el-table-column label="id" align="center" prop="id" v-if="true"/>
-          <el-table-column label="数据集id" align="center" prop="datasetId"/>
+          <el-table-column label="序号" type="index" align="center">
+            <template #default="scope">
+              <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="文档名称" align="center" prop="docName"/>
-          <!--          <el-table-column label="对象存储id" align="center" prop="ossId" />-->
           <el-table-column label="字符数" align="center" prop="charNum"/>
           <el-table-column label="状态" align="center" prop="status">
             <template #default="scope">

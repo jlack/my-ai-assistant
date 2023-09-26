@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <div class="chat-input">
+    <div class="chat-input" v-if="enableInput">
       <el-input v-model="newMessage" placeholder="输入消息..." @keydown.enter="sendMessage"/>
       <el-button @click="sendMessage">发送</el-button>
     </div>
@@ -40,6 +40,10 @@ const sessionLogList = ref<SessionLogVO[]>([])
 const props = defineProps({
   sessionId: {
     type: String
+  },
+  enableInput: {
+    type: Boolean,
+    default: true
   }
 })
 

@@ -68,7 +68,7 @@ import {addDatasetToApp, getConfig, updateApp} from "@/api/witdock/app";
 import {DatasetVO} from "@/api/witdock/dataset/types";
 import {AppForm, AppVO} from "@/api/witdock/app/type";
 import {ElTable} from "element-plus";
-import {delAppDataset, delAppDatasetByBothId, delAppDatasetByData} from "@/api/witdock/appDataset";
+import {delAppDataset, delAppDatasetByBothId} from "@/api/witdock/appDataset";
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const route = useRoute();

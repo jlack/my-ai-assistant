@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.witdock.domain.SessionLog;
+import org.dromara.witdock.mapper.SessionLogMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.SessionInfoBo;
 import org.dromara.witdock.domain.vo.SessionInfoVo;
@@ -30,6 +32,7 @@ import java.util.Collection;
 public class SessionInfoServiceImpl implements ISessionInfoService {
 
     private final SessionInfoMapper baseMapper;
+    private final SessionLogMapper logMapper;
 
     /**
      * 查询会话
@@ -46,6 +49,11 @@ public class SessionInfoServiceImpl implements ISessionInfoService {
     public TableDataInfo<SessionInfoVo> queryPageList(SessionInfoBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<SessionInfo> lqw = buildQueryWrapper(bo);
         Page<SessionInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        List<SessionInfoVo> vos = result.getRecords();
+        for (SessionInfoVo vo : vos) {
+
+         vo.setMsgNum(logMapper.countLogMsgBySessionId(vo.getId()));
+        }
         return TableDataInfo.build(result);
     }
 

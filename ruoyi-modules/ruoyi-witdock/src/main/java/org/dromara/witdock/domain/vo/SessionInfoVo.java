@@ -1,5 +1,9 @@
 package org.dromara.witdock.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.witdock.domain.SessionInfo;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -29,7 +33,7 @@ public class SessionInfoVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     *
      */
     @ExcelProperty(value = "")
     private Long id;
@@ -58,5 +62,24 @@ public class SessionInfoVo implements Serializable {
     @ExcelProperty(value = "是否置顶")
     private Boolean topping;
 
+    /**
+     * 会话创建人id
+     */
+    private Long createBy;
 
+    /**
+     * 会话创建人名字
+     */
+    @Translation(type = TransConstant.USER_ID_TO_NAME, mapper = "createBy")
+    private String createByName;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 消息数
+     */
+    private Integer msgNum;
 }
