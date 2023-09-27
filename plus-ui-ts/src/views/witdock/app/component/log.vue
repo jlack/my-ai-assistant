@@ -1,8 +1,9 @@
 <template>
-  <el-form ref="form" :model="form" :inline="true" label-width="80px">
+  <el-form ref="form" :model="queryParams" :inline="true" label-width="80px">
     <el-form-item>
       <el-date-picker
-        v-model="value2"
+        v-model="dateRange"
+        value-format="YYYY-MM-DD HH:mm:ss"
         type="daterange"
         unlink-panels
         range-separator="至"
@@ -18,6 +19,10 @@
           <el-option label="未标注" value="noflag"></el-option>
         </el-select>
       </el-form-item>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+      <el-button icon="Refresh" @click="resetQuery">重置</el-button>
     </el-form-item>
   </el-form>
   <el-table v-loading="loading" :data="conversationList">
@@ -58,7 +63,7 @@
       :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
-      @pagination="getList"
+      @pagination="getMsgInfoList"
     />
   </el-dialog>
 </template>
@@ -67,14 +72,16 @@ import {ref} from "vue";
 import {listMessageInfo} from "@/api/witdock/messageInfo/api";
 import {listConversationInfo} from "@/api/witdock/conversationInfo/api";
 import {ConversationInfoQuery} from "@/api/witdock/conversationInfo/types";
+import {func} from "vue-types";
 
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const dateRange = ref([]);
 const total = ref(0);
 const msgInfoList = ref([])
 const openMsgInfo = ref(false);
 const loading = ref(false)
 const conversationList = ref([]);
 const form = ref({scope: "all"})
-const value2 = ref('')
 const shortcuts = [
   {
     text: '今天',
@@ -125,9 +132,9 @@ const initConversationList = async () => {
 }
 
 /** 查询会话日志表列表 */
-const getList = async () => {
+const getMsgInfoList = async () => {
   loading.value = true;
-  const res = await listMessageInfo(queryParams.value);
+  const res = await listMessageInfo();
   msgInfoList.value = res.rows;
   total.value = res.total;
   loading.value = false;
@@ -136,7 +143,21 @@ const getList = async () => {
 function handleViewMsgInfo(conversationId: any) {
   openMsgInfo.value = true;
   queryParams.value.conversationId = conversationId;
-  getList();
+  getMsgInfoList();
+}
+
+async function handleQuery() {
+  queryParams.value.pageNum = 1;
+  proxy?.addDateRange(queryParams.value, dateRange.value, 'CreateTime');
+  loading.value = true;
+  let res = await listConversationInfo(queryParams.value)
+  conversationList.value = res.rows;
+  loading.value = false;
+}
+
+function resetQuery() {
+  dateRange.value = [];
+  handleQuery();
 }
 
 initConversationList()

@@ -70,6 +70,8 @@ public class ConversationInfoServiceImpl implements IConversationInfoService {
         lqw.like(StringUtils.isNotBlank(bo.getConversationTitle()), ConversationInfo::getConversationTitle, bo.getConversationTitle());
         lqw.eq(bo.getUserId() != null, ConversationInfo::getUserId, bo.getUserId());
         lqw.eq(bo.getTopping() != null, ConversationInfo::getTopping, bo.getTopping());
+        lqw.between(params.get("beginCreateTime") != null && params.get("endCreateTime") != null,
+            ConversationInfo::getCreateTime ,params.get("beginCreateTime"), params.get("endCreateTime"));
         return lqw;
     }
 
