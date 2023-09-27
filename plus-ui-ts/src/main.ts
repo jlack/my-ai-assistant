@@ -9,6 +9,9 @@ import App from './App.vue';
 import store from './store';
 import router from './router';
 
+// 解决警告信息non-passive event listener
+import 'default-passive-events'
+
 // 自定义指令
 import directive from './directive';
 
