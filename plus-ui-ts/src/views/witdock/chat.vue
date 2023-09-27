@@ -28,12 +28,13 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {SessionLogForm, SessionLogVO} from "@/api/witdock/sessionLog/type";
 import {addSessionLog, listSessionLog} from "@/api/witdock/sessionLog/api";
 import {UserFilled} from '@element-plus/icons-vue'
 
-// const webSocket = useWebSocket("")
+const newMessage = ref('');
+const {data, status, close, open, send, ws} = useWebSocket("ws://localhost:8080/resource/websocket?clientid=import.meta.env.VITE_APP_CLIENT_ID&Authorization=Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpblR5cGUiOiJsb2dpbiIsImxvZ2luSWQiOiJzeXNfdXNlcjoxIiwicm5TdHIiOiJHTDkxMXVmdzBsR0swN0dsTXNNRW9xMXFqdFZOdVdZNCIsImNsaWVudGlkIjoiZTVjZDdlNDg5MWJmOTVkMWQxOTIwNmNlMjRhN2IzMmUiLCJ0ZW5hbnRJZCI6IjAwMDAwMCIsInVzZXJJZCI6MX0.mVExuen-eNihz8lK_2vWdI1hZYgd8jzFDHWTOISc-os")
 
 const sessionLogList = ref<SessionLogVO[]>([])
 
@@ -47,17 +48,11 @@ const props = defineProps({
   }
 })
 
+data.value
+
 watch(() => props.sessionId, (newSessionId, oldSessionId) => {
   initSessionLogList()
 });
-
-// const sessionLogList = ref([
-//   {text: '你好！', sentByUser: false},
-//   {text: '你好！有什么新鲜事吗？', sentByUser: true},
-// ]);
-
-const newMessage = ref('');
-
 
 const initSessionLogList = async () => {
 
@@ -78,6 +73,7 @@ const sendMessage = async () => {
     query: newMessage.value
   }
   let res = await addSessionLog(form);
+  webSocket.send(newMessage.value)
   newMessage.value = '';
   initSessionLogList()
 };
