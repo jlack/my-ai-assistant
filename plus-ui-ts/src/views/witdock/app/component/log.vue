@@ -20,24 +20,24 @@
       </el-form-item>
     </el-form-item>
   </el-form>
-  <el-table v-loading="loading" :data="sessionList">
+  <el-table v-loading="loading" :data="conversationList">
     <el-table-column label="发起时间" align="center" prop="createTime"/>
     <el-table-column label="发起用户" align="center" prop="createByName"/>
-    <el-table-column label="会话标题" align="center" prop="sessionTitle"/>
+    <el-table-column label="会话标题" align="center" prop="conversationTitle"/>
     <el-table-column label="消息数" align="center" prop="msgNum"/>
     <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
       <template #default="scope">
-        <el-button link type="primary" icon="View" @click="handleViewLog(scope.row.id)">
+        <el-button link type="primary" icon="View" @click="handleViewMsgInfo(scope.row.id)">
           查看会话日志
         </el-button>
       </template>
     </el-table-column>
   </el-table>
 
-  <el-dialog v-model="openSessionLog" width="65%" style="height: 80%">
-    <div><span>对话id: {{ queryParams.sessionId }}</span></div>
+  <el-dialog v-model="openMsgInfo" width="65%" style="height: 80%">
+    <div><span>对话id: {{ queryParams.conversationId }}</span></div>
     <!--    会话日志展示表-->
-    <el-table v-loading="loading" :data="sessionLogList">
+    <el-table v-loading="loading" :data="msgInfoList">
       <el-table-column label="序号" width="70" type="index" align="center">
         <template #default="scope">
           <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
@@ -64,17 +64,15 @@
 </template>
 <script setup lang="ts">
 import {ref} from "vue";
-import {SessionQuery} from "@/api/witdock/session/types";
-import {listSession} from "@/api/witdock/session";
-import {SessionLogForm, SessionLogQuery, SessionLogVO} from "@/api/witdock/sessionLog/type";
-import {listSessionLog} from "@/api/witdock/sessionLog/api";
+import {listMessageInfo} from "@/api/witdock/messageInfo/api";
+import {listConversationInfo} from "@/api/witdock/conversationInfo/api";
+import {ConversationInfoQuery} from "@/api/witdock/conversationInfo/types";
 
 const total = ref(0);
-const sessionLogList = ref<SessionLogVO[]>([])
-const currSessionId = ref('');
-const openSessionLog = ref(false);
+const msgInfoList = ref([])
+const openMsgInfo = ref(false);
 const loading = ref(false)
-const sessionList = ref([]);
+const conversationList = ref([]);
 const form = ref({scope: "all"})
 const value2 = ref('')
 const shortcuts = [
@@ -104,7 +102,7 @@ const shortcuts = [
 const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
-  sessionId: undefined,
+  conversationId: undefined,
   query: undefined,
   answer: undefined,
   reDatetime: undefined,
@@ -112,36 +110,36 @@ const queryParams = ref({
   params: {}
 });
 
-const currentAppId = useRoute().params.id as String;
+const currentAppId = useRoute().params.id;
 
-const initSessionList = async () => {
+const initConversationList = async () => {
   loading.value = true
-  let sessionQuery: SessionQuery = {
-    appId: currentAppId,
+  let conversationQuery: ConversationInfoQuery = {
+    appId: currentAppId as string,
     isAsc: "desc",
     orderByColumn: "createTime"
   }
-  const res = await listSession(sessionQuery);
-  sessionList.value = res.rows
+  const res = await listConversationInfo(conversationQuery);
+  conversationList.value = res.rows
   loading.value = false
 }
 
 /** 查询会话日志表列表 */
 const getList = async () => {
   loading.value = true;
-  const res = await listSessionLog(queryParams.value);
-  sessionLogList.value = res.rows;
+  const res = await listMessageInfo(queryParams.value);
+  msgInfoList.value = res.rows;
   total.value = res.total;
   loading.value = false;
 }
 
-function handleViewLog(sessionId) {
-  openSessionLog.value = true;
-  queryParams.sessionId = sessionId;
+function handleViewMsgInfo(conversationId: any) {
+  openMsgInfo.value = true;
+  queryParams.value.conversationId = conversationId;
   getList();
 }
 
-initSessionList()
+initConversationList()
 
 </script>
 <style scoped lang="scss">

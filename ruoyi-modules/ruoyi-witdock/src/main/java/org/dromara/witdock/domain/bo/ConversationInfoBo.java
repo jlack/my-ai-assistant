@@ -1,6 +1,6 @@
 package org.dromara.witdock.domain.bo;
 
-import org.dromara.witdock.domain.SessionInfo;
+import org.dromara.witdock.domain.ConversationInfo;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
@@ -10,15 +10,15 @@ import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 
 /**
- * 会话业务对象 session_info
+ * 会话业务对象 conversation_info
  *
- * @author liaoyusheng
- * @date 2023-09-25
+ * @author Lion Li
+ * @date 2023-09-27
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AutoMapper(target = SessionInfo.class, reverseConvertGenerate = false)
-public class SessionInfoBo extends BaseEntity {
+@AutoMapper(target = ConversationInfo.class, reverseConvertGenerate = false)
+public class ConversationInfoBo extends BaseEntity {
 
     /**
      *
@@ -35,7 +35,7 @@ public class SessionInfoBo extends BaseEntity {
     /**
      * 会话标题
      */
-    private String sessionTitle;
+    private String conversationTitle;
 
     /**
      * 发起用户
@@ -46,6 +46,12 @@ public class SessionInfoBo extends BaseEntity {
      * 是否置顶
      */
     private Boolean topping;
+
+
+    /**
+     * 是否删除
+     */
+    private Boolean isDeleted;
 
 
 }

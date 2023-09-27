@@ -1,10 +1,8 @@
 package org.dromara.witdock.domain.vo;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import org.dromara.common.translation.annotation.Translation;
 import org.dromara.common.translation.constant.TransConstant;
-import org.dromara.witdock.domain.SessionInfo;
+import org.dromara.witdock.domain.ConversationInfo;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import org.dromara.common.excel.annotation.ExcelDictFormat;
@@ -19,15 +17,15 @@ import java.util.Date;
 
 
 /**
- * 会话视图对象 session_info
+ * 会话视图对象 conversation_info
  *
- * @author liaoyusheng
- * @date 2023-09-25
+ * @author Lion Li
+ * @date 2023-09-27
  */
 @Data
 @ExcelIgnoreUnannotated
-@AutoMapper(target = SessionInfo.class)
-public class SessionInfoVo implements Serializable {
+@AutoMapper(target = ConversationInfo.class)
+public class ConversationInfoVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -48,7 +46,7 @@ public class SessionInfoVo implements Serializable {
      * 会话标题
      */
     @ExcelProperty(value = "会话标题")
-    private String sessionTitle;
+    private String conversationTitle;
 
     /**
      * 发起用户

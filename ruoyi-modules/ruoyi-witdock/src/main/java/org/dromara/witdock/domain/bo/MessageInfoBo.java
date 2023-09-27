@@ -1,6 +1,6 @@
 package org.dromara.witdock.domain.bo;
 
-import org.dromara.witdock.domain.SessionLog;
+import org.dromara.witdock.domain.MessageInfo;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
@@ -13,15 +13,15 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
- * 会话日志表业务对象 session_log
+ * 对话消息业务对象 message_info
  *
  * @author Lion Li
- * @date 2023-09-25
+ * @date 2023-09-27
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AutoMapper(target = SessionLog.class, reverseConvertGenerate = false)
-public class SessionLogBo extends BaseEntity {
+@AutoMapper(target = MessageInfo.class, reverseConvertGenerate = false)
+public class MessageInfoBo extends BaseEntity {
 
     /**
      *
@@ -32,7 +32,7 @@ public class SessionLogBo extends BaseEntity {
     /**
      * 对话id
      */
-    private Long sessionId;
+    private Long conversationId;
 
     /**
      * 提问内容

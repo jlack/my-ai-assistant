@@ -4,7 +4,7 @@
       <h2>会话标题</h2>
     </div>
     <div class="chat-messages">
-      <div v-for="(message, index) in sessionLogList" :key="index" class="message">
+      <div v-for="(message, index) in msgInfoList" :key="index" class="message">
         <div class="message-query">
           <div class="message-content">{{ message.query }}</div>
           <div class="avatar">
@@ -28,18 +28,18 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
-import {SessionLogForm, SessionLogVO} from "@/api/witdock/sessionLog/type";
-import {addSessionLog, listSessionLog} from "@/api/witdock/sessionLog/api";
+import {ref} from 'vue';
 import {UserFilled} from '@element-plus/icons-vue'
+import {addMessageInfo, listMessageInfo} from "@/api/witdock/messageInfo/api";
+import {MessageInfoQuery, MessageInfoVO} from "@/api/witdock/messageInfo/types";
 
 const newMessage = ref('');
 const {data, status, close, open, send, ws} = useWebSocket("ws://localhost:8080/resource/websocket?clientid=import.meta.env.VITE_APP_CLIENT_ID&Authorization=Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpblR5cGUiOiJsb2dpbiIsImxvZ2luSWQiOiJzeXNfdXNlcjoxIiwicm5TdHIiOiJHTDkxMXVmdzBsR0swN0dsTXNNRW9xMXFqdFZOdVdZNCIsImNsaWVudGlkIjoiZTVjZDdlNDg5MWJmOTVkMWQxOTIwNmNlMjRhN2IzMmUiLCJ0ZW5hbnRJZCI6IjAwMDAwMCIsInVzZXJJZCI6MX0.mVExuen-eNihz8lK_2vWdI1hZYgd8jzFDHWTOISc-os")
 
-const sessionLogList = ref<SessionLogVO[]>([])
+const msgInfoList = ref<MessageInfoVO>([])
 
 const props = defineProps({
-  sessionId: {
+  conversationId: {
     type: String
   },
   enableInput: {
@@ -50,32 +50,28 @@ const props = defineProps({
 
 data.value
 
-watch(() => props.sessionId, (newSessionId, oldSessionId) => {
-  initSessionLogList()
+watch(() => props.conversationId, (newVal, oldVal) => {
+  initMsgInfoList()
 });
 
-const initSessionLogList = async () => {
-
-  let form: SessionLogForm
-  form = {
-    sessionId: props.sessionId
-  }
-  const res = await listSessionLog(form);
-  sessionLogList.value = res.rows
+const initMsgInfoList = async () => {
+  const res = await listMessageInfo({
+    conversationId: props.conversationId
+  } as MessageInfoQuery);
+  msgInfoList.value = res.rows
 }
 
 const sendMessage = async () => {
-  if (newMessage.value === '') return;
-  // sessionLogList.value.push({text: newMessage.value, sentByUser: true});
-  let form: SessionLogForm
-  form = {
-    sessionId: props.sessionId,
+  if (newMessage.value === '')
+    return;
+  let form = {
+    conversationId: props.conversationId,
     query: newMessage.value
   }
-  let res = await addSessionLog(form);
+  await addMessageInfo(form);
   webSocket.send(newMessage.value)
   newMessage.value = '';
-  initSessionLogList()
+  initMsgInfoList()
 };
 </script>
 

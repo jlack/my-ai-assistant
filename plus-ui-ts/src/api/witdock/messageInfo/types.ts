@@ -1,4 +1,4 @@
-export interface SessionLogVO {
+export interface MessageInfoVO {
   /**
    *
    */
@@ -7,7 +7,7 @@ export interface SessionLogVO {
   /**
    * 对话id
    */
-  sessionId: string | number;
+  conversationId: string | number;
 
   /**
    * 提问内容
@@ -31,7 +31,7 @@ export interface SessionLogVO {
 
 }
 
-export interface SessionLogForm extends BaseEntity {
+export interface MessageInfoForm extends BaseEntity {
   /**
    *
    */
@@ -40,7 +40,7 @@ export interface SessionLogForm extends BaseEntity {
   /**
    * 对话id
    */
-  sessionId?: string | number;
+  conversationId?: string | number;
 
   /**
    * 提问内容
@@ -64,12 +64,12 @@ export interface SessionLogForm extends BaseEntity {
 
 }
 
-export interface SessionLogQuery extends PageQuery {
+export interface MessageInfoQuery extends PageQuery {
 
   /**
    * 对话id
    */
-  sessionId?: string | number;
+  conversationId?: string | number;
 
   /**
    * 提问内容

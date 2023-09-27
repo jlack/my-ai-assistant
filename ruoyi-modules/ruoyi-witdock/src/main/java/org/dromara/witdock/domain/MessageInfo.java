@@ -11,15 +11,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serial;
 
 /**
- * 会话日志表对象 session_log
+ * 对话消息对象 message_info
  *
  * @author Lion Li
- * @date 2023-09-25
+ * @date 2023-09-27
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("session_log")
-public class SessionLog extends BaseEntity {
+@TableName("message_info")
+public class MessageInfo extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -33,7 +33,7 @@ public class SessionLog extends BaseEntity {
     /**
      * 对话id
      */
-    private Long sessionId;
+    private Long conversationId;
 
     /**
      * 提问内容

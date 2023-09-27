@@ -1,4 +1,4 @@
-export interface SessionVO {
+export interface ConversationInfoVO {
   /**
    *
    */
@@ -12,7 +12,7 @@ export interface SessionVO {
   /**
    * 会话标题
    */
-  sessionTitle: string;
+  conversationTitle: string;
 
   /**
    * 发起用户
@@ -26,7 +26,7 @@ export interface SessionVO {
 
 }
 
-export interface SessionForm extends BaseEntity {
+export interface ConversationInfoForm extends BaseEntity {
   /**
    *
    */
@@ -40,7 +40,7 @@ export interface SessionForm extends BaseEntity {
   /**
    * 会话标题
    */
-  sessionTitle?: string;
+  conversationTitle?: string;
 
   /**
    * 发起用户
@@ -52,9 +52,14 @@ export interface SessionForm extends BaseEntity {
    */
   topping?: boolean;
 
+  /**
+   * 是否删除
+   */
+  isDeleted?: boolean;
+
 }
 
-export interface SessionQuery extends PageQuery {
+export interface ConversationInfoQuery extends PageQuery {
 
   /**
    * 应用id
@@ -64,7 +69,7 @@ export interface SessionQuery extends PageQuery {
   /**
    * 会话标题
    */
-  sessionTitle?: string;
+  conversationTitle?: string;
 
   /**
    * 发起用户

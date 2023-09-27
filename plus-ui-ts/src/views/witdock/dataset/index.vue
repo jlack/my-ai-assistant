@@ -43,7 +43,7 @@
 </template>
 
 <script setup name="Dataset" lang="ts">
-import {listDataset, getDataset, delDataset, addDataset, updateDataset} from '@/api/witdock/dataset';
+import {listDataset, delDataset, addDataset, updateDataset} from '@/api/witdock/dataset';
 import {DatasetVO, DatasetQuery, DatasetForm} from '@/api/witdock/dataset/types';
 import {useRouter} from "vue-router";
 
@@ -150,22 +150,13 @@ const handleSelectionChange = (selection: DatasetVO[]) => {
 
 /** 新增按钮操作 */
 const handleAdd = () => {
-  // reset();
-  // dialog.visible = true;
-  // dialog.title = "添加数据集";
   router.push("/dataset/add");
 }
 
 /** 修改按钮操作 */
 const handleUpdate = async (row?: DatasetVO) => {
-  // reset();
-  // const _id = row?.id || ids.value[0]
   const _id = row?.id
   router.push("/dataset/detail/" + _id)
-  // const res = await getDataset(_id);
-  // Object.assign(form.value, res.data);
-  // dialog.visible = true;
-  // dialog.title = "修改数据集";
 }
 
 /** 提交按钮 */

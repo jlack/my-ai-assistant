@@ -17,34 +17,34 @@
           <el-col :span="4">
             <el-menu class="el-menu-demo">
               <el-menu-item>
-                <el-button type="primary" @click="newSession()">新建会话</el-button>
+                <el-button type="primary" @click="newConversation()">新建会话</el-button>
               </el-menu-item>
-              <div v-for="(sessionItem, index) in sessionList">
-                <el-menu-item :index="sessionItem.id"
-                              @click="chooseSession(sessionItem)" style="width: 100%">
-                  {{ sessionItem.sessionTitle }}
+              <div v-for="(conversationItem, index) in conversationList">
+                <el-menu-item :index="conversationItem.id"
+                              @click="chooseConversation(conversationItem)" style="width: 100%">
+                  {{ conversationItem.conversationTitle }}
                   <el-dropdown style="position: absolute; right: 4%;">
                     <el-button>...</el-button>
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item v-if="!sessionItem.topping" icon="CaretTop" @click="handleTopPost(sessionItem.id)">置顶</el-dropdown-item>
-                        <el-dropdown-item v-if="sessionItem.topping" icon="CaretTop" @click="handleUnTopPost(sessionItem.id)">取消置顶</el-dropdown-item>
-                        <el-dropdown-item icon="EditPen" @click="handleRename(sessionItem.id, sessionItem.sessionTitle)">
+                        <el-dropdown-item v-if="!conversationItem.topping" icon="CaretTop" @click="handleTopPost(conversationItem.id)">置顶</el-dropdown-item>
+                        <el-dropdown-item v-if="conversationItem.topping" icon="CaretBottom" @click="handleUnTopPost(conversationItem.id)">取消置顶</el-dropdown-item>
+                        <el-dropdown-item icon="EditPen" @click="handleRename(conversationItem.id, conversationItem.conversationTitle)">
                           重命名
                         </el-dropdown-item>
-                        <el-dropdown-item icon="Delete" @click="handleDelete(sessionItem.id)">删除</el-dropdown-item>
+                        <el-dropdown-item icon="Delete" @click="handleDelete(conversationItem.id)">删除</el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
                 </el-menu-item>
-                <el-divider content-class="custom-divider" v-if="index === topSessionNum - 1"/>
+                <el-divider content-class="custom-divider" v-if="index === topConversationNum - 1"/>
               </div>
 
 
             </el-menu>
           </el-col>
           <el-col :span="20">
-            <chat v-if="currentSessionId" :session-id="currentSessionId"></chat>
+            <chat v-if="currConversationId" :conversation-id="currConversationId"></chat>
           </el-col>
         </el-row>
       </el-card>
@@ -53,9 +53,9 @@
 
 
   <el-dialog title="会话重命名" v-model="openRename" width="500px" :append-to-body="true">
-    <el-form ref="sessionRenameRef" :model="selectedSession" :rules="renameRules" label-width="100px">
-      <el-form-item label="会话名称" prop="sessionTitle">
-        <el-input style="width: 85%;" clearable v-model="selectedSession.sessionTitle" placeholder="请输入会话名称"/>
+    <el-form ref="conversationRenameRef" :model="selectedConversation" :rules="renameRules" label-width="100px">
+      <el-form-item label="会话名称" prop="conversationTitle">
+        <el-input style="width: 85%;" clearable v-model="selectedConversation.conversationTitle" placeholder="请输入会话名称"/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -70,27 +70,32 @@
 <script setup lang="ts">
 
 
-import {addApp, listApp, updateApp} from "@/api/witdock/app";
+import {listApp} from "@/api/witdock/app";
 import {AppVO} from "@/api/witdock/app/type";
-import {addSession, delSession, listSession, updateSession} from "@/api/witdock/session";
-import {SessionForm, SessionQuery, SessionVO} from "@/api/witdock/session/types";
 import Chat from "@/views/witdock/chat.vue";
-import {listSessionLog} from "@/api/witdock/sessionLog/api";
-import {SessionLogForm, SessionLogVO} from "@/api/witdock/sessionLog/type";
+import {ConversationInfoForm, ConversationInfoQuery, ConversationInfoVO} from "@/api/witdock/conversationInfo/types";
+import {
+  addConversationInfo,
+  delConversationInfo,
+  listConversationInfo,
+  updateConversationInfo
+} from "@/api/witdock/conversationInfo/api";
+import {listMessageInfo} from "@/api/witdock/messageInfo/api";
+import {MessageInfoVO} from "@/api/witdock/messageInfo/types";
 
-const topSessionNum = ref(0);
-const sessionRenameRef = ref(null);
-const selectedSession = ref({});
+const topConversationNum = ref(0);
+const conversationRenameRef = ref(null);
+const selectedConversation = ref({});
 const openRename = ref(false);
 const buttonLoading = ref(false);
 const appList = ref<AppVO[]>([])
-const sessionList = ref<SessionVO[]>([])
-const sessionLogList = ref<SessionLogVO[]>([])
+const conversationList = ref<ConversationInfoVO[]>([])
+const msgInfoList = ref<MessageInfoVO[]>([])
 const currentAppId = ref('')
-const currentSessionId = ref('')
+const currConversationId = ref('')
 const loading = ref(false)
 const renameRules = reactive({
-  sessionTitle: [
+  conversationTitle: [
     {required: true, message: "会话名称不能为空", trigger: "blur"}
   ]
 })
@@ -101,55 +106,42 @@ const init = async () => {
   appList.value = res.rows
 }
 
-const newSession = async () => {
+const newConversation = async () => {
   loading.value = true
-  let session: SessionForm
-  session = {
+  let conversation: ConversationInfoForm = {
     appId: currentAppId.value
   }
-  await addSession(session)
-  await initSessionList()
+  await addConversationInfo(conversation)
+  await initConversationList()
 }
 
 const chooseApp = async (item: AppVO) => {
   currentAppId.value = item.id as string
-  await initSessionList()
+  await initConversationList()
 }
-const chooseSession = async (item: SessionVO) => {
-  currentSessionId.value = item.id as string
-  // await initSessionLogList()
+const chooseConversation = async (item: ConversationInfoVO) => {
+  currConversationId.value = item.id as string
 }
 
-const initSessionLogList = async () => {
+const initConversationList = async () => {
   loading.value = true
-  let form: SessionLogForm
-  form = {
-    sessionId: currentSessionId.value
-  }
-  const res = await listSessionLog(form);
-  sessionLogList.value = res.rows
-  loading.value = false
-}
-const initSessionList = async () => {
-  loading.value = true
-  let sessionQuery: SessionQuery
-  sessionQuery = {
+  let conversationQuery: ConversationInfoQuery = {
     appId: currentAppId.value,
     pageNum: 1,
     pageSize: 20,
     isAsc: "desc,desc",
     orderByColumn: "topping,updateTime"
   }
-  const res = await listSession(sessionQuery);
-  sessionList.value = res.rows
-  topSessionNum.value = res.rows.filter(sessionItem => sessionItem.topping === true).length;
+  const res = await listConversationInfo(conversationQuery);
+  conversationList.value = res.rows
+  topConversationNum.value = res.rows.filter(conversationItem => conversationItem.topping === true).length;
   loading.value = false
 }
 
-function handleTopPost(sessionId: number | string) {
-  updateSession({id: sessionId, topping: true}).then((res) => {
+function handleTopPost(conversationId: number | string) {
+  updateConversationInfo({id: conversationId, topping: true}).then((res) => {
     if (res.code === 200) {
-      initSessionList().finally(() => {
+      initConversationList().finally(() => {
         ElMessage.success("置顶成功")
       })
     } else {
@@ -158,10 +150,10 @@ function handleTopPost(sessionId: number | string) {
   })
 }
 
-function handleUnTopPost(sessionId: number | string) {
-  updateSession({id: sessionId, topping: false}).then((res) => {
+function handleUnTopPost(conversationId: number | string) {
+  updateConversationInfo({id: conversationId, topping: false}).then((res) => {
     if (res.code === 200) {
-      initSessionList().finally(() => {
+      initConversationList().finally(() => {
         ElMessage.success("置顶成功")
       })
     } else {
@@ -171,17 +163,16 @@ function handleUnTopPost(sessionId: number | string) {
 }
 
 
-function handleRename(sessionId: string | number, sessionTitle: string) {
-  console.log(sessionId)
-  selectedSession.value = {id: sessionId, sessionTitle: sessionTitle} as SessionVO;
+function handleRename(conversationId: string | number, conversationTitle: string) {
+  selectedConversation.value = {id: conversationId, conversationTitle: conversationTitle} as ConversationInfoVO;
   openRename.value = true;
 }
 
-function handleDelete(sessionId: string | number) {
-  delSession(sessionId).then((res) => {
+function handleDelete(conversationId: string | number) {
+  delConversationInfo(conversationId).then((res) => {
     if (res.code === 200) {
       ElMessage.success("删除成功");
-      initSessionList();
+      initConversationList();
     } else {
       ElMessage.warning("删除失败");
     }
@@ -190,13 +181,13 @@ function handleDelete(sessionId: string | number) {
 
 /** 提交按钮 */
 const submitRenameForm = () => {
-  (sessionRenameRef.value)?.validate(async (valid: boolean) => {
+  (conversationRenameRef.value)?.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
-      await updateSession(selectedSession.value).finally(() => buttonLoading.value = false);
+      await updateConversationInfo(selectedConversation.value).finally(() => buttonLoading.value = false);
       ElMessage.success("会话重命名成功")
       openRename.value = false;
-      await initSessionList();
+      await initConversationList();
     }
   });
 }

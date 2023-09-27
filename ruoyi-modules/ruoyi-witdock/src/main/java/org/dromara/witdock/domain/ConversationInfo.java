@@ -8,15 +8,15 @@ import lombok.EqualsAndHashCode;
 import java.io.Serial;
 
 /**
- * 会话对象 session_info
+ * 会话对象 conversation_info
  *
- * @author liaoyusheng
- * @date 2023-09-25
+ * @author Lion Li
+ * @date 2023-09-27
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("session_info")
-public class SessionInfo extends BaseEntity {
+@TableName("conversation_info")
+public class ConversationInfo extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -35,7 +35,7 @@ public class SessionInfo extends BaseEntity {
     /**
      * 会话标题
      */
-    private String sessionTitle;
+    private String conversationTitle;
 
     /**
      * 发起用户

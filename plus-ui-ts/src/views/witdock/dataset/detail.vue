@@ -95,10 +95,10 @@ import {DocForm, DocQuery, DocVO} from "@/api/witdock/datasetDoc/type";
 
 import {ref} from 'vue'
 import {Search} from '@element-plus/icons-vue'
-import {addDoc, listDoc, listDocByDatasetId, updateDoc} from "@/api/witdock/datasetDoc/api";
+import {addDoc, listDoc, updateDoc} from "@/api/witdock/datasetDoc/api";
 import {TabsPaneContext} from "element-plus";
 import {DatasetVO} from "@/api/witdock/dataset/types";
-import {delDataset, getDataset, updateDataset} from "@/api/witdock/dataset";
+import {getDataset, updateDataset} from "@/api/witdock/dataset";
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const { witdock_doc_status } = toRefs<any>(proxy?.useDict("witdock_doc_status"));
