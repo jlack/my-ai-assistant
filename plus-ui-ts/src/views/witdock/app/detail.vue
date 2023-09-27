@@ -91,7 +91,7 @@
 
       </el-tab-pane>
       <el-tab-pane label="提示词编排" name="second">
-        <Config :id=id></Config>
+        <Config :id=String(id)></Config>
       </el-tab-pane>
       <el-tab-pane label="访问API" name="third"></el-tab-pane>
       <el-tab-pane label="日志与标注" name="fourth">
@@ -112,7 +112,7 @@ import {DocumentCopy, Refresh} from "@element-plus/icons-vue";
 const {proxy} = getCurrentInstance() as ComponentInternalInstance
 
 const activeName = ref('first')
-const id = (useRoute().params.id || 0) as number;
+const id = (useRoute().params.id || 0) as string;
 const app = ref<AppVO | null>(null)
 
 
