@@ -3,14 +3,17 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>上下文</span>
-        <el-button style="float: right; padding: 3px 0" type="text" icon="Plus" @click="handleAddDataset">添加
-        </el-button>
+        <el-link style="float: right; padding: 3px 0; color: #409EFF" :underline="false" @click="handleAddDataset">
+          <el-icon class="el-icon--right"><Plus /></el-icon>增加
+        </el-link>
       </div>
       <el-row :gutter="10">
         <el-col :span="12" v-for="item in dataSetList">
           <el-card class="box-card" shadow="never">
             {{ item.datasetName }}
-            <el-button type="text" style="float: right" icon="Delete" @click="handleUnRef(appId, item.id)"></el-button>
+            <el-link style="float: right; color: #409EFF" :underline="false" @click="handleUnRef(appId, item.id)">
+              <el-icon class="el-icon--right"><Delete /></el-icon>
+            </el-link>
           </el-card>
         </el-col>
       </el-row>
@@ -18,8 +21,9 @@
     <el-card class="box-card mt20">
       <div slot="header" class="clearfix">
         <span>对话开场白</span>
-        <el-button style="float: right; padding: 3px 0" type="text" icon="Edit" @click="editProlog=true">编辑
-        </el-button>
+        <el-link style="float: right; padding: 3px 0; color: #409EFF" :underline="false" @click="editProlog=true">
+          <el-icon class="el-icon--right"><Edit /></el-icon>编辑
+        </el-link>
       </div>
       <div v-if="editProlog">
         <el-input type="textarea" v-model="app.prolog"></el-input>
@@ -76,7 +80,7 @@ const appId = route.params.id;
 
 const props = defineProps({
   id: {
-    type: Number,
+    type: String,
     required: true
   }
 })
