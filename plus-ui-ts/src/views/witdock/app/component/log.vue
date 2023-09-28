@@ -25,7 +25,7 @@
       <el-button icon="Refresh" @click="resetQuery">重置</el-button>
     </el-form-item>
   </el-form>
-  <el-table v-loading="loading" :data="conversationList">
+  <el-table v-loading="loading" :data="conversationList" stripe>
     <el-table-column label="发起时间" align="center" prop="createTime"/>
     <el-table-column label="发起用户" align="center" prop="createByName"/>
     <el-table-column label="会话标题" align="center" prop="conversationTitle"/>
@@ -41,8 +41,8 @@
 
   <el-dialog v-model="openMsgInfo" width="65%" style="height: 80%">
     <div><span>对话id: {{ queryParams.conversationId }}</span></div>
-    <!--    会话日志展示表-->
-    <el-table v-loading="loading" :data="msgInfoList">
+    <!--消息日志展示表-->
+    <el-table v-loading="loading" :data="msgInfoList" stripe max-height="500px">
       <el-table-column label="序号" width="70" type="index" align="center">
         <template #default="scope">
           <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
@@ -134,7 +134,7 @@ const initConversationList = async () => {
 /** 查询会话日志表列表 */
 const getMsgInfoList = async () => {
   loading.value = true;
-  const res = await listMessageInfo();
+  const res = await listMessageInfo(queryParams.value);
   msgInfoList.value = res.rows;
   total.value = res.total;
   loading.value = false;
