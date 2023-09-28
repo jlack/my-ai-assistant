@@ -161,11 +161,19 @@ onMounted(() => {
 <style lang="scss" scoped>
 .register {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   height: 100%;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
+  background-position: center;
+  .register-form {
+    margin-right: 15%;
+    border-radius: 4px;
+    background: #ffffff;
+    width: 460px;
+    padding: 36px 40px;
+  }
 }
 
 .title {

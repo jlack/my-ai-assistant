@@ -48,18 +48,18 @@ const props = defineProps({
   }
 })
 
-data.value
 
 watch(() => props.conversationId, (newVal, oldVal) => {
   initMsgInfoList()
-});
+},{ immediate: true});
 
-const initMsgInfoList = async () => {
+async function initMsgInfoList() {
   const res = await listMessageInfo({
     conversationId: props.conversationId
   } as MessageInfoQuery);
   msgInfoList.value = res.rows
 }
+
 
 const sendMessage = async () => {
   if (newMessage.value === '')

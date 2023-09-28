@@ -279,35 +279,6 @@ onMounted(() => {
       font-size: 14px;
     }
   }
-
-  .el-form-item__content {
-    display: flex;
-    align-items: center;
-
-    input {
-      flex: 1;
-    }
-
-    img {
-      padding-left: 10px;
-      cursor: pointer;
-      vertical-align: middle;
-      height: 44px;
-    }
-  }
-
-  .el-login-footer {
-    height: 40px;
-    line-height: 40px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    color: #fff;
-    font-family: Arial;
-    font-size: 12px;
-    letter-spacing: 1px;
-  }
 }
 
 

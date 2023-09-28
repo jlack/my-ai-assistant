@@ -22,7 +22,8 @@
                 </el-menu-item>
                 <div v-for="(conversationItem, index) in conversationList">
                   <el-menu-item :index="conversationItem.id"
-                                @click="chooseConversation(conversationItem)" style="width: 100%">
+                                @click="chooseConversation(conversationItem)"
+                                style="width: 100%">
                     {{ conversationItem.conversationTitle }}
                     <el-dropdown style="position: absolute; right: 4%;">
                       <el-button>...</el-button>
@@ -49,7 +50,18 @@
               </el-menu>
             </el-col>
             <el-col :span="20">
-              <chat v-if="currConversationId" :conversation-id="currConversationId"></chat>
+              <div style="height: 500px">
+                <chat v-if="currConversationId" :conversation-id="currConversationId"></chat>
+                <div v-if="!conversationList?.length > 0 && loading === false" style="height: 100%; display: flex; justify-content: center; align-items: center">
+                  <el-card :header="currentAppName" style="height: 110px; width: 50%; margin: auto; border-radius: 20px">
+                    <el-button type="primary" style="border-radius: 12px"
+                               @click="startConversation()">
+                      <el-icon class="mr5"><ChatDotSquare /></el-icon>开始对话
+                    </el-button>
+                  </el-card>
+                </div>
+              </div>
+
             </el-col>
           </el-row>
         </el-card>
@@ -97,8 +109,8 @@ const openRename = ref(false);
 const buttonLoading = ref(false);
 const appList = ref<AppVO[]>([])
 const conversationList = ref<ConversationInfoVO[]>([])
-const msgInfoList = ref<MessageInfoVO[]>([])
 const currentAppId = ref('')
+const currentAppName = ref('')
 const currConversationId = ref('')
 const loading = ref(false)
 const renameRules = reactive({
@@ -113,6 +125,11 @@ const init = async () => {
   appList.value = res.rows
 }
 
+async function startConversation() {
+  await newConversation();
+  await chooseConversation(conversationList.value[0]);
+}
+
 const newConversation = async () => {
   loading.value = true
   let conversation: ConversationInfoForm = {
@@ -124,6 +141,8 @@ const newConversation = async () => {
 
 const chooseApp = async (item: AppVO) => {
   currentAppId.value = item.id as string
+  let currApp = appList.value.find(app => app.id === currentAppId.value);
+  currentAppName.value = currApp ? currApp.appName : '';
   await initConversationList()
 }
 const chooseConversation = async (item: ConversationInfoVO) => {
@@ -179,6 +198,9 @@ function handleDelete(conversationId: string | number) {
   delConversationInfo(conversationId).then((res) => {
     if (res.code === 200) {
       ElMessage.success("删除成功");
+      if (currConversationId.value === conversationId) {
+        currConversationId.value = '';
+      }
       initConversationList();
     } else {
       ElMessage.warning("删除失败");
