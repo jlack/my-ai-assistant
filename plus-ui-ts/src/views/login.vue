@@ -212,12 +212,105 @@ onMounted(() => {
 <style lang="scss" scoped>
 .login {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   height: 100%;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
+  background-position: center;
+  .login-form {
+    margin-right: 15%;
+    border-radius: 4px;
+    background: #ffffff;
+    width: 460px;
+    padding: 36px 40px;
+
+    input,
+    button {
+      font-size: 14px !important;
+    }
+
+    .logo {
+      margin: 0 auto;
+      display: block;
+      width: 168px;
+    }
+
+    .login-label {
+      margin-top: 36px;
+      margin-bottom: 46px;
+      position: relative;
+      color: #012D72;
+      font-size: 22px;
+
+      &::after {
+        content: '';
+        width: 50px;
+        height: 2px;
+        border-radius: 2px;
+        background-color: #012D72;
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+      }
+    }
+
+    .input-box {
+      margin-top: 22px;
+
+      .input-label {
+        font-size: 14px;
+        margin-bottom: 12px;
+        color: #012D72;
+      }
+
+      input {
+        height: 50px !important;
+      }
+    }
+
+    .remember {
+      margin: 10px 0 30px;
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 50px;
+      font-size: 14px;
+    }
+  }
+
+  .el-form-item__content {
+    display: flex;
+    align-items: center;
+
+    input {
+      flex: 1;
+    }
+
+    img {
+      padding-left: 10px;
+      cursor: pointer;
+      vertical-align: middle;
+      height: 44px;
+    }
+  }
+
+  .el-login-footer {
+    height: 40px;
+    line-height: 40px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-family: Arial;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
 }
+
+
 
 .title {
   margin: 0px auto 30px auto;
