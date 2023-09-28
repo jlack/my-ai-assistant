@@ -1,5 +1,12 @@
 package org.dromara.witdock.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.thread.AsyncUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,12 +15,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.websocket.service.MsgService;
+import org.dromara.common.websocket.utils.WebSocketUtils;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.MessageInfoBo;
 import org.dromara.witdock.domain.vo.MessageInfoVo;
 import org.dromara.witdock.domain.MessageInfo;
 import org.dromara.witdock.mapper.MessageInfoMapper;
 import org.dromara.witdock.service.IMessageInfoService;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +38,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Service
-public class MessageInfoServiceImpl implements IMessageInfoService {
+public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
 
     private final MessageInfoMapper baseMapper;
 
@@ -35,7 +46,7 @@ public class MessageInfoServiceImpl implements IMessageInfoService {
      * 查询对话消息
      */
     @Override
-    public MessageInfoVo queryById(Long id){
+    public MessageInfoVo queryById(Long id) {
         return baseMapper.selectVoById(id);
     }
 
@@ -96,7 +107,7 @@ public class MessageInfoServiceImpl implements IMessageInfoService {
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(MessageInfo entity){
+    private void validEntityBeforeSave(MessageInfo entity) {
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -105,9 +116,33 @@ public class MessageInfoServiceImpl implements IMessageInfoService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public void addMsg(WebSocketSession session, TextMessage msg, Long userId) {
+        MessageInfoBo messageInfoBo = JSONUtil.toBean(msg.getPayload(), MessageInfoBo.class);
+        messageInfoBo.setCreateBy(userId);
+        Boolean b = insertByBo(messageInfoBo);
+        //把问题保存到数据库，先返回给前端，再进行回答
+        WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(BeanUtil.toBean(messageInfoBo, MessageInfoVo.class)));
+        if (b) {
+            //异步执行
+            ThreadUtil.execAsync(() -> {
+                //休眠2秒钟模拟调用chatGpt
+                ThreadUtil.sleep(2000);
+                messageInfoBo.setAnswer("自动回答" + IdUtil.simpleUUID());
+                messageInfoBo.setReDatetime(DateUtil.date());
+                //发送回答内容
+                MessageInfoVo vo = BeanUtil.toBean(messageInfoBo, MessageInfoVo.class);
+                WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(vo));
+                //更新数据库
+                updateByBo(messageInfoBo);
+            });
+        }
+        System.out.println("addMsg结束");
     }
 }
