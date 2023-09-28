@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <div class="chat-input" v-if="enableInput">
+    <div class="chat-input">
       <el-input v-model="newMessage" placeholder="输入消息..." @keydown.enter="sendMessage"/>
       <el-button @click="sendMessage">发送</el-button>
     </div>
@@ -32,22 +32,47 @@ import {ref} from 'vue';
 import {UserFilled} from '@element-plus/icons-vue'
 import {addMessageInfo, listMessageInfo} from "@/api/witdock/messageInfo/api";
 import {MessageInfoQuery, MessageInfoVO} from "@/api/witdock/messageInfo/types";
+import {getToken} from "@/utils/auth";
 
-const newMessage = ref('');
-const {data, status, close, open, send, ws} = useWebSocket("ws://localhost:8080/resource/websocket?clientid=import.meta.env.VITE_APP_CLIENT_ID&Authorization=Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpblR5cGUiOiJsb2dpbiIsImxvZ2luSWQiOiJzeXNfdXNlcjoxIiwicm5TdHIiOiJHTDkxMXVmdzBsR0swN0dsTXNNRW9xMXFqdFZOdVdZNCIsImNsaWVudGlkIjoiZTVjZDdlNDg5MWJmOTVkMWQxOTIwNmNlMjRhN2IzMmUiLCJ0ZW5hbnRJZCI6IjAwMDAwMCIsInVzZXJJZCI6MX0.mVExuen-eNihz8lK_2vWdI1hZYgd8jzFDHWTOISc-os")
+const {proxy} = getCurrentInstance() as ComponentInternalInstance
 
-const msgInfoList = ref<MessageInfoVO>([])
-
+const msgInfoList = ref<MessageInfoVO[]>([])
 const props = defineProps({
   conversationId: {
     type: String
-  },
-  enableInput: {
-    type: Boolean,
-    default: true
   }
 })
 
+const newMessage = ref('');
+const webSocketUrl = "ws://localhost:8080/resource/websocket?clientid="
+    + import.meta.env.VITE_APP_CLIENT_ID
+    + "&Authorization="
+    + "Bearer " + getToken();
+
+const webSocket = useWebSocket(webSocketUrl);
+
+
+// 监听 WebSocket 数据
+watch(webSocket.data, (newData) => {
+  if (newData) {
+    // 处理收到的数据
+    const res = JSON.parse(newData) as MessageInfoVO;
+    //遍历msgInfoList,如果不存在说明只是返回了 query，直接push. 否则就是返回answer进行更新
+    if (res.answer) {
+      //倒序循环
+      for (let i = msgInfoList.value.length - 1; i >= 0; i--) {
+        const item = msgInfoList.value[i];
+        if (item.id === res.id) {
+          item.answer = res.answer;
+          item.reDatetime = res.reDatetime;
+          break; // 找到匹配元素后跳出循环
+        }
+      }
+    } else {
+      msgInfoList.value.push(res)
+    }
+  }
+});
 
 watch(() => props.conversationId, (newVal, oldVal) => {
   initMsgInfoList()
@@ -60,18 +85,21 @@ async function initMsgInfoList() {
   msgInfoList.value = res.rows
 }
 
-
 const sendMessage = async () => {
   if (newMessage.value === '')
     return;
   let form = {
     conversationId: props.conversationId,
-    query: newMessage.value
+    query: newMessage.value,
+    wsType: 'chatMsg'
   }
-  await addMessageInfo(form);
-  webSocket.send(newMessage.value)
-  newMessage.value = '';
-  initMsgInfoList()
+  // await addMessageInfo(form);
+  let isSuccess = webSocket.send(JSON.stringify(form));
+  if (isSuccess) {
+    newMessage.value = ''
+  } else {
+    proxy?.$modal.msgError("发送失败")
+  }
 };
 </script>
 
