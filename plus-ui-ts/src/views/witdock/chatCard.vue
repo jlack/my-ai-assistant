@@ -1,6 +1,5 @@
 <template>
   <div style="height: 100%;">
-
   <el-card class="box-card" :body-style="{height: '100%'}" style="height: 100%;" v-loading="loading" v-if="currAppId">
     <el-row :gutter="10" style="height: 100%">
       <el-col :span="4">
@@ -87,7 +86,7 @@ import Chat from "@/views/witdock/chat.vue";
 import {listApp} from "@/api/witdock/app";
 
 const route = useRoute()
-const appCode = route.params.id;
+const appCode = route.params.code;
 const currAppId = ref('')
 
 const props = defineProps({

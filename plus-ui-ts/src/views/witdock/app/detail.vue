@@ -127,7 +127,8 @@ const app = ref<AppVO | null>(null)
 const appUrlRef = ref();
 
 function handlePreview() {
-  router.push("/app/preview/" + app.value.code);
+  // router.push("/app/preview/" + app.value.code);
+  router.push("/chatCard/" + app.value.code);
 }
 
 const copyByElId = async (elId) => {

@@ -27,12 +27,12 @@ import Layout from '@/layout/index.vue';
 // 公共路由
 export const constantRoutes: RouteOption[] = [
   {
-    path: '/chat',
+    path: '/chatCard',
     hidden: true,
     children: [
       {
         path: ':code(.*)',
-        component: () => import('@/views/witdock/chat.vue')
+        component: () => import('@/views/witdock/chatCard.vue')
       }
     ]
   },

@@ -26,7 +26,7 @@
 
 import {listApp} from "@/api/witdock/app";
 import {AppVO} from "@/api/witdock/app/type";
-import ChatCard from "@/views/witdock/app/component/chatCard.vue";
+import ChatCard from "@/views/witdock/chatCard.vue";
 
 
 const appList = ref<AppVO[]>([])
