@@ -50,11 +50,11 @@
                 />
               </div>
               <el-text>公开访问URL</el-text>
-              <el-input v-model="app.code" readonly :value="'https://witdock.manascloud.com/chat/'+app.code">
+              <el-input readonly :value="'https://witdock.manascloud.com/chat/'+app.code" ref="appUrlRef" id="appUrl">
                 <template #append>
                   <el-row :gutter="30">
                     <el-col :span="12">
-                      <el-button :icon="DocumentCopy"/>
+                      <el-button :icon="DocumentCopy" @click="copyByElId('appUrl')"/>
                     </el-col>
                     <el-col :span="12">
                       <el-button :icon="Refresh" @click="resetUrl(app)"/>
@@ -108,13 +108,26 @@ import type {TabsPaneContext} from 'element-plus'
 import {getApp, updateApp, resetCode} from "@/api/witdock/app";
 import {AppVO, AppForm} from "@/api/witdock/app/type";
 import {DocumentCopy, Refresh} from "@element-plus/icons-vue";
+import useClipboard from 'vue-clipboard3'
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance
 
+const { toClipboard } = useClipboard()
 const activeName = ref('first')
 const id = (useRoute().params.id || 0) as string;
 const app = ref<AppVO | null>(null)
+const appUrlRef = ref();
 
+const copyByElId = async (elId) => {
+  try {
+    const input = document.getElementById(elId);
+    // await toClipboard('Any text you like')
+    await toClipboard(input)
+    ElMessage.success("复制成功")
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 const resetUrl = async (app: AppVO) => {
   await proxy?.$modal.confirm('确认要重置URL吗?');
