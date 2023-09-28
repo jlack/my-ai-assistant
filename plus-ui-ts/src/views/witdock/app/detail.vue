@@ -62,6 +62,10 @@
                   </el-row>
                 </template>
               </el-input>
+              <el-row class="mt10">
+                <el-button type="primary" plain @click="handlePreview()"><el-icon class="mr5"><Position /></el-icon>预览</el-button>
+                <el-button type="primary" plain><el-icon class="mr5"><Tools /></el-icon>设置</el-button>
+              </el-row>
             </el-card>
           </el-col>
           <el-col :span="12">
@@ -78,13 +82,17 @@
                   inactive-text="已停用"
                 />
               </div>
+              <el-text>api访问依据</el-text>
               <el-input>
                 <template #append>
                   <el-button :icon="DocumentCopy"/>
                 </template>
               </el-input>
-              <el-button type="primary" plain>API 密钥</el-button>
-              <el-button type="primary" plain>查阅API文档</el-button>
+              <el-row class="mt10">
+                <el-button type="primary" plain><el-icon class="mr5"><Key /></el-icon>API 密钥</el-button>
+                <el-button type="primary" plain><el-icon class="mr5"><Document /></el-icon>查阅API文档</el-button>
+              </el-row>
+
             </el-card>
           </el-col>
         </el-row>
@@ -111,17 +119,20 @@ import {DocumentCopy, Refresh} from "@element-plus/icons-vue";
 import useClipboard from 'vue-clipboard3'
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance
-
+const router = useRouter();
 const { toClipboard } = useClipboard()
 const activeName = ref('first')
 const id = (useRoute().params.id || 0) as string;
 const app = ref<AppVO | null>(null)
 const appUrlRef = ref();
 
+function handlePreview() {
+  router.push("/app/preview/" + app.value.code);
+}
+
 const copyByElId = async (elId) => {
   try {
     const input = document.getElementById(elId);
-    // await toClipboard('Any text you like')
     await toClipboard(input)
     ElMessage.success("复制成功")
   } catch (e) {
