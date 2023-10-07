@@ -101,7 +101,7 @@ const data = reactive<PageData<AppForm, AppQuery>>({
     pageNum: 1,
     pageSize: 10,
     appName: undefined,
-    appDesc: undefined
+    appDesc: undefined,
     params: {}
   },
   rules: {

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
-import { AxiosPromise } from 'axios';
-import { AppDatasetVO, AppDatasetForm, AppDatasetQuery } from '@/api/witdock/appDataset/types';
+import {AxiosPromise} from 'axios';
+import {AppDatasetVO, AppDatasetForm, AppDatasetQuery} from '@/api/witdock/appDataset/types';
 
 /**
  * 查询应用数据集列表
@@ -66,7 +66,7 @@ export const delAppDataset = (id: string | number | Array<string | number>) => {
  * 删除应用数据集
  * @param id
  */
-export const delAppDatasetByBothId = (data) => {
+export const delAppDatasetByBothId = (data: AppDatasetForm) => {
   return request({
     url: '/witdock/appDataset/delAppDatasetByBothId/' + data.appId + "/" + data.datasetId,
     method: 'delete'

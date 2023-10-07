@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { DocVO, DocForm, DocQuery } from '@/api/witdock/doc/types';
+import { DocVO, DocForm, DocQuery } from '@/api/witdock/datasetDoc/type';
 
 /**
  * 查询数据集文档列表
