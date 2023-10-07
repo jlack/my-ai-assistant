@@ -80,6 +80,16 @@ export interface ConversationInfoQuery extends PageQuery {
    * 日期范围参数
    */
   params?: any;
+
+  /**
+   * 查找结果排序 desc/asc
+   */
+  isAsc: string | undefined;
+
+  /**
+   * 按照哪一个字段的值进行排序
+   */
+  orderByColumn: string | undefined;
 }
 
 

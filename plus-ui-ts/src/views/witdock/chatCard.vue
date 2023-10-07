@@ -87,7 +87,7 @@ import {listApp} from "@/api/witdock/app";
 
 const route = useRoute()
 const appCode = route.params.code;
-const currAppId = ref('')
+const currAppId = ref<string | number>('')
 
 const props = defineProps({
   propAppId: {
@@ -106,7 +106,7 @@ const conversationList = ref<ConversationInfoVO[]>([]);
 const loading = ref(false);
 const currConversationId = ref('')
 const conversationRenameRef = ref(null);
-const selectedConversation = ref({});
+const selectedConversation = ref({conversationTitle: ''});
 const openRename = ref(false);
 const buttonLoading = ref(false);
 const currAppName = ref('')
@@ -155,7 +155,11 @@ watch(() => props.propAppId, () => {
 
 watch(() => appCode, async () => {
   if (appCode) {
-    let res = await listApp({code: appCode});
+    let res = await listApp({
+      code: String(appCode),
+      pageNum: 1,
+      pageSize: 10
+    });
     currAppId.value = res.rows[0].id;
     currAppName.value = res.rows[0].appName;
     await initConversationList();
@@ -197,7 +201,7 @@ function handleDelete(conversationId: string | number) {
 
 /** 提交按钮 */
 const submitRenameForm = () => {
-  (conversationRenameRef.value)?.validate(async (valid: boolean) => {
+  (conversationRenameRef.value as any).validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
       await updateConversationInfo(selectedConversation.value).finally(() => buttonLoading.value = false);

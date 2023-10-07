@@ -40,7 +40,7 @@ export const addDatasetToApp = (data: {}) => {
 }
 
 
-export const getConfig = (appId: number) => {
+export const getConfig = (appId: number | string) => {
   return request({
     url: '/witdock/app/getConfig/' + appId,
     method: 'get',

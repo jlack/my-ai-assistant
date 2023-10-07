@@ -130,12 +130,12 @@ const initFormData: DocForm = {
   charNum: undefined,
   status: undefined
 }
-const data = reactive<PageData<DocForm, DocQuery>>({
+const data = reactive({
   datasetFormRef: {...initFormData},
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    datasetId: undefined,
+    datasetId: '',
     docName: undefined,
     ossId: undefined,
     charNum: undefined,
@@ -235,7 +235,7 @@ const resetQuery = () => {
 
 /** 提交按钮 */
 const submitForm = () => {
-  datasetFormRef.value?.validate(async (valid: boolean) => {
+  (datasetFormRef.value as any).validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
       await updateDataset(datasetInfo.value).finally(() => buttonLoading.value = false);

@@ -71,16 +71,17 @@
 import {ref} from "vue";
 import {listMessageInfo} from "@/api/witdock/messageInfo/api";
 import {listConversationInfo} from "@/api/witdock/conversationInfo/api";
-import {ConversationInfoQuery} from "@/api/witdock/conversationInfo/types";
+import {ConversationInfoQuery, ConversationInfoVO} from "@/api/witdock/conversationInfo/types";
 import {func} from "vue-types";
+import {MessageInfoVO} from "@/api/witdock/messageInfo/types";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const dateRange = ref([]);
 const total = ref(0);
-const msgInfoList = ref([])
+const msgInfoList = ref<MessageInfoVO[]>([])
 const openMsgInfo = ref(false);
 const loading = ref(false)
-const conversationList = ref([]);
+const conversationList = ref<ConversationInfoVO[]>([]);
 const form = ref({scope: "all"})
 const shortcuts = [
   {
@@ -114,6 +115,8 @@ const queryParams = ref({
   answer: undefined,
   reDatetime: undefined,
   msgToken: undefined,
+  isAsc: undefined,
+  orderByColumn: undefined,
   params: {}
 });
 
@@ -124,7 +127,9 @@ const initConversationList = async () => {
   let conversationQuery: ConversationInfoQuery = {
     appId: currentAppId as string,
     isAsc: "desc",
-    orderByColumn: "createTime"
+    orderByColumn: "createTime",
+    pageNum: 1,
+    pageSize: 10
   }
   const res = await listConversationInfo(conversationQuery);
   conversationList.value = res.rows

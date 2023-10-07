@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { DocVO, DocForm, DocQuery } from '@/api/witdock/datasetDoc/type';
+import {DocVO, DocForm, DocQuery, AddDocsBo} from '@/api/witdock/datasetDoc/type';
 
 /**
  * 查询数据集文档列表
@@ -51,7 +51,7 @@ export const addDoc = (data: DocForm) => {
  * 新增多个数据集文档
  * @param data
  */
-export const addDocs = (data: DocForm) => {
+export const addDocs = (data: AddDocsBo) => {
   return request({
     url: '/witdock/doc/addDocs',
     method: 'post',

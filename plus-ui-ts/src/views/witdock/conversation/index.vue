@@ -156,6 +156,8 @@ const data = reactive<PageData<ConversationInfoForm, ConversationInfoQuery>>({
     conversationTitle: undefined,
     userId: undefined,
     topping: undefined,
+    isAsc: undefined,
+    orderByColumn: undefined,
     params: {}
   },
   rules: {

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick" v-if="app">
+    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="概览" name="first">
         <el-card class="box-card mb10" shadow="never">
           <el-row>
@@ -50,11 +50,11 @@
                 />
               </div>
               <el-text>公开访问URL</el-text>
-              <el-input readonly :value="'https://witdock.manascloud.com/chat/'+app.code" ref="appUrlRef" id="appUrl">
+              <el-input readonly :value="visitUrl" ref="appUrlRef" id="appUrl">
                 <template #append>
                   <el-row :gutter="30">
                     <el-col :span="12">
-                      <el-button :icon="DocumentCopy" @click="copyByElId('appUrl')"/>
+                      <el-button :icon="DocumentCopy" @click="copyVisitUrl()"/>
                     </el-col>
                     <el-col :span="12">
                       <el-button :icon="Refresh" @click="resetUrl(app)"/>
@@ -99,7 +99,7 @@
 
       </el-tab-pane>
       <el-tab-pane label="提示词编排" name="second">
-        <Config :id=String(id)></Config>
+        <Config :id=id></Config>
       </el-tab-pane>
       <el-tab-pane label="访问API" name="third"></el-tab-pane>
       <el-tab-pane label="日志与标注" name="fourth">
@@ -116,25 +116,35 @@ import type {TabsPaneContext} from 'element-plus'
 import {getApp, updateApp, resetCode} from "@/api/witdock/app";
 import {AppVO, AppForm} from "@/api/witdock/app/type";
 import {DocumentCopy, Refresh} from "@element-plus/icons-vue";
-import useClipboard from 'vue-clipboard3'
+import useClipboard from 'vue-clipboard3';
+
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance
 const router = useRouter();
 const { toClipboard } = useClipboard()
 const activeName = ref('first')
 const id = (useRoute().params.id || 0) as string;
-const app = ref<AppVO | null>(null)
+const app = ref<AppVO>({
+  id: "",
+  appName: "",
+  appDesc: "",
+  code: "",
+  enableSite: false,
+  enableApi: false,
+  datasetIds: [],
+  prolog: ""
+});
 const appUrlRef = ref();
+const visitUrl = ref('');
 
 function handlePreview() {
   // router.push("/app/preview/" + app.value.code);
   router.push("/chatCard/" + app.value.code);
 }
 
-const copyByElId = async (elId) => {
+async function copyVisitUrl() {
   try {
-    const input = document.getElementById(elId);
-    await toClipboard(input)
+    await toClipboard(visitUrl.value);
     ElMessage.success("复制成功")
   } catch (e) {
     console.error(e)
@@ -180,12 +190,14 @@ const enableApi = async (app: AppVO) => {
   }
 }
 
+
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
 const init = async () => {
-  const res = await getApp(id as number)
-  app.value = res.data
+  const res = await getApp(id)
+  app.value = res.data;
+  visitUrl.value = 'https://witdock.manascloud.com/chat/'+app.value.code;
 }
 init()
 </script>

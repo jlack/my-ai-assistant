@@ -2,7 +2,7 @@ export interface AddDocsBo {
 
   datasetId: string | number;
 
-  ossIds: string;
+  ossIds: string | undefined;
 }
 
 export interface DocVO {

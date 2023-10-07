@@ -33,8 +33,9 @@ import {UserFilled} from '@element-plus/icons-vue'
 import {addMessageInfo, listMessageInfo} from "@/api/witdock/messageInfo/api";
 import {MessageInfoQuery, MessageInfoVO} from "@/api/witdock/messageInfo/types";
 
-const manasCloudLogo = "/src/assets/logo/logo.png";
 import {getToken} from "@/utils/auth";
+
+const manasCloudLogo = "/src/assets/logo/logo.png";
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance
 const waitServerRes = ref(false)

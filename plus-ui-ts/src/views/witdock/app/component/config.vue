@@ -128,7 +128,7 @@ const handleAddDataset = () => {
 }
 
 // 解除app对dataset的引用
-const handleUnRef = (appId, datasetId) => {
+const handleUnRef = (appId: any, datasetId: any) => {
   delAppDatasetByBothId({ appId: appId, datasetId: datasetId })
     .then((res) => {
     if (res.code === 200) {
