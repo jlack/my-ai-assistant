@@ -52,11 +52,6 @@ export interface ConversationInfoForm extends BaseEntity {
    */
   topping?: boolean;
 
-  /**
-   * 是否删除
-   */
-  isDeleted?: boolean;
-
 }
 
 export interface ConversationInfoQuery extends PageQuery {

@@ -119,9 +119,6 @@ const rules = ref({
   ],
   visiblePermission: [
     {required: true, message: "me,all不能为空", trigger: "change"}
-  ],
-  isDeleted: [
-    {required: true, message: "是否删除不能为空", trigger: "blur"}
   ]
 });
 

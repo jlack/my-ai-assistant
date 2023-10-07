@@ -1,19 +1,24 @@
 <template>
   <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+    <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
+                :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
           <el-form-item label="应用id" prop="appId">
-            <el-input v-model="queryParams.appId" placeholder="请输入应用id" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.appId" placeholder="请输入应用id" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item label="会话标题" prop="conversationTitle">
-            <el-input v-model="queryParams.conversationTitle" placeholder="请输入会话标题" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.conversationTitle" placeholder="请输入会话标题" clearable
+                      style="width: 240px" @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item label="发起用户" prop="userId">
-            <el-input v-model="queryParams.userId" placeholder="请输入发起用户" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.userId" placeholder="请输入发起用户" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item label="是否置顶" prop="topping">
-            <el-input v-model="queryParams.topping" placeholder="请输入是否置顶" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.topping" placeholder="请输入是否置顶" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -27,35 +32,45 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['witdock:conversationInfo:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd"
+                       v-hasPermi="['witdock:conversationInfo:add']">新增
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['witdock:conversationInfo:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()"
+                       v-hasPermi="['witdock:conversationInfo:edit']">修改
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['witdock:conversationInfo:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()"
+                       v-hasPermi="['witdock:conversationInfo:remove']">删除
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['witdock:conversationInfo:export']">导出</el-button>
+            <el-button type="warning" plain icon="Download" @click="handleExport"
+                       v-hasPermi="['witdock:conversationInfo:export']">导出
+            </el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
 
       <el-table v-loading="loading" :data="conversationInfoList" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="" align="center" prop="id" v-if="true" />
-        <el-table-column label="应用id" align="center" prop="appId" />
-        <el-table-column label="会话标题" align="center" prop="conversationTitle" />
-        <el-table-column label="发起用户" align="center" prop="userId" />
-        <el-table-column label="是否置顶" align="center" prop="topping" />
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column label="" align="center" prop="id" v-if="true"/>
+        <el-table-column label="应用id" align="center" prop="appId"/>
+        <el-table-column label="会话标题" align="center" prop="conversationTitle"/>
+        <el-table-column label="发起用户" align="center" prop="userId"/>
+        <el-table-column label="是否置顶" align="center" prop="topping"/>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['witdock:conversationInfo:edit']"></el-button>
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+                         v-hasPermi="['witdock:conversationInfo:edit']"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['witdock:conversationInfo:remove']"></el-button>
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+                         v-hasPermi="['witdock:conversationInfo:remove']"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -73,19 +88,16 @@
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
       <el-form ref="conversationInfoFormRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="应用id" prop="appId">
-          <el-input v-model="form.appId" placeholder="请输入应用id" />
+          <el-input v-model="form.appId" placeholder="请输入应用id"/>
         </el-form-item>
         <el-form-item label="会话标题" prop="conversationTitle">
-          <el-input v-model="form.conversationTitle" placeholder="请输入会话标题" />
+          <el-input v-model="form.conversationTitle" placeholder="请输入会话标题"/>
         </el-form-item>
         <el-form-item label="发起用户" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入发起用户" />
+          <el-input v-model="form.userId" placeholder="请输入发起用户"/>
         </el-form-item>
         <el-form-item label="是否置顶" prop="topping">
-          <el-input v-model="form.topping" placeholder="请输入是否置顶" />
-        </el-form-item>
-        <el-form-item label="是否删除" prop="isDeleted">
-          <el-input v-model="form.isDeleted" placeholder="请输入是否删除" />
+          <el-input v-model="form.topping" placeholder="请输入是否置顶"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -99,10 +111,17 @@
 </template>
 
 <script setup name="ConversationInfo" lang="ts">
-import { listConversationInfo, getConversationInfo, delConversationInfo, addConversationInfo, updateConversationInfo } from '@/api/witdock/conversationInfo';
-import { ConversationInfoVO, ConversationInfoQuery, ConversationInfoForm } from '@/api/witdock/conversationInfo/types';
 
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+import {ConversationInfoVO, ConversationInfoQuery, ConversationInfoForm} from '@/api/witdock/conversationInfo/types';
+import {
+  addConversationInfo, delConversationInfo,
+  getConversationInfo,
+  listConversationInfo,
+  updateConversationInfo
+} from "@/api/witdock/conversationInfo/api";
+
+
+const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 
 const conversationInfoList = ref<ConversationInfoVO[]>([]);
 const buttonLoading = ref(false);
@@ -126,8 +145,7 @@ const initFormData: ConversationInfoForm = {
   appId: undefined,
   conversationTitle: undefined,
   userId: undefined,
-  topping: undefined,
-  isDeleted: undefined
+  topping: undefined
 }
 const data = reactive<PageData<ConversationInfoForm, ConversationInfoQuery>>({
   form: {...initFormData},
@@ -138,29 +156,28 @@ const data = reactive<PageData<ConversationInfoForm, ConversationInfoQuery>>({
     conversationTitle: undefined,
     userId: undefined,
     topping: undefined,
-    params: {
-    }
+    params: {}
   },
   rules: {
     id: [
-      { required: true, message: "不能为空", trigger: "blur" }
+      {required: true, message: "不能为空", trigger: "blur"}
     ],
     appId: [
-      { required: true, message: "应用id不能为空", trigger: "blur" }
+      {required: true, message: "应用id不能为空", trigger: "blur"}
     ],
     conversationTitle: [
-      { required: true, message: "会话标题不能为空", trigger: "blur" }
+      {required: true, message: "会话标题不能为空", trigger: "blur"}
     ],
     userId: [
-      { required: true, message: "发起用户不能为空", trigger: "blur" }
+      {required: true, message: "发起用户不能为空", trigger: "blur"}
     ],
     topping: [
-      { required: true, message: "是否置顶不能为空", trigger: "blur" }
+      {required: true, message: "是否置顶不能为空", trigger: "blur"}
     ],
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const {queryParams, form, rules} = toRefs(data);
 
 /** 查询会话列表 */
 const getList = async () => {
@@ -225,9 +242,9 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateConversationInfo(form.value).finally(() =>  buttonLoading.value = false);
+        await updateConversationInfo(form.value).finally(() => buttonLoading.value = false);
       } else {
-        await addConversationInfo(form.value).finally(() =>  buttonLoading.value = false);
+        await addConversationInfo(form.value).finally(() => buttonLoading.value = false);
       }
       proxy?.$modal.msgSuccess("修改成功");
       dialog.visible = false;

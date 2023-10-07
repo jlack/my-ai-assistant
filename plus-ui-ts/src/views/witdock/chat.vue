@@ -14,7 +14,7 @@
 
         <div class="message-answer" v-if="message.answer">
           <div class="avatar">
-            <el-avatar :icon="UserFilled"/>
+            <el-avatar :src="manasCloudLogo"/>
           </div>
           <div class="message-content">{{ message.answer }}</div>
         </div>
@@ -22,7 +22,7 @@
     </div>
     <div class="chat-input">
       <el-input v-model="newMessage" placeholder="输入消息..." @keydown.enter="sendMessage"/>
-      <el-button @click="sendMessage">发送</el-button>
+      <el-button @click="sendMessage" :disabled="waitServerRes">{{ waitServerRes ? '发送中...' : '发送' }}</el-button>
     </div>
   </div>
 </template>
@@ -32,10 +32,12 @@ import {ref} from 'vue';
 import {UserFilled} from '@element-plus/icons-vue'
 import {addMessageInfo, listMessageInfo} from "@/api/witdock/messageInfo/api";
 import {MessageInfoQuery, MessageInfoVO} from "@/api/witdock/messageInfo/types";
+
+const manasCloudLogo = "/src/assets/logo/logo.png";
 import {getToken} from "@/utils/auth";
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance
-
+const waitServerRes = ref(false)
 const msgInfoList = ref<MessageInfoVO[]>([])
 const props = defineProps({
   conversationId: {
@@ -45,12 +47,18 @@ const props = defineProps({
 
 const newMessage = ref('');
 const webSocketUrl = "ws://localhost:8080/resource/websocket?clientid="
-    + import.meta.env.VITE_APP_CLIENT_ID
-    + "&Authorization="
-    + "Bearer " + getToken();
+  + import.meta.env.VITE_APP_CLIENT_ID
+  + "&Authorization="
+  + "Bearer " + getToken();
 
 const webSocket = useWebSocket(webSocketUrl);
 
+
+watch(webSocket.status, (status) => {
+  if (status.valueOf() === 'CLOSED') {
+    proxy?.$modal.msgError("链接websocket关闭了")
+  }
+})
 
 // 监听 WebSocket 数据
 watch(webSocket.data, (newData) => {
@@ -58,13 +66,14 @@ watch(webSocket.data, (newData) => {
     // 处理收到的数据
     const res = JSON.parse(newData) as MessageInfoVO;
     //遍历msgInfoList,如果不存在说明只是返回了 query，直接push. 否则就是返回answer进行更新
-    if (res.answer) {
+    if (res.reDatetime) {
       //倒序循环
       for (let i = msgInfoList.value.length - 1; i >= 0; i--) {
         const item = msgInfoList.value[i];
         if (item.id === res.id) {
           item.answer = res.answer;
           item.reDatetime = res.reDatetime;
+          waitServerRes.value = false
           break; // 找到匹配元素后跳出循环
         }
       }
@@ -88,17 +97,18 @@ async function initMsgInfoList() {
 const sendMessage = async () => {
   if (newMessage.value === '')
     return;
+  waitServerRes.value = true
   let form = {
     conversationId: props.conversationId,
     query: newMessage.value,
     wsType: 'chatMsg'
   }
-  // await addMessageInfo(form);
   let isSuccess = webSocket.send(JSON.stringify(form));
   if (isSuccess) {
     newMessage.value = ''
   } else {
-    proxy?.$modal.msgError("发送失败")
+    proxy?.$modal.msgError("消息发送失败")
+    waitServerRes.value = false
   }
 };
 </script>
@@ -130,7 +140,6 @@ const sendMessage = async () => {
 .avatar {
   width: 50px; /* 头像的宽度 */
   height: 50px; /* 头像的高度 */
-  border-radius: 50%; /* 圆形头像 */
   overflow: hidden;
   margin-right: 10px;
   margin-left: 10px;

@@ -1,5 +1,6 @@
 package org.dromara.witdock.service.impl;
 
+import cn.hutool.core.lang.ObjectId;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
@@ -135,7 +136,7 @@ public class AppInfoServiceImpl implements IAppInfoService {
     @Override
     public Boolean resetCode(Long id) {
         return new LambdaUpdateChainWrapper<>(baseMapper)
-            .set(AppInfo::getCode, IdUtil.simpleUUID())
+            .set(AppInfo::getCode, IdUtil.objectId())
             .eq(AppInfo::getId, id).update();
     }
 

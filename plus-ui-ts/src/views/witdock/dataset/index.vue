@@ -73,8 +73,7 @@ const initFormData: DatasetForm = {
   id: undefined,
   datasetName: undefined,
   datasetDesc: undefined,
-  visiblePermission: undefined,
-  isDeleted: undefined
+  visiblePermission: undefined
 }
 const data = reactive<PageData<DatasetForm, DatasetQuery>>({
   form: {...initFormData},
@@ -84,7 +83,6 @@ const data = reactive<PageData<DatasetForm, DatasetQuery>>({
     datasetName: undefined,
     datasetDesc: undefined,
     visiblePermission: undefined,
-    isDeleted: undefined,
     params: {}
   },
   rules: {
@@ -99,9 +97,6 @@ const data = reactive<PageData<DatasetForm, DatasetQuery>>({
     ],
     visiblePermission: [
       {required: true, message: "me,all不能为空", trigger: "blur"}
-    ],
-    isDeleted: [
-      {required: true, message: "是否删除不能为空", trigger: "blur"}
     ]
   }
 });

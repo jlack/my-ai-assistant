@@ -32,7 +32,7 @@
           <el-table-column label="字符数" align="center" prop="charNum"/>
           <el-table-column label="状态" align="center" prop="status">
             <template #default="scope">
-              <dict-tag :options="witdock_doc_status" :value="scope.row.status" />
+              <dict-tag :options="witdock_doc_status" :value="scope.row.status"/>
             </template>
           </el-table-column>
           <el-table-column label="启用" align="center" prop="status">
@@ -49,10 +49,12 @@
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-tooltip content="归档" placement="top">
-                <el-button v-if="scope.row.status !== 'archived'" link type="primary" icon="Delete" @click="handleArchive(scope.row)"
+                <el-button v-if="scope.row.status !== 'archived'" link type="primary" icon="Delete"
+                           @click="handleArchive(scope.row)"
                            v-hasPermi="['witdoc:doc:remove']">归档
                 </el-button>
-                <el-button v-if="scope.row.status === 'archived'" link type="primary" icon="RefreshLeft" @click="handleReArchive(scope.row)"
+                <el-button v-if="scope.row.status === 'archived'" link type="primary" icon="RefreshLeft"
+                           @click="handleReArchive(scope.row)"
                            v-hasPermi="['witdoc:doc:remove']">取消归档
                 </el-button>
               </el-tooltip>
@@ -101,18 +103,24 @@ import {DatasetVO} from "@/api/witdock/dataset/types";
 import {getDataset, updateDataset} from "@/api/witdock/dataset";
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
-const { witdock_doc_status } = toRefs<any>(proxy?.useDict("witdock_doc_status"));
+const {witdock_doc_status} = toRefs<any>(proxy?.useDict("witdock_doc_status"));
 
 
 const router = useRouter();
 const datasetId = useRoute().params.id as string;
-const datasetInfo = ref({});
+const datasetInfo = ref<DatasetVO>({
+  id: "",
+  datasetName: "",
+  datasetDesc: "",
+  visiblePermission: "",
+  docNum: 0,
+  charNum: 0
+})
 const activeName = ref('first');
 const docList = ref<DocVO[]>([]);
 const buttonLoading = ref(false);
 const loading = ref(true);
 const total = ref(0);
-const ossIds = ref<String>(undefined);
 
 const initFormData: DocForm = {
   id: undefined,

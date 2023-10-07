@@ -117,8 +117,14 @@
 </template>
 
 <script setup name="MessageInfo" lang="ts">
-import { listMessageInfo, getMessageInfo, delMessageInfo, addMessageInfo, updateMessageInfo } from '@/api/witdock/messageInfo';
 import { MessageInfoVO, MessageInfoQuery, MessageInfoForm } from '@/api/witdock/messageInfo/types';
+import {
+  addMessageInfo,
+  delMessageInfo,
+  getMessageInfo,
+  listMessageInfo,
+  updateMessageInfo
+} from "@/api/witdock/messageInfo/api";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 

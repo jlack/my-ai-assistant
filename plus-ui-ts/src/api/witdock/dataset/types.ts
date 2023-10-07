@@ -20,11 +20,6 @@ export interface DatasetVO {
   visiblePermission: string;
 
   /**
-   * 是否删除
-   */
-  isDeleted: number;
-
-  /**
    * 文档数量
    */
   docNum: number;
@@ -57,11 +52,6 @@ export interface DatasetForm extends BaseEntity {
    */
   visiblePermission?: string;
 
-  /**
-   * 是否删除
-   */
-  isDeleted?: number;
-
 }
 
 export interface DatasetQuery extends PageQuery {
@@ -80,11 +70,6 @@ export interface DatasetQuery extends PageQuery {
    * me\all
    */
   visiblePermission?: string;
-
-  /**
-   * 是否删除
-   */
-  isDeleted?: number;
 
   /**
    * 日期范围参数

@@ -15,11 +15,6 @@ export interface AppVO {
   appDesc: string;
 
   /**
-   * 逻辑删除
-   */
-  isDeleted: number;
-
-  /**
    * 应用Code
    */
   code: string;
@@ -59,10 +54,7 @@ export interface AppForm extends BaseEntity {
    */
   appDesc?: string;
 
-  /**
-   * 逻辑删除
-   */
-  isDeleted?: number;
+
 
   /**
    * 应用Code
@@ -98,10 +90,7 @@ export interface AppQuery extends PageQuery {
    */
   appDesc?: string;
 
-  /**
-   * 逻辑删除
-   */
-  isDeleted?: number;
+
 
   /**
    * 应用Code

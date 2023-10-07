@@ -93,8 +93,7 @@ const dialog = reactive<DialogOption>({
 const initFormData: AppForm = {
   id: undefined,
   appName: undefined,
-  appDesc: undefined,
-  isDeleted: undefined
+  appDesc: undefined
 }
 const data = reactive<PageData<AppForm, AppQuery>>({
   form: {...initFormData},
@@ -102,8 +101,7 @@ const data = reactive<PageData<AppForm, AppQuery>>({
     pageNum: 1,
     pageSize: 10,
     appName: undefined,
-    appDesc: undefined,
-    isDeleted: undefined,
+    appDesc: undefined
     params: {}
   },
   rules: {
