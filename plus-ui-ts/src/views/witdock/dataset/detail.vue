@@ -48,16 +48,17 @@
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
-              <el-tooltip content="归档" placement="top">
-                <el-button v-if="scope.row.status !== 'archived'" link type="primary" icon="Delete"
-                           @click="handleArchive(scope.row)"
-                           v-hasPermi="['witdoc:doc:remove']">归档
-                </el-button>
-                <el-button v-if="scope.row.status === 'archived'" link type="primary" icon="RefreshLeft"
-                           @click="handleReArchive(scope.row)"
-                           v-hasPermi="['witdoc:doc:remove']">取消归档
-                </el-button>
-              </el-tooltip>
+              <el-button v-if="scope.row.status !== 'archived'" link type="primary" icon="Delete"
+                         @click="handleArchive(scope.row)"
+                         v-hasPermi="['witdoc:doc:remove']">归档
+              </el-button>
+              <el-button v-if="scope.row.status === 'archived'" link type="primary" icon="RefreshLeft"
+                         @click="handleReArchive(scope.row)"
+                         v-hasPermi="['witdoc:doc:remove']">取消归档
+              </el-button>
+              <el-button link type="primary" icon="View"
+                         @click="viewParagraph()"
+              >分段详情</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -186,6 +187,9 @@ const addDocInfo = (ossId: number): void => {
   })
 }
 
+function viewParagraph() {
+
+}
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
