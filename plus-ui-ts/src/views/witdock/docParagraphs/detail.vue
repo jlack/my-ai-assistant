@@ -30,7 +30,7 @@
               </el-icon>
               归 档
             </el-button>
-            <el-button style="float: right;" size="large" type="primary" plain @click="handleArchive(DocStatus.INACTIVE)" v-else>
+            <el-button style="float: right;" size="large" type="info" plain @click="handleArchive(DocStatus.INACTIVE)" v-else>
               <el-icon>
                 <RefreshLeft />
               </el-icon>
@@ -230,7 +230,8 @@ const submitForm = () => {
       addLoading.value = true;
       let res;
       if (form.value.id) {
-        res = await updateDocParagraphs(form.value).finally(() =>  addLoading.value = false);
+        let charNum = form.value.content?.length;
+        res = await updateDocParagraphs({...form.value, charNum: charNum}).finally(() =>  addLoading.value = false);
         showResultMsg(res, '修改');
       } else {
         res = await addDocParagraphs({...form.value, docId: currDocId}).finally(() =>  addLoading.value = false);
