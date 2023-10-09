@@ -272,5 +272,18 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
         return oss;
     }
 
-
+    public Long getFileSize(Long ossId) {
+        SysOssVo ossVo = baseMapper.selectVoById(ossId);
+        Long size = 0L;
+//        try {
+//            Minio
+//            OssClient storage = OssFactory.instance(ossVo.getService());
+//            storage.getConfigKey()
+//            InputStream inputStream = storage.getObjectContent(ossVo.getUrl());
+//            size = Long.valueOf(inputStream.available());
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+        return size;
+    }
 }

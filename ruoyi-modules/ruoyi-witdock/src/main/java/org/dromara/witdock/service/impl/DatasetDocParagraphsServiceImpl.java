@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.system.domain.SysDept;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.DatasetDocParagraphsBo;
 import org.dromara.witdock.domain.vo.DatasetDocParagraphsVo;
@@ -64,7 +65,7 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
         lqw.eq(bo.getDocId() != null, DatasetDocParagraphs::getDocId, bo.getDocId());
         lqw.eq(bo.getSno() != null, DatasetDocParagraphs::getSno, bo.getSno());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), DatasetDocParagraphs::getStatus, bo.getStatus());
-        lqw.eq(StringUtils.isNotBlank(bo.getContent()), DatasetDocParagraphs::getContent, bo.getContent());
+        lqw.like(StringUtils.isNotBlank(bo.getContent()), DatasetDocParagraphs::getContent, bo.getContent());
         lqw.eq(bo.getCharNum() != null, DatasetDocParagraphs::getCharNum, bo.getCharNum());
         return lqw;
     }
@@ -76,6 +77,8 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
     public Boolean insertByBo(DatasetDocParagraphsBo bo) {
         DatasetDocParagraphs add = MapstructUtils.convert(bo, DatasetDocParagraphs.class);
         validEntityBeforeSave(add);
+        add.setSno(baseMapper.getSnoMax(bo.getDocId()) + 1);
+        add.setCharNum((long) bo.getContent().length());
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());

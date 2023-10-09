@@ -57,7 +57,7 @@
                          v-hasPermi="['witdoc:doc:remove']">取消归档
               </el-button>
               <el-button link type="primary" icon="View"
-                         @click="viewParagraph()"
+                         @click="handleView(scope.row)"
               >分段详情</el-button>
             </template>
           </el-table-column>
@@ -178,19 +178,6 @@ const getList = async () => {
   loading.value = false;
 }
 
-const addDocInfo = (ossId: number): void => {
-  addDoc({ossId: ossId, datasetId: datasetId} as DocForm).then((res) => {
-    if (res.code === 200) {
-      ElMessage.success("添加文件成功");
-      getList();
-    }
-  })
-}
-
-function viewParagraph() {
-
-}
-
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
@@ -200,9 +187,9 @@ const handleUpload = () => {
 }
 
 /** 归档按钮操作 */
-const handleArchive = async (row?: DatasetVO) => {
+const handleArchive = async (row?: DocVO) => {
   const id = row?.id;
-  await proxy?.$modal.confirm('是否确认将数据集编号为"' + id + '"的数据项归档？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认将名为"' + row?.docName + '"的文档归档？').finally(() => loading.value = false);
   await updateDoc({
     id: id,
     status: 'archived'
@@ -212,15 +199,20 @@ const handleArchive = async (row?: DatasetVO) => {
 }
 
 /** 取消归档按钮操作 */
-const handleReArchive = async (row?: DatasetVO) => {
+const handleReArchive = async (row?: DocVO) => {
   const id = row?.id;
-  await proxy?.$modal.confirm('是否确认将数据集编号为"' + id + '"的数据项取消归档？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认将编号为"' + row?.docName + '"的文档取消归档？').finally(() => loading.value = false);
   await updateDoc({
     id: id,
     status: 'inactive'
   })
   proxy?.$modal.msgSuccess("取消归档成功");
   await getList();
+}
+
+/** 查看doc分段详情 */
+function handleView(row: DocVO) {
+  router.push("/paraDetail/" + row.id)
 }
 
 /** 搜索按钮操作 */

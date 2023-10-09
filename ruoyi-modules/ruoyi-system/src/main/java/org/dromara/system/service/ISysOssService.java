@@ -38,4 +38,6 @@ public interface ISysOssService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     public Long calculateCharNum(Long ossId);
+
+    public Long getFileSize(Long ossId);
 }

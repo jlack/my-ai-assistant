@@ -23,7 +23,7 @@ public class DatasetDocBo extends BaseEntity {
     /**
      *
      */
-    @NotNull(message = "不能为空", groups = { EditGroup.class })
+    @NotNull(message = "docId不能为空", groups = { EditGroup.class })
     private Long id;
 
     /**

@@ -6,12 +6,14 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
+import org.dromara.system.domain.vo.SysOssVo;
 import org.dromara.witdock.domain.DatasetDoc;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
 
 
 /**
@@ -65,5 +67,27 @@ public class DatasetDocVo implements Serializable {
     @ExcelDictFormat(readConverterExp = "a=ctive,inactive,archived")
     private String status;
 
+    /**
+     * 上传人名称
+     */
+    @Translation(type = TransConstant.USER_ID_TO_NAME, mapper = "createBy")
+    private String createByName;
 
+    private Long createBy;
+
+    private Date createTime;
+
+    /**
+     * 更新人账号
+     */
+    @Translation(type = TransConstant.USER_ID_TO_NAME, mapper = "updateBy")
+    private String updateByName;
+
+    private Long updateBy;
+
+    private Date updateTime;
+
+    private Long fileSize;
+
+    private SysOssVo ossVo;
 }

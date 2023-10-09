@@ -75,7 +75,10 @@ public class DatasetDocController extends BaseController {
     @GetMapping("/{id}")
     public R<DatasetDocVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
-        return R.ok(datasetDocService.queryById(id));
+        DatasetDocVo docVo = datasetDocService.queryById(id);
+        docVo.setOssVo(ossService.getById(docVo.getOssId()));
+        docVo.setFileSize(ossService.getFileSize(docVo.getOssId()));
+        return R.ok(docVo);
     }
 
     /**

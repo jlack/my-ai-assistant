@@ -97,5 +97,10 @@ export interface DocParagraphsQuery extends PageQuery {
   params?: any;
 }
 
-
-
+/** 激活状态 */
+export enum ParaStatus {
+  /** 激活 */
+  ACTIVE = 'active',
+  /** 未激活 */
+  INACTIVE = 'inactive'
+}

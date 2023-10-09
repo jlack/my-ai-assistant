@@ -7,7 +7,7 @@ export interface AddDocsBo {
 
 export interface DocVO {
   /**
-   *
+   * 文档id
    */
   id: string | number;
 
@@ -69,6 +69,7 @@ export interface DocForm extends BaseEntity {
    */
   status?: string;
 
+  ossVo?: any;
 }
 
 export interface DocQuery extends PageQuery {
@@ -104,5 +105,13 @@ export interface DocQuery extends PageQuery {
   params?: any;
 }
 
-
+/** 状态 */
+export enum DocStatus {
+  /** 激活 */
+  ACTIVE = 'active',
+  /** 未激活 */
+  INACTIVE = 'inactive',
+  /** 归档 */
+  ARCHIVED = 'archived',
+}
 

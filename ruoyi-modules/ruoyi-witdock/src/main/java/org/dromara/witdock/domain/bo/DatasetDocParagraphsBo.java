@@ -35,13 +35,13 @@ public class DatasetDocParagraphsBo extends BaseEntity {
     /**
      * 段落编号
      */
-    @NotNull(message = "段落编号不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "段落编号不能为空", groups = { EditGroup.class })
     private Long sno;
 
     /**
      * 状态（active,inactive）可用、禁用
      */
-    @NotBlank(message = "状态（active,inactive）可用、禁用不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "状态（active,inactive）可用、禁用不能为空", groups = { EditGroup.class })
     private String status;
 
     /**
@@ -53,7 +53,7 @@ public class DatasetDocParagraphsBo extends BaseEntity {
     /**
      * 字数
      */
-    @NotNull(message = "字数不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "字数不能为空", groups = { EditGroup.class })
     private Long charNum;
 
 
