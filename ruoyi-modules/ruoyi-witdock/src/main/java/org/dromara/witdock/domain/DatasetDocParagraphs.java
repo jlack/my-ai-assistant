@@ -35,7 +35,7 @@ public class DatasetDocParagraphs extends BaseEntity {
     /**
      * 段落编号
      */
-    private Long sno;
+    private int sno;
 
     /**
      * 状态（active,inactive）可用、禁用

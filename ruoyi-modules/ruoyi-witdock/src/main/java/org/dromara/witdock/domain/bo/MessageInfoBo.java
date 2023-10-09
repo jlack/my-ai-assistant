@@ -8,8 +8,10 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -26,7 +28,7 @@ public class MessageInfoBo extends BaseEntity {
     /**
      *
      */
-    @NotNull(message = "不能为空", groups = { EditGroup.class })
+    @NotNull(message = "不能为空", groups = {EditGroup.class})
     private Long id;
 
     /**
@@ -54,5 +56,9 @@ public class MessageInfoBo extends BaseEntity {
      */
     private BigDecimal msgToken;
 
+    /**
+     * 本地客户端生成唯一ID
+     */
+    private String msgLocalId;
 
 }

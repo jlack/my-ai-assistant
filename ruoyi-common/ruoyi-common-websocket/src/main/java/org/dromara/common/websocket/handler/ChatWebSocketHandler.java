@@ -1,24 +1,20 @@
 package org.dromara.common.websocket.handler;
 
-import org.dromara.common.core.domain.model.LoginUser;
-import org.dromara.common.websocket.dto.WebSocketMessageDto;
-import org.dromara.common.websocket.holder.WebSocketSessionHolder;
-import org.dromara.common.websocket.utils.WebSocketUtils;
+import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.common.core.domain.model.LoginUser;
+import org.dromara.common.websocket.holder.WebSocketSessionHolder;
+import org.dromara.common.websocket.service.MsgService;
+import org.dromara.common.websocket.utils.WebSocketUtils;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-import java.util.List;
-
 import static org.dromara.common.websocket.constant.WebSocketConstants.LOGIN_USER_KEY;
 
-/**
- * WebSocketHandler 实现类
- *
- * @author zendwang
- */
 @Slf4j
-public class PlusWebSocketHandler extends AbstractWebSocketHandler {
+public class ChatWebSocketHandler extends AbstractWebSocketHandler {
 
     /**
      * 连接成功后
@@ -41,11 +37,9 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         LoginUser loginUser = (LoginUser) session.getAttributes().get(LOGIN_USER_KEY);
         log.info("PlusWebSocketHandler, 连接：" + session.getId() + "，已收到消息:" + message.getPayload());
-        List<Long> userIds = List.of(loginUser.getUserId());
-        WebSocketMessageDto webSocketMessageDto = new WebSocketMessageDto();
-        webSocketMessageDto.setSessionKeys(userIds);
-        webSocketMessageDto.setMessage(message.getPayload());
-        WebSocketUtils.publishMessage(webSocketMessageDto);
+        //聊天消息
+        MsgService msgService = SpringUtil.getBean(MsgService.class);
+        msgService.addMsg(session,message,loginUser.getUserId());
     }
 
     @Override
@@ -99,5 +93,4 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
     public boolean supportsPartialMessages() {
         return false;
     }
-
 }

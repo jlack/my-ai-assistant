@@ -61,5 +61,8 @@ public class MessageInfo extends BaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
-
+    /**
+     * 本地客户端生成唯一ID
+     */
+    private String msgLocalId;
 }

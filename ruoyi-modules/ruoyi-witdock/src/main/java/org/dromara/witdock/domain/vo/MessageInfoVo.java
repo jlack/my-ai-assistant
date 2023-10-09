@@ -67,5 +67,8 @@ public class MessageInfoVo implements Serializable {
     @ExcelProperty(value = "花费token")
     private BigDecimal msgToken;
 
-
+    /**
+     * 本地客户端生成唯一ID
+     */
+    private String msgLocalId;
 }

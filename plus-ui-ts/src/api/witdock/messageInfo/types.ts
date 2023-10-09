@@ -29,6 +29,10 @@ export interface MessageInfoVO {
    */
   msgToken: number;
 
+  /**
+   * 本地客户端生成的id
+   */
+  msgLocalId: string;
 }
 
 export interface MessageInfoForm extends BaseEntity {
@@ -62,6 +66,15 @@ export interface MessageInfoForm extends BaseEntity {
    */
   msgToken?: number;
 
+  /**
+   * 本地客户端生成的id
+   */
+  msgLocalId: string;
+
+  /**
+   * ws 类型
+   */
+  wsType?: string;
 }
 
 export interface MessageInfoQuery extends PageQuery {
