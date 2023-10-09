@@ -23,20 +23,21 @@
               inactive-text="禁用中"
               @change="handleDocActive"
             />
-            <el-button style="float: right" size="large" type="primary" plain
+            <el-button style="float: right" size="large" type="warning" plain
                        @click="handleArchive(DocStatus.ARCHIVED)" v-if="currDoc.status !== DocStatus.ARCHIVED">
               <el-icon>
                 <Delete />
               </el-icon>
-              归档
+              归 档
             </el-button>
-            <el-button style="float: right;" size="large" type="primary" plain @click="handleArchive(DocStatus.INACTIVE)" v-else>
+            <el-button style="float: right;" size="large" type="info" plain @click="handleArchive(DocStatus.INACTIVE)" v-else>
               <el-icon>
                 <RefreshLeft />
               </el-icon>
               取消归档
             </el-button>
-            <el-button type="primary" plain size="large" style="float: right" class="mr20" @click="open = true">
+            <el-button type="primary" plain size="large" style="float: right" class="mr20"
+                       @click="() => {dialog.visible = true; dialog.title = '新增段落';}">
               <el-icon>
                 <Plus />
               </el-icon>
@@ -46,7 +47,7 @@
         </el-row>
         <el-divider class="mr5"/>
         <div class="row-container">
-          <div><span style="font-size: 140%">段落数: {{ total }}</span></div>
+          <span style="font-size: 120%">段落数: {{ total }}</span>
           <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
             <el-form-item label="状态" prop="status">
               <el-select placeholder="段落状态" v-model="queryParams.status" clearable style="width: 100px">
@@ -75,17 +76,19 @@
                   <el-tag size="large">{{ '#' + para.sno }}</el-tag>
 
                   <span v-show="isCardHover(para.id)" class="ml20">{{ '字符数:' + para.charNum }}</span>
-                  <el-switch
-                    v-bind:value="paraActive(para)"
-                    class="ml-2"
-                    inline-prompt
-                    style="float: right;--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-                    active-text="已激活"
-                    inactive-text="禁用中"
-                    @change="handleParaActive(para)"
-                  />
-                  <el-button size="small" v-show="isCardHover(para.id)" style="float: right;"
+                  <el-button type="warning" v-show="isCardHover(para.id)" class="ml20"
                              @click.stop="handleDelete(para)" icon="Delete" plain/>
+                  <span @click.stop="">
+                    <el-switch
+                      v-bind:value="paraActive(para)"
+                      class="ml-2"
+                      inline-prompt
+                      style="float: right;--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                      active-text="已激活"
+                      inactive-text="禁用中"
+                      @change="handleParaActive(para)"
+                    />
+                  </span>
                 </div>
               </template>
               <el-text class="mt20 mx-1" truncated>{{ para.content }}</el-text>
@@ -126,12 +129,20 @@
     </el-row>
 
     <!-- 添加或修改文档段落表对话框 -->
-    <el-dialog title="新增段落" v-model="open" width="640px" append-to-body>
+    <el-dialog :title="dialog.title" v-model="dialog.visible" width="660px" append-to-body :close-on-click-modal="false">
       <el-form ref="docParagraphsFormRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="段落内容">
           <el-input type="textarea" :rows="6" v-model="form.content" :min-height="192"/>
         </el-form-item>
+        <el-form-item label="状态" v-if="dialog.title === '段落详情'">
+          <el-radio-group v-model="form.status">
+            <el-radio v-for="dict in witdock_para_status" :key="dict.value" :label="dict.value">
+              {{ dict.label }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
+      <el-tag v-if="dialog.title === '段落详情'" class="mr5 mt5" v-for="keyword in keywordList" :key="keyword.id">{{keyword.keyword}}</el-tag>
       <template #footer>
         <div class="dialog-footer">
           <el-button :loading="addLoading" type="primary" @click="submitForm">确 定</el-button>
@@ -145,17 +156,25 @@
 <script setup lang="ts">
 import {
   addDocParagraphs,
-  delDocParagraphs,
+  delDocParagraphs, getDocParagraphs,
   listDocParagraphs,
   updateDocParagraphs
 } from "@/api/witdock/docParagraphs/api";
 import {DocParagraphsForm, DocParagraphsQuery, DocParagraphsVO, ParaStatus} from "@/api/witdock/docParagraphs/types";
 import {DocStatus, DocVO} from "@/api/witdock/datasetDoc/type";
 import {getDoc, updateDoc} from "@/api/witdock/datasetDoc/api";
+import {DocParagraphsKeywordVO} from "@/api/witdock/docParagraphsKeyword/types";
+import {listDocParagraphsKeyword} from "@/api/witdock/docParagraphsKeyword/api";
+import {showResultMsg} from "@/utils/message";
+
 
 const router = useRouter();
 const isArchived = ref(false);
-const open = ref(false);
+const dialog = reactive<DialogOption>({
+  visible: false,
+  title: ''
+});
+
 const total = ref(0);
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const {witdock_para_status} = toRefs<any>(proxy?.useDict("witdock_para_status"));
@@ -193,7 +212,7 @@ const queryParams = ref<DocParagraphsQuery>({
   charNum: undefined,
   params: {}
 })
-
+const keywordList = ref<DocParagraphsKeywordVO[]>([]);
 const form = ref({...initFormData});
 const addLoading = ref(false);
 const rules = ref({
@@ -209,12 +228,26 @@ const submitForm = () => {
   docParagraphsFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       addLoading.value = true;
-      await addDocParagraphs({...form.value, docId: currDocId}).finally(() =>  addLoading.value = false);
-      proxy?.$modal.msgSuccess("新增成功");
-      open.value = false;
+      let res;
+      if (form.value.id) {
+        let charNum = form.value.content?.length;
+        res = await updateDocParagraphs({...form.value, charNum: charNum}).finally(() =>  addLoading.value = false);
+        showResultMsg(res, '修改');
+      } else {
+        res = await addDocParagraphs({...form.value, docId: currDocId}).finally(() =>  addLoading.value = false);
+        showResultMsg(res, '新增');
+      }
+
+      cancel();
       await init();
     }
   });
+}
+
+function cancel() {
+  form.value = {...initFormData};
+  docParagraphsFormRef.value?.resetFields();
+  dialog.visible = false;
 }
 
 function handleBack() {
@@ -236,37 +269,34 @@ const docActive = computed(() => (para: { status: DocStatus; }) => {
   return para.status === DocStatus.ACTIVE;
 })
 
-function handleUpdate(para: DocParagraphsVO) {
-
+async function handleUpdate(para: DocParagraphsVO) {
+  dialog.visible = true;
+  dialog.title = '段落详情';
+  form.value = para;
+  let keywordRes = await listDocParagraphsKeyword({paragraphsId: para.id, pageNum: 1, pageSize: 1000});
+  keywordList.value = keywordRes.rows;
 }
 
 async function handleDelete(para: DocParagraphsVO) {
   let res = await delDocParagraphs(para.id);
-  if (res.code === 200)
-    ElMessage.success("删除成功");
-  else
-    ElMessage.warning("删除失败")
+  showResultMsg(res, '删除');
   await init();
 }
 
 async function handleParaActive(para: DocParagraphsVO) {
   let status = para.status === ParaStatus.ACTIVE ? ParaStatus.INACTIVE : ParaStatus.ACTIVE;
-  let res = await updateDocParagraphs({...para, status: status})
+  let res = await updateDocParagraphs({id: para.id, status: status});
+  showResultMsg(res);
   await init();
-  if (res.code === 200)
-    ElMessage.success("操作成功");
-  else
-    ElMessage.warning("操作失败")
+  // form.value.status = status;
 }
 
 async function handleDocActive() {
   let status = currDoc.value.status === DocStatus.ACTIVE ? DocStatus.INACTIVE : DocStatus.ACTIVE;
   let res = await updateDoc({id: currDocId, status: status})
-  await init();
   if (res.code === 200)
-    ElMessage.success("操作成功");
-  else
-    ElMessage.warning("操作失败");
+    currDoc.value.status = status;
+  showResultMsg(res);
 }
 
 /** 归档按钮操作 */
@@ -274,19 +304,11 @@ async function handleArchive(status: DocStatus){
   if (status === DocStatus.ARCHIVED) {
     await proxy?.$modal.confirm('是否确认将名为"' + currDoc.value.docName + '"的文档归档？');
     let res = await updateDoc({id: currDocId, status: status})
-    if (res.code === 200) {
-      proxy?.$modal.msgSuccess("归档成功");
-    } else {
-      proxy?.$modal.msgSuccess("归档失败");
-    }
+    showResultMsg(res, '归档');
   } else {
     await proxy?.$modal.confirm('是否确认将名为"' + currDoc.value.docName + '"的文档取消归档？');
     let res = await updateDoc({id: currDocId, status: status})
-    if (res.code === 200) {
-      proxy?.$modal.msgSuccess("取消归档成功");
-    } else {
-      proxy?.$modal.msgSuccess("取消归档失败");
-    }
+    showResultMsg(res, '取消归档');
   }
 
   await init();
