@@ -15,5 +15,5 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 public interface DatasetDocParagraphsMapper extends BaseMapperPlus<DatasetDocParagraphs, DatasetDocParagraphsVo> {
 //    查出sno字段最大值，返回最大值+1值
 @Select("SELECT MAX(sno) FROM dataset_doc_paragraphs WHERE doc_id = #{docId}")
-    Long getSnoMax(@Param("docId") Long docId);
+    Integer getSnoMax(@Param("docId") Long docId);
 }
