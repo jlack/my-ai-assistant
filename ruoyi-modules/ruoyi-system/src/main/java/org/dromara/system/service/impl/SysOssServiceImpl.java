@@ -3,6 +3,7 @@ package org.dromara.system.service.impl;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -272,18 +273,17 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
         return oss;
     }
 
+    // 返回值单位字节(byte)
     public Long getFileSize(Long ossId) {
         SysOssVo ossVo = baseMapper.selectVoById(ossId);
         Long size = 0L;
-//        try {
-//            Minio
-//            OssClient storage = OssFactory.instance(ossVo.getService());
-//            storage.getConfigKey()
-//            InputStream inputStream = storage.getObjectContent(ossVo.getUrl());
-//            size = Long.valueOf(inputStream.available());
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
+        try {
+            OssClient storage = OssFactory.instance(ossVo.getService());
+            ObjectMetadata objectMetadata = storage.getObjectMetadata(ossVo.getUrl());
+            size = objectMetadata.getContentLength();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         return size;
     }
 }

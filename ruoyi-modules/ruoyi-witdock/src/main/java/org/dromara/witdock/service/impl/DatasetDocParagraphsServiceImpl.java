@@ -77,7 +77,7 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
     public Boolean insertByBo(DatasetDocParagraphsBo bo) {
         DatasetDocParagraphs add = MapstructUtils.convert(bo, DatasetDocParagraphs.class);
         validEntityBeforeSave(add);
-        add.setSno(baseMapper.getSnoMax(bo.getDocId()) + 1);
+        add.setSno((int) (baseMapper.getSnoMax(bo.getDocId()) + 1));
         add.setCharNum((long) bo.getContent().length());
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {

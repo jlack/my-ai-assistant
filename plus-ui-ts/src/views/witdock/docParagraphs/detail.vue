@@ -105,7 +105,14 @@
       <el-col :span="6">
         <el-descriptions title="文件信息" :column="1" :border="true">
           <el-descriptions-item label="文件名:">{{ currDoc.docName }}</el-descriptions-item>
-          <el-descriptions-item label="文件大小:">{{ currDoc.fileSize }}</el-descriptions-item>
+          <el-descriptions-item label="文件大小:">
+            <template v-if="currDoc.fileSize > 1024">
+              {{ (currDoc.fileSize / 1024).toFixed(1) + ' KB' }}
+            </template>
+            <template v-else>
+              {{ currDoc.fileSize + ' Byte' }}
+            </template>
+          </el-descriptions-item>
           <el-descriptions-item label="字符数:">{{ currDoc.charNum }}</el-descriptions-item>
           <el-descriptions-item label="上传时间:">{{ currDoc.createTime }}</el-descriptions-item>
           <el-descriptions-item label="上传用户:">{{ currDoc.createByName }}</el-descriptions-item>
