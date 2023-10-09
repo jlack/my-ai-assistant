@@ -36,7 +36,7 @@ public class DatasetDocParagraphsBo extends BaseEntity {
      * 段落编号
      */
     @NotNull(message = "段落编号不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long sno;
+    private int sno;
 
     /**
      * 状态（active,inactive）可用、禁用

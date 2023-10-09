@@ -44,7 +44,7 @@ public class DatasetDocParagraphsVo implements Serializable {
      * 段落编号
      */
     @ExcelProperty(value = "段落编号")
-    private Long sno;
+    private int sno;
 
     /**
      * 状态（active,inactive）可用、禁用

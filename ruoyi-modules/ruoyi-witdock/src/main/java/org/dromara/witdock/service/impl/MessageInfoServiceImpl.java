@@ -7,6 +7,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import org.dromara.common.core.constant.CacheConstants;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -15,6 +16,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.redis.utils.CacheUtils;
+import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.websocket.service.MsgService;
 import org.dromara.common.websocket.utils.WebSocketUtils;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ import org.dromara.witdock.service.IMessageInfoService;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -124,10 +128,14 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
 
     @Override
     public void addMsg(WebSocketSession session, TextMessage msg, Long userId) {
+
+        System.out.println(session.toString());
         MessageInfoBo messageInfoBo = JSONUtil.toBean(msg.getPayload(), MessageInfoBo.class);
         messageInfoBo.setCreateBy(userId);
-        Boolean b = insertByBo(messageInfoBo);
         //把问题保存到数据库，先返回给前端，再进行回答
+        Boolean b = insertByBo(messageInfoBo);
+//        RedisUtils.setCacheObject(CacheConstants.MSG_WS_SESSION_KEY + messageInfoBo.getId(), session);
+//        CacheUtils.put(CacheConstants.MSG_WS_SESSION_KEY, messageInfoBo.getId(), session);
         WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(BeanUtil.toBean(messageInfoBo, MessageInfoVo.class)));
         if (b) {
             //异步执行
@@ -138,6 +146,21 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
                 messageInfoBo.setReDatetime(DateUtil.date());
                 //发送回答内容
                 MessageInfoVo vo = BeanUtil.toBean(messageInfoBo, MessageInfoVo.class);
+//                WebSocketSession session1 = CacheUtils.get(CacheConstants.MSG_WS_SESSION_KEY, messageInfoBo.getId());
+//                CacheUtils.evict(CacheConstants.MSG_WS_SESSION_KEY, messageInfoBo.getId());
+//                System.out.println("b");
+//                try {
+//                    String str = RedisUtils.getCacheObject(CacheConstants.MSG_WS_SESSION_KEY + messageInfoBo.getId());
+//                    if (str != null) {
+//                        System.out.println("a" + str);
+//                    } else {
+//                        System.out.println("WebSocketSession is null.");
+//                    }
+//                    WebSocketSession bean = JSONUtil.toBean(str, WebSocketSession.class);
+//
+//                } catch (Exception e) {
+//                    System.out.println(e);
+//                }
                 WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(vo));
                 //更新数据库
                 updateByBo(messageInfoBo);

@@ -2,6 +2,7 @@ package org.dromara.common.websocket.config;
 
 import cn.hutool.core.util.StrUtil;
 import org.dromara.common.websocket.config.properties.WebSocketProperties;
+import org.dromara.common.websocket.handler.ChatWebSocketHandler;
 import org.dromara.common.websocket.handler.PlusWebSocketHandler;
 import org.dromara.common.websocket.interceptor.PlusWebSocketInterceptor;
 import org.dromara.common.websocket.listener.WebSocketTopicListener;
@@ -28,6 +29,7 @@ public class WebSocketConfig {
     @Bean
     public WebSocketConfigurer webSocketConfigurer(HandshakeInterceptor handshakeInterceptor,
                                                    WebSocketHandler webSocketHandler,
+                                                   WebSocketHandler chatSocketHandler,
                                                    WebSocketProperties webSocketProperties) {
         if (StrUtil.isBlank(webSocketProperties.getPath())) {
             webSocketProperties.setPath("/websocket");
@@ -39,6 +41,7 @@ public class WebSocketConfig {
 
         return registry -> registry
             .addHandler(webSocketHandler, webSocketProperties.getPath())
+            .addHandler(chatSocketHandler, "/websocket/chat")
             .addInterceptors(handshakeInterceptor)
             .setAllowedOrigins(webSocketProperties.getAllowedOrigins());
     }
@@ -51,6 +54,11 @@ public class WebSocketConfig {
     @Bean
     public WebSocketHandler webSocketHandler() {
         return new PlusWebSocketHandler();
+    }
+
+    @Bean
+    public WebSocketHandler chatSocketHandler() {
+        return new ChatWebSocketHandler();
     }
 
     @Bean
