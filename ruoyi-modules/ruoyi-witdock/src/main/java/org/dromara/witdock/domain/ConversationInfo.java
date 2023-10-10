@@ -33,6 +33,11 @@ public class ConversationInfo extends BaseEntity {
     private Long appId;
 
     /**
+     * 会话token
+     */
+    private String chatToken;
+
+    /**
      * 会话标题
      */
     private String conversationTitle;

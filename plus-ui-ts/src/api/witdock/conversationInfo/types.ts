@@ -10,6 +10,11 @@ export interface ConversationInfoVO {
   appId: string | number;
 
   /**
+   * 会话token
+   */
+  chatToken: string;
+
+  /**
    * 会话标题
    */
   conversationTitle: string;
@@ -38,6 +43,11 @@ export interface ConversationInfoForm extends BaseEntity {
   appId?: string | number;
 
   /**
+   * 会话token
+   */
+  chatToken?: string ;
+
+  /**
    * 会话标题
    */
   conversationTitle?: string;
@@ -60,6 +70,7 @@ export interface ConversationInfoQuery extends PageQuery {
    * 应用id
    */
   appId?: string | number;
+
 
   /**
    * 会话标题
@@ -92,5 +103,8 @@ export interface ConversationInfoQuery extends PageQuery {
   orderByColumn: string | undefined;
 }
 
+export enum ConversationConstants {
+  /** 查询会话数量 */
+  QuerySize = 20
 
-
+}

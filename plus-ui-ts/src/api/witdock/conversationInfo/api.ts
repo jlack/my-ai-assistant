@@ -16,6 +16,45 @@ export const listConversationInfo = (query?: ConversationInfoQuery): AxiosPromis
   });
 };
 
+export const listConversationWithIsVistor = (query: any, isVistor: boolean = false): AxiosPromise<ConversationInfoVO[]> => {
+  if (isVistor) {
+    query.createby = 0;
+  }
+  return request({
+    url: '/witdock/conversationInfo/listWithCreateBy',
+    method: 'get',
+    params: query
+  });
+};
+
+/**
+ * 查询非游客创建的会话列表
+ * @param query
+ * @returns {*}
+ */
+
+export const listUserConversationInfo = (query?: ConversationInfoQuery): AxiosPromise<ConversationInfoVO[]> => {
+  return request({
+    url: '/witdock/conversationInfo/listUserConversationInfo',
+    method: 'get',
+    params: query
+  });
+};
+
+/**
+ * 查询游客创建的会话列表
+ * @param query
+ * @returns {*}
+ */
+
+export const listVisitorConversationInfo = (query?: ConversationInfoQuery): AxiosPromise<ConversationInfoVO[]> => {
+  return request({
+    url: '/witdock/conversationInfo/listVisitorConversationInfo',
+    method: 'get',
+    params: query
+  });
+};
+
 /**
  * 查询会话详细
  * @param id
@@ -61,3 +100,15 @@ export const delConversationInfo = (id: string | number | Array<string | number>
     method: 'delete'
   });
 };
+
+
+/**
+ * 依据token查出ConversationList
+ * @param chatToken
+ */
+export const genChatToken = () => {
+  return request({
+    url: '/witdock/conversationInfo/genChatToken',
+    method: 'get'
+  });
+}

@@ -41,7 +41,7 @@
           <chat style="height: 100%" v-if="currConversationId" :conversation-id="currConversationId"/>
           <div v-if="!conversationList?.length > 0 && loading === false"
                style="height: 100%; display: flex; justify-content: center; align-items: center">
-            <el-card :header="currAppName" style="height: 110px; width: 50%; margin: auto; border-radius: 20px">
+            <el-card :header="currApp.appName" style="height: 110px; width: 50%; margin: auto; border-radius: 20px">
               <el-button type="primary" style="border-radius: 12px"
                          @click="startConversation()">
                 <el-icon class="mr5">
@@ -57,10 +57,11 @@
   </el-card>
 
   <el-dialog title="会话重命名" v-model="openRename" width="500px" :append-to-body="true">
-    <el-form ref="conversationRenameRef" :model="selectedConversation" :rules="renameRules" label-width="100px">
+<!--    @submit.native.prevent 可以阻止按回车刷新页面-->
+    <el-form ref="conversationRenameRef" :model="selectedConversation" :rules="renameRules" label-width="100px" @submit.native.prevent>
       <el-form-item label="会话名称" prop="conversationTitle">
         <el-input style="width: 85%;" clearable v-model="selectedConversation.conversationTitle"
-                  placeholder="请输入会话名称"/>
+                  placeholder="请输入会话名称"  @keyup.enter="submitRenameForm"/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -75,23 +76,34 @@
 </template>
 
 <script setup lang="ts">
-import {ConversationInfoForm, ConversationInfoQuery, ConversationInfoVO} from "@/api/witdock/conversationInfo/types";
+import {
+  ConversationConstants,
+  ConversationInfoForm,
+  ConversationInfoQuery,
+  ConversationInfoVO
+} from "@/api/witdock/conversationInfo/types";
 import {
   addConversationInfo,
   delConversationInfo,
-  listConversationInfo,
+  listConversationInfo, listConversationWithIsVistor,
   updateConversationInfo
 } from "@/api/witdock/conversationInfo/api";
 import Chat from "@/views/witdock/chat.vue";
-import {listApp} from "@/api/witdock/app";
+import {getApp, listApp} from "@/api/witdock/app";
+import {AppVO} from "@/api/witdock/app/type";
 
-const route = useRoute()
+const route = useRoute();
 const appCode = route.params.code;
-const currAppId = ref<string | number>('')
+const currAppId = ref<string | number>('');
+const chatToken = localStorage.getItem('chatToken');
 
 const props = defineProps({
   propAppId: {
     type: String
+  },
+  isVistor: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -109,7 +121,7 @@ const conversationRenameRef = ref(null);
 const selectedConversation = ref({conversationTitle: ''});
 const openRename = ref(false);
 const buttonLoading = ref(false);
-const currAppName = ref('')
+const currApp = ref<AppVO>({})
 
 async function startConversation() {
   await newConversation();
@@ -119,7 +131,9 @@ async function startConversation() {
 const newConversation = async () => {
   loading.value = true
   let conversation: ConversationInfoForm = {
-    appId: currAppId.value
+    appId: currAppId.value,
+    chatToken: props.isVistor && chatToken != null ? chatToken : '',
+    createBy: props.isVistor ? 0 : null,
   }
   await addConversationInfo(conversation)
   await initConversationList()
@@ -130,11 +144,18 @@ const initConversationList = async () => {
   let conversationQuery: ConversationInfoQuery = {
     appId: currAppId.value ,
     pageNum: 1,
-    pageSize: 20,
+    pageSize: ConversationConstants.QuerySize,
     isAsc: "desc,desc",
     orderByColumn: "topping,updateTime"
   }
-  const res = await listConversationInfo(conversationQuery);
+  const res = await listConversationWithIsVistor(
+    {
+      ...conversationQuery,
+      chatToken: props.isVistor && chatToken != null ? chatToken : '',
+      createBy: props.isVistor ? 0 : null
+    } as ConversationInfoQuery,
+    props.isVistor
+  );
   conversationList.value = res.rows
   topConversationNum.value = res.rows.filter(conversationItem => conversationItem.topping === true).length;
   loading.value = false
@@ -145,26 +166,13 @@ const chooseConversation = async (item: ConversationInfoVO) => {
   currConversationId.value = item.id as string
 }
 
-watch(() => props.propAppId, () => {
+watch(() => props.propAppId, async () => {
   if (props.propAppId) {
     currAppId.value = props.propAppId;
-    initConversationList();
-  }
-}, {immediate: true});
-
-
-watch(() => appCode, async () => {
-  if (appCode) {
-    let res = await listApp({
-      code: String(appCode),
-      pageNum: 1,
-      pageSize: 10
-    });
-    currAppId.value = res.rows[0].id;
-    currAppName.value = res.rows[0].appName;
+    let res = await getApp(currAppId.value);
+    currApp.value = res.data;
     await initConversationList();
   }
-
 }, {immediate: true});
 
 function handleTopPost(conversationId: number | string, isTopping: boolean) {

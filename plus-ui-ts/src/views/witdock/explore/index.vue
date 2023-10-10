@@ -13,7 +13,7 @@
         </el-menu>
       </el-col>
       <el-col :span="20">
-          <chat-card style="height: 600px" :prop-app-id="currentAppId"></chat-card>
+          <chat-card style="height: 600px" :is-user="false" :prop-app-id="currentAppId"/>
       </el-col>
     </el-row>
 

@@ -23,6 +23,10 @@ public interface IConversationInfoService {
     ConversationInfoVo queryById(Long id);
 
     /**
+     * 查询用户列表
+     */
+    TableDataInfo<ConversationInfoVo> queryUserPageList(ConversationInfoBo bo, PageQuery pageQuery);
+    /**
      * 查询会话列表
      */
     TableDataInfo<ConversationInfoVo> queryPageList(ConversationInfoBo bo, PageQuery pageQuery);

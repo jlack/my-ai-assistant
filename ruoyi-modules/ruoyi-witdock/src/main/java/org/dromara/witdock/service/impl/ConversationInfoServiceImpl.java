@@ -41,6 +41,18 @@ public class ConversationInfoServiceImpl implements IConversationInfoService {
         return baseMapper.selectVoById(id);
     }
 
+    @Override
+    public TableDataInfo<ConversationInfoVo> queryUserPageList(ConversationInfoBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<ConversationInfo> lqw = buildQueryWrapper(bo);
+        lqw.ne(bo.getChatToken() != null, ConversationInfo::getChatToken, bo.getChatToken());
+        lqw.isNull(bo.getChatToken() == null, ConversationInfo::getChatToken);
+        Page<ConversationInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        for (ConversationInfoVo vo : result.getRecords()) {
+            vo.setMsgNum(msgInfoMapper.countMsgNumByConversationId(vo.getId()));
+        }
+        return TableDataInfo.build(result);
+    }
+
     /**
      * 查询会话列表
      */
@@ -70,6 +82,7 @@ public class ConversationInfoServiceImpl implements IConversationInfoService {
         lqw.like(StringUtils.isNotBlank(bo.getConversationTitle()), ConversationInfo::getConversationTitle, bo.getConversationTitle());
         lqw.eq(bo.getUserId() != null, ConversationInfo::getUserId, bo.getUserId());
         lqw.eq(bo.getTopping() != null, ConversationInfo::getTopping, bo.getTopping());
+        lqw.eq(bo.getChatToken() != null, ConversationInfo::getChatToken, bo.getChatToken());
         lqw.between(params.get("beginCreateTime") != null && params.get("endCreateTime") != null,
             ConversationInfo::getCreateTime ,params.get("beginCreateTime"), params.get("endCreateTime"));
         return lqw;

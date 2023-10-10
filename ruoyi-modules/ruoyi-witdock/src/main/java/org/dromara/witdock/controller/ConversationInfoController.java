@@ -2,10 +2,17 @@ package org.dromara.witdock.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.dao.SaTokenDao;
+import cn.dev33.satoken.session.SaSession;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.core.domain.model.LoginUser;
+import org.dromara.common.core.utils.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -46,6 +53,20 @@ public class ConversationInfoController extends BaseController {
     }
 
     /**
+     * 查询会话列表
+     */
+    @SaCheckPermission("witdock:conversationInfo:list")
+    @GetMapping("/listWithCreateBy")
+    public TableDataInfo<ConversationInfoVo> listWithCreateBy(ConversationInfoBo bo, PageQuery pageQuery) {
+        // 不是空代表不是0, 即不是游客, 是用户
+        if (StringUtils.isEmpty(bo.getChatToken())) {
+           return conversationInfoService.queryUserPageList(bo, pageQuery);
+        } else {
+            return conversationInfoService.queryPageList(bo, pageQuery);
+        }
+    }
+
+    /**
      * 导出会话列表
      */
     @SaCheckPermission("witdock:conversationInfo:export")
@@ -56,6 +77,7 @@ public class ConversationInfoController extends BaseController {
         ExcelUtil.exportExcel(list, "会话", ConversationInfoVo.class, response);
     }
 
+
     /**
      * 获取会话详细信息
      *
@@ -64,7 +86,7 @@ public class ConversationInfoController extends BaseController {
     @SaCheckPermission("witdock:conversationInfo:query")
     @GetMapping("/{id}")
     public R<ConversationInfoVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+                                         @PathVariable Long id) {
         return R.ok(conversationInfoService.queryById(id));
     }
 
@@ -101,5 +123,16 @@ public class ConversationInfoController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(conversationInfoService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+    /**
+     * 生成会话token
+     */
+    @Log(title = "生成chatToken")
+    @RepeatSubmit()
+    @GetMapping("/genChatToken")
+    public R<String> genChatToken() {
+        String chatToken = IdUtil.fastSimpleUUID();
+        return R.ok("生成chatToken成功", chatToken);
     }
 }

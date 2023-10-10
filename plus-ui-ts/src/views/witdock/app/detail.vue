@@ -63,8 +63,18 @@
                 </template>
               </el-input>
               <el-row class="mt10">
-                <el-button type="primary" plain @click="handlePreview()"><el-icon class="mr5"><Position /></el-icon>预览</el-button>
-                <el-button type="primary" plain><el-icon class="mr5"><Tools /></el-icon>设置</el-button>
+                <el-button type="primary" plain @click="handlePreview()">
+                  <el-icon class="mr5">
+                    <Position/>
+                  </el-icon>
+                  预览
+                </el-button>
+                <el-button type="primary" plain>
+                  <el-icon class="mr5">
+                    <Tools/>
+                  </el-icon>
+                  设置
+                </el-button>
               </el-row>
             </el-card>
           </el-col>
@@ -89,8 +99,18 @@
                 </template>
               </el-input>
               <el-row class="mt10">
-                <el-button type="primary" plain><el-icon class="mr5"><Key /></el-icon>API 密钥</el-button>
-                <el-button type="primary" plain><el-icon class="mr5"><Document /></el-icon>查阅API文档</el-button>
+                <el-button type="primary" plain>
+                  <el-icon class="mr5">
+                    <Key/>
+                  </el-icon>
+                  API 密钥
+                </el-button>
+                <el-button type="primary" plain>
+                  <el-icon class="mr5">
+                    <Document/>
+                  </el-icon>
+                  查阅API文档
+                </el-button>
               </el-row>
 
             </el-card>
@@ -121,7 +141,7 @@ import useClipboard from 'vue-clipboard3';
 
 const {proxy} = getCurrentInstance() as ComponentInternalInstance
 const router = useRouter();
-const { toClipboard } = useClipboard()
+const {toClipboard} = useClipboard()
 const activeName = ref('first')
 const id = (useRoute().params.id || 0) as string;
 const app = ref<AppVO>({
@@ -138,8 +158,7 @@ const appUrlRef = ref();
 const visitUrl = ref('');
 
 function handlePreview() {
-  // router.push("/app/preview/" + app.value.code);
-  router.push("/chatCard/" + app.value.code);
+  router.push("/chatPage/" + app.value.code);
 }
 
 async function copyVisitUrl() {
@@ -154,7 +173,7 @@ async function copyVisitUrl() {
 const resetUrl = async (app: AppVO) => {
   await proxy?.$modal.confirm('确认要重置URL吗?');
   const res = await resetCode(app.id)
-  init()
+  await init()
   proxy?.$modal.msgSuccess(res.msg)
 }
 
@@ -197,7 +216,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 const init = async () => {
   const res = await getApp(id)
   app.value = res.data;
-  visitUrl.value = 'https://witdock.manascloud.com/chat/'+app.value.code;
+  visitUrl.value = 'https://witdock.manascloud.com/chatPage/' + app.value.code;
 }
 init()
 </script>

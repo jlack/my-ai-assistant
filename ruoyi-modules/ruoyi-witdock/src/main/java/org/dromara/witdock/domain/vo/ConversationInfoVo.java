@@ -43,6 +43,11 @@ public class ConversationInfoVo implements Serializable {
     private Long appId;
 
     /**
+     * 会话token
+     */
+    private String chatToken;
+
+    /**
      * 会话标题
      */
     @ExcelProperty(value = "会话标题")
