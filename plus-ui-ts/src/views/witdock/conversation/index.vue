@@ -116,7 +116,7 @@ import {ConversationInfoVO, ConversationInfoQuery, ConversationInfoForm} from '@
 import {
   addConversationInfo, delConversationInfo,
   getConversationInfo,
-  listConversationInfo, listConversationWithIsVistor,
+  listConversationInfo,
   updateConversationInfo
 } from "@/api/witdock/conversationInfo/api";
 
@@ -184,7 +184,7 @@ const {queryParams, form, rules} = toRefs(data);
 /** 查询会话列表 */
 const getList = async () => {
   loading.value = true;
-  const res = await listConversationWithIsVistor(queryParams.value);
+  const res = await listConversationInfo(queryParams.value);
   conversationInfoList.value = res.rows;
   total.value = res.total;
   loading.value = false;

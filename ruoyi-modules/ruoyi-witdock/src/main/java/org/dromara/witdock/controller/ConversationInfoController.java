@@ -49,22 +49,15 @@ public class ConversationInfoController extends BaseController {
     @SaCheckPermission("witdock:conversationInfo:list")
     @GetMapping("/list")
     public TableDataInfo<ConversationInfoVo> list(ConversationInfoBo bo, PageQuery pageQuery) {
-        return conversationInfoService.queryPageList(bo, pageQuery);
-    }
-
-    /**
-     * 查询会话列表
-     */
-    @SaCheckPermission("witdock:conversationInfo:list")
-    @GetMapping("/listWithCreateBy")
-    public TableDataInfo<ConversationInfoVo> listWithCreateBy(ConversationInfoBo bo, PageQuery pageQuery) {
-        // 不是空代表不是0, 即不是游客, 是用户
+        // 没有chatToken代表是用户, 反之是游客
         if (StringUtils.isEmpty(bo.getChatToken())) {
-           return conversationInfoService.queryUserPageList(bo, pageQuery);
+            bo.setCreateBy(0L);
+            return conversationInfoService.queryUserPageList(bo, pageQuery);
         } else {
             return conversationInfoService.queryPageList(bo, pageQuery);
         }
     }
+
 
     /**
      * 导出会话列表

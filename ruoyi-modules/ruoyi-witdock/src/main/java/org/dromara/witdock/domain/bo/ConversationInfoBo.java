@@ -58,5 +58,5 @@ public class ConversationInfoBo extends BaseEntity {
      */
     private Boolean isDeleted;
 
-
+    private Boolean isVistor;
 }

@@ -16,17 +16,6 @@ export const listConversationInfo = (query?: ConversationInfoQuery): AxiosPromis
   });
 };
 
-export const listConversationWithIsVistor = (query: any, isVistor: boolean = false): AxiosPromise<ConversationInfoVO[]> => {
-  if (isVistor) {
-    query.createby = 0;
-  }
-  return request({
-    url: '/witdock/conversationInfo/listWithCreateBy',
-    method: 'get',
-    params: query
-  });
-};
-
 /**
  * 查询非游客创建的会话列表
  * @param query

@@ -85,7 +85,7 @@ import {
 import {
   addConversationInfo,
   delConversationInfo,
-  listConversationInfo, listConversationWithIsVistor,
+  listConversationInfo,
   updateConversationInfo
 } from "@/api/witdock/conversationInfo/api";
 import Chat from "@/views/witdock/chat.vue";
@@ -148,13 +148,12 @@ const initConversationList = async () => {
     isAsc: "desc,desc",
     orderByColumn: "topping,updateTime"
   }
-  const res = await listConversationWithIsVistor(
+  const res = await listConversationInfo(
     {
       ...conversationQuery,
       chatToken: props.isVistor && chatToken != null ? chatToken : '',
       createBy: props.isVistor ? 0 : null
     } as ConversationInfoQuery,
-    props.isVistor
   );
   conversationList.value = res.rows
   topConversationNum.value = res.rows.filter(conversationItem => conversationItem.topping === true).length;
