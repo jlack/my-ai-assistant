@@ -18,7 +18,7 @@
           </el-col>
 
           <el-col :span="4">
-            <el-button style="float: right" type="primary" @click="handleUpload">上传文件</el-button>
+            <el-button style="float: right" type="primary" @click="handleUpload" v-hasPermi="['witdock:doc:add']">上传文件</el-button>
           </el-col>
         </el-row>
 
@@ -183,7 +183,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 }
 
 const handleUpload = () => {
-  router.push("/dataset/add/" + datasetId)
+  router.push("/dataset/appendFile/" + datasetId)
 }
 
 /** 归档按钮操作 */
