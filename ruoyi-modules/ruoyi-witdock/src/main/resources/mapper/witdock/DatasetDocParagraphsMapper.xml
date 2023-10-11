@@ -4,4 +4,15 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dromara.witdock.mapper.DatasetDocParagraphsMapper">
 
+    <select id="listByConversationId" resultType="org.dromara.witdock.domain.DatasetDocParagraphs">
+
+        SELECT dp.*
+        FROM dataset_doc_paragraphs dp
+                 JOIN dataset_doc dd ON dp.doc_id = dd.id
+                 JOIN app_dataset ad ON dd.dataset_id = ad.dataset_id
+                 JOIN conversation_info ci ON ad.app_id = ci.app_id
+        WHERE ci.id = #{conversation_id};
+
+
+    </select>
 </mapper>

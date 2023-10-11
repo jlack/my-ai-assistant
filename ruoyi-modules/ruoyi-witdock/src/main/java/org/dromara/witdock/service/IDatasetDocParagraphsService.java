@@ -37,6 +37,8 @@ public interface IDatasetDocParagraphsService {
      */
     Boolean insertByBo(DatasetDocParagraphsBo bo);
 
+    List<DatasetDocParagraphs> listByDatesetIds(List<Long> ids);
+
     /**
      * 修改文档段落表
      */
