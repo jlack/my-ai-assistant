@@ -1,5 +1,8 @@
 package org.dromara.witdock.service.impl;
 
+import cn.hutool.core.util.ArrayUtil;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import jodd.util.ArraysUtil;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -9,6 +12,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.system.domain.SysDept;
+import org.dromara.witdock.domain.DatasetDoc;
+import org.dromara.witdock.enums.DatasetDocParagraphsStatusEnum;
+import org.dromara.witdock.mapper.DatasetDocMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.DatasetDocParagraphsBo;
 import org.dromara.witdock.domain.vo.DatasetDocParagraphsVo;
@@ -16,9 +22,11 @@ import org.dromara.witdock.domain.DatasetDocParagraphs;
 import org.dromara.witdock.mapper.DatasetDocParagraphsMapper;
 import org.dromara.witdock.service.IDatasetDocParagraphsService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * 文档段落表Service业务层处理
@@ -31,12 +39,13 @@ import java.util.Collection;
 public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsService {
 
     private final DatasetDocParagraphsMapper baseMapper;
+    private final DatasetDocMapper datasetDocMapper;
 
     /**
      * 查询文档段落表
      */
     @Override
-    public DatasetDocParagraphsVo queryById(Long id){
+    public DatasetDocParagraphsVo queryById(Long id) {
         return baseMapper.selectVoById(id);
     }
 
@@ -86,6 +95,24 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
         return flag;
     }
 
+    @Override
+    public List<DatasetDocParagraphs> listByDatesetIds(List<Long> ids) {
+        List<DatasetDoc> list = new LambdaQueryChainWrapper<>(datasetDocMapper)
+            .select(DatasetDoc::getId)
+            .in(DatasetDoc::getDatasetId, ids)
+            .list();
+        List<Long> DatasetDocIds = list.stream().map(DatasetDoc::getId).collect(Collectors.toList());
+        if (ArrayUtil.isNotEmpty(DatasetDocIds)) {
+            List<DatasetDocParagraphs> paragraphsList = new LambdaQueryChainWrapper<>(baseMapper)
+                .in(DatasetDocParagraphs::getDocId, ids)
+                .eq(DatasetDocParagraphs::getStatus, DatasetDocParagraphsStatusEnum.ACTIVE)
+                .list();
+            return paragraphsList;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     /**
      * 修改文档段落表
      */
@@ -99,7 +126,7 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(DatasetDocParagraphs entity){
+    private void validEntityBeforeSave(DatasetDocParagraphs entity) {
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -108,7 +135,7 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;

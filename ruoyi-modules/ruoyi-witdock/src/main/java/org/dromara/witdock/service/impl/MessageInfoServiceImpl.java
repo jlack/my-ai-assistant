@@ -7,6 +7,18 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.model.input.Prompt;
+import dev.langchain4j.model.input.PromptTemplate;
+import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.store.embedding.EmbeddingMatch;
+import dev.langchain4j.store.embedding.EmbeddingStore;
+import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import org.dromara.common.core.constant.CacheConstants;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -20,6 +32,10 @@ import org.dromara.common.redis.utils.CacheUtils;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.websocket.service.MsgService;
 import org.dromara.common.websocket.utils.WebSocketUtils;
+import org.dromara.langchain4j.MyCLLModel;
+import org.dromara.witdock.domain.DatasetDocParagraphs;
+import org.dromara.witdock.mapper.AppInfoMapper;
+import org.dromara.witdock.mapper.DatasetDocParagraphsMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.MessageInfoBo;
 import org.dromara.witdock.domain.vo.MessageInfoVo;
@@ -30,9 +46,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * 对话消息Service业务层处理
@@ -45,6 +64,8 @@ import java.util.Collection;
 public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
 
     private final MessageInfoMapper baseMapper;
+    private final AppInfoMapper appInfoMapper;
+    private final DatasetDocParagraphsMapper datasetDocParagraphsMapper;
 
     /**
      * 查询对话消息
@@ -126,10 +147,67 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         return baseMapper.deleteBatchIds(ids) > 0;
     }
 
+    /**
+     * 调用LLM回答问题
+     *
+     * @return
+     */
+    public String answer(MessageInfoBo messageInfoBo) {
+        //根据消息查所属的会话，再根据会话查所属的APP，再根据APP查包含的数据集文档段落，再请求LLM
+        List<DatasetDocParagraphs> docParagraphs = datasetDocParagraphsMapper.listByConversationId(messageInfoBo.getConversationId());
+
+        //使用嵌入模型 mbed 段（将它们转换为表示含义的向量）
+        EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
+        EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
+
+        for (DatasetDocParagraphs item : docParagraphs) {
+            //将嵌入存储到嵌入存储中以供进一步搜索检索
+            TextSegment segment1 = TextSegment.from(item.getContent());
+            Embedding embedding1 = embeddingModel.embed(segment1).content();
+            embeddingStore.add(embedding1, segment1);
+        }
+
+        String question = messageInfoBo.getQuery();
+
+        // 嵌入问题
+        Embedding questionEmbedding = embeddingModel.embed(question).content();
+        // 通过语义相似度在嵌入存储中查找相关嵌入
+        // 您可以使用下面的参数来找到适合您的特定用例的最佳位置
+        int maxResults = 3;
+        double minScore = 0.7;
+        List<EmbeddingMatch<TextSegment>> relevantEmbeddings
+            = embeddingStore.findRelevant(questionEmbedding, maxResults, minScore);
+
+        //为包含问题和相关嵌入的模型创建提示
+        PromptTemplate promptTemplate = PromptTemplate.from(
+            "Answer the following question to the best of your ability:\n"
+                + "\n"
+                + "Question:\n"
+                + "{{question}}\n"
+                + "\n"
+                + "Base your answer on the following information:\n"
+                + "{{information}}");
+
+        String information = relevantEmbeddings.stream()
+            .map(match -> match.embedded().text())
+            .collect(joining("\n\n"));
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("question", question);
+        variables.put("information", information);
+
+        Prompt prompt = promptTemplate.apply(variables);
+
+        // 将提示发送到 OpenAI 聊天模型
+        ChatLanguageModel chatModel = MyCLLModel.getOpenAI();
+        AiMessage aiMessage = chatModel.generate(prompt.toUserMessage()).content();
+        //答案
+        return aiMessage.text();
+    }
+
     @Override
     public void addMsg(WebSocketSession session, TextMessage msg, Long userId) {
 
-        System.out.println(session.toString());
         MessageInfoBo messageInfoBo = JSONUtil.toBean(msg.getPayload(), MessageInfoBo.class);
         messageInfoBo.setCreateBy(userId);
         //把问题保存到数据库，先返回给前端，再进行回答
@@ -141,8 +219,10 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
             //异步执行
             ThreadUtil.execAsync(() -> {
                 //休眠2秒钟模拟调用chatGpt
-                ThreadUtil.sleep(2000);
-                messageInfoBo.setAnswer("自动回答" + IdUtil.simpleUUID());
+//                ThreadUtil.sleep(2000);
+//                messageInfoBo.setAnswer("自动回答" + IdUtil.simpleUUID());
+
+                messageInfoBo.setAnswer(answer(messageInfoBo));
                 messageInfoBo.setReDatetime(DateUtil.date());
                 //发送回答内容
                 MessageInfoVo vo = BeanUtil.toBean(messageInfoBo, MessageInfoVo.class);
