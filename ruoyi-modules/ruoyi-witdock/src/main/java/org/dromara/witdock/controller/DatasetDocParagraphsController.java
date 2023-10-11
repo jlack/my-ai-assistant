@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.witdock.domain.bo.DocParaSplitBo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -101,5 +102,18 @@ public class DatasetDocParagraphsController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(datasetDocParagraphsService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+
+    /**
+     * doc分段后批量新增段落
+     */
+    @SaCheckPermission("witdock:docParagraphs:add")
+    @Log(title = "文档段落表", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/splitDocToPara")
+    public R<Void> splitDocToPara(@RequestBody DocParaSplitBo docParaSplitBo) throws Exception {
+        datasetDocParagraphsService.insertSplitedParas(docParaSplitBo);
+        return R.ok("分段成功");
     }
 }

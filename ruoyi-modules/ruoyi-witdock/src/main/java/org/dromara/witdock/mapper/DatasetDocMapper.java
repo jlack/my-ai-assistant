@@ -15,4 +15,7 @@ public interface DatasetDocMapper extends BaseMapperPlus<DatasetDoc, DatasetDocV
 
     @Select("select sum(char_num) from dataset_doc where dataset_id = #{datasetId}")
     Integer countCharNumByDatasetId(Long datasetId);
+
+    @Select("select * from dataset_doc where oss_id  = #{ossId}")
+    DatasetDocVo selectVoByOssId(Long ossId);
 }

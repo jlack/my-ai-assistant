@@ -104,3 +104,15 @@ export enum ParaStatus {
   /** 未激活 */
   INACTIVE = 'inactive'
 }
+
+export interface addSplitedParasBo {
+  /**
+   * 已上传的待分段的文件的ossId
+   */
+  ossIds: string,
+
+  /**
+   * 分段最大尺寸，按token数计算
+   */
+  maxSegmentSizeInTokens: number
+}

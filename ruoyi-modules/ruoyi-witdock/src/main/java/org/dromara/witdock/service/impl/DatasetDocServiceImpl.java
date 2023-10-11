@@ -48,6 +48,14 @@ public class DatasetDocServiceImpl implements IDatasetDocService {
     }
 
     /**
+     * 查询数据集文档
+     */
+    @Override
+    public DatasetDocVo queryByOssId(Long ossId){
+        return baseMapper.selectVoByOssId(ossId);
+    }
+
+    /**
      * 查询数据集文档列表
      */
     @Override

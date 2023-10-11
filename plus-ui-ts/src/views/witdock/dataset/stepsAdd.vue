@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-
+    <el-button @click="splitTest">split-test</el-button>
     <el-steps :active="active" finish-status="success">
       <el-step title="选择数据源"/>
       <el-step title="文本分段与清洗"/>
@@ -39,7 +39,8 @@ import {ref} from "vue";
 import {AddDocsBo} from "@/api/witdock/datasetDoc/type";
 import {DatasetForm} from "@/api/witdock/dataset/types";
 import {addDataset, addDatasetWithDocs} from "@/api/witdock/dataset";
-import {addDocs} from "@/api/witdock/datasetDoc/api";
+import {addDocs, splitDocToPara} from "@/api/witdock/datasetDoc/api";
+import {showResultMsg} from "@/utils/message";
 
 
 const props = defineProps({
@@ -50,6 +51,7 @@ const props = defineProps({
 })
 
 const router = useRouter();
+const maxSegSize = ref(0);
 const docForm = ref<Partial<AddDocsBo>>({});
 const dataSetForm = ref<Partial<DatasetForm>>({});
 const active = ref(0)
@@ -67,10 +69,24 @@ const pre = () => {
 
 function addDS() {
   addDataset(dataSetForm.value).then((res) => {
-    if (res.code === 200) {
-      console.log("新增dataset成功");
-    }
+    showResultMsg(res, "新增dataset");
   })
+}
+
+async function handleDocSplit() {
+  let res = await splitDocToPara({
+    ossIds: docForm.value.ossIds as string,
+    maxSegmentSizeInTokens: maxSegSize.value
+  });
+  console.log(res.msg);
+}
+
+async function splitTest() {
+  let res = await splitDocToPara({
+    ossIds: '1712023518775406594',
+    maxSegmentSizeInTokens: maxSegSize.value
+  });
+  console.log(res.msg);
 }
 
 async function handleComplete() {
@@ -89,7 +105,7 @@ async function handleComplete() {
             }
           })
           .finally(() => buttonLoading.value = false);
-
+        await handleDocSplit();
       } else {
         ElMessage.error("请填写必要数据")
       }

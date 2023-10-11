@@ -30,6 +30,11 @@ public interface IDatasetDocService {
     DatasetDocVo queryById(Long id);
 
     /**
+     * 查询数据集文档
+     */
+    DatasetDocVo queryByOssId(Long ossId);
+
+    /**
      * 查询数据集文档列表
      */
     TableDataInfo<DatasetDocVo> queryPageList(DatasetDocBo bo, PageQuery pageQuery);

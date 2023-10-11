@@ -15,8 +15,8 @@ import java.util.List;
  * @date 2023-10-07
  */
 public interface DatasetDocParagraphsMapper extends BaseMapperPlus<DatasetDocParagraphs, DatasetDocParagraphsVo> {
-    //    查出sno字段最大值，返回最大值+1值
-    @Select("SELECT MAX(sno) FROM dataset_doc_paragraphs WHERE doc_id = #{docId}")
+//    查出sno字段最大值，返回最大值+1值
+    @Select("SELECT IFNULL(MAX(sno), 0) FROM dataset_doc_paragraphs WHERE doc_id = #{docId} and is_deleted = '0'")
     Integer getSnoMax(@Param("docId") Long docId);
 
     List<DatasetDocParagraphs> listByConversationId(Long conversationId);

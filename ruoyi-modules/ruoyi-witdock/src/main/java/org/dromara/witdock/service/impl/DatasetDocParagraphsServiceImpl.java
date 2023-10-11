@@ -1,5 +1,15 @@
 package org.dromara.witdock.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.FileSystemDocumentLoader;
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.segment.TextSegment;
+import org.apache.commons.lang3.ArrayUtils;
 import cn.hutool.core.util.ArrayUtil;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import jodd.util.ArraysUtil;
@@ -11,7 +21,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.oss.core.OssClient;
+import org.dromara.common.oss.factory.OssFactory;
 import org.dromara.system.domain.SysDept;
+import org.dromara.system.domain.vo.SysOssVo;
+import org.dromara.system.service.ISysOssService;
+import org.dromara.witdock.domain.bo.DocParaSplitBo;
+import org.dromara.witdock.service.IDatasetDocService;
 import org.dromara.witdock.domain.DatasetDoc;
 import org.dromara.witdock.enums.DatasetDocParagraphsStatusEnum;
 import org.dromara.witdock.mapper.DatasetDocMapper;
@@ -22,6 +38,11 @@ import org.dromara.witdock.domain.DatasetDocParagraphs;
 import org.dromara.witdock.mapper.DatasetDocParagraphsMapper;
 import org.dromara.witdock.service.IDatasetDocParagraphsService;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +61,10 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
 
     private final DatasetDocParagraphsMapper baseMapper;
     private final DatasetDocMapper datasetDocMapper;
+
+    private final IDatasetDocService docService;
+
+    private final ISysOssService ossService;
 
     /**
      * 查询文档段落表
@@ -139,5 +164,61 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public void insertSplitedParas(DocParaSplitBo docParaSplitBo) {
+        String[] ossIdArr = StringUtils.split(docParaSplitBo.getOssIds(), ",");
+
+        Long[] ossIdLongArr = new Long[ossIdArr.length];
+
+        for (int i = 0; i < ossIdArr.length; i++) {
+            ossIdLongArr[i] = Long.parseLong(ossIdArr[i]);
+        }
+
+        List<Long> ossIdList = Arrays.asList(ossIdLongArr);
+
+        DocumentSplitter splitter = DocumentSplitters.recursive(
+            docParaSplitBo.getMaxSegmentSizeInTokens(),
+            0
+        );
+
+        List<SysOssVo> ossVoList = ossService.listByIds(ossIdList);
+
+
+
+        for (SysOssVo oss : ossVoList) {
+            OssClient storage = OssFactory.instance(oss.getService());
+            Map<String, Object> rawMetadata = storage.getObjectMetadata(oss.getUrl()).getRawMetadata();
+            Map<String, String> stringMap = new HashMap<>();
+            for (Map.Entry<String, Object> entry : rawMetadata.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue().toString();
+                stringMap.put(key, value);
+            }
+
+            InputStream inputStream = storage.getObjectContent(oss.getUrl());
+            String text = new BufferedReader(new InputStreamReader(inputStream))
+                .lines().collect(Collectors.joining(System.lineSeparator()));
+
+            Document document = new Document(text, new Metadata(stringMap));
+
+            List<TextSegment> segments = splitter.split(document);
+            List<DatasetDocParagraphs> paraList = new ArrayList<>();
+
+            Long docId = docService.queryByOssId(oss.getOssId()).getId();
+            Integer snoMax = baseMapper.getSnoMax(docId);
+            for (int i = 0; i < segments.size(); i++) {
+                DatasetDocParagraphs para = new DatasetDocParagraphs();
+                para.setContent(segments.get(i).text());
+                para.setDocId(docId);
+                para.setSno(snoMax + i + 1);
+                para.setCharNum((long) segments.get(i).text().length());
+                paraList.add(para);
+            }
+
+            baseMapper.insertBatch(paraList);
+        }
+
     }
 }

@@ -1,6 +1,9 @@
 package org.dromara.witdock.service;
 
+import dev.langchain4j.data.segment.TextSegment;
+import org.dromara.system.domain.vo.SysOssVo;
 import org.dromara.witdock.domain.DatasetDocParagraphs;
+import org.dromara.witdock.domain.bo.DocParaSplitBo;
 import org.dromara.witdock.domain.vo.DatasetDocParagraphsVo;
 import org.dromara.witdock.domain.bo.DatasetDocParagraphsBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -48,4 +51,9 @@ public interface IDatasetDocParagraphsService {
      * 校验并批量删除文档段落表信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 批量新增文本段落
+     */
+    void insertSplitedParas(DocParaSplitBo docParaSplitBo);
 }

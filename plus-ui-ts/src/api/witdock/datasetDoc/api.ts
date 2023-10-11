@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import {DocVO, DocForm, DocQuery, AddDocsBo} from '@/api/witdock/datasetDoc/type';
+import {addSplitedParasBo} from "@/api/witdock/docParagraphs/types";
 
 /**
  * 查询数据集文档列表
@@ -10,7 +11,7 @@ import {DocVO, DocForm, DocQuery, AddDocsBo} from '@/api/witdock/datasetDoc/type
 
 export const listDoc = (query?: DocQuery): AxiosPromise<DocVO[]> => {
   return request({
-    url: '/witdock/doc/list',
+    url: '/witdock/docParagraphs/list',
     method: 'get',
     params: query
   });
@@ -81,3 +82,16 @@ export const delDoc = (id: string | number | Array<string | number>) => {
     method: 'delete'
   });
 };
+
+
+export const splitDocToPara = (data: addSplitedParasBo) => {
+  /* 默认分段尺寸1000tokens */
+  if (data.maxSegmentSizeInTokens || data.maxSegmentSizeInTokens === 0) {
+    data.maxSegmentSizeInTokens = 1000;
+  }
+  return request({
+    url: '/witdock/docParagraphs/splitDocToPara',
+    method: 'post',
+    data: data
+  });
+}
