@@ -13,6 +13,8 @@
       </el-button>
     </div>
     <div v-if="active==1">
+      {{maxSegSize}}
+      <el-input label="输入分段尺寸" v-model="maxSegSize"/>
       <el-button style="margin-top: 12px" @click="pre">上一步</el-button>
       <el-button style="margin-top: 12px" @click="next">下一步</el-button>
     </div>
@@ -76,7 +78,7 @@ function addDS() {
 async function handleDocSplit() {
   let res = await splitDocToPara({
     ossIds: docForm.value.ossIds as string,
-    maxSegmentSizeInTokens: maxSegSize.value
+    maxSegmentSizeInTokens: 200
   });
   console.log(res.msg);
 }
