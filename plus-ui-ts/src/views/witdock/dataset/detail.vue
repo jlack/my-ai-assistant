@@ -194,8 +194,8 @@ const handleArchive = async (row?: DocVO) => {
     id: id,
     status: 'archived'
   })
-  proxy?.$modal.msgSuccess("归档成功");
   await getList();
+  proxy?.$modal.msgSuccess("归档成功");
 }
 
 /** 取消归档按钮操作 */
@@ -206,8 +206,8 @@ const handleReArchive = async (row?: DocVO) => {
     id: id,
     status: 'inactive'
   })
-  proxy?.$modal.msgSuccess("取消归档成功");
   await getList();
+  proxy?.$modal.msgSuccess("取消归档成功");
 }
 
 /** 查看doc分段详情 */
