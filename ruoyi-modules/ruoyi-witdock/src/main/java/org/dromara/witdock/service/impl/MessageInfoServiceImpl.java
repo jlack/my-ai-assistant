@@ -159,6 +159,18 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         //使用嵌入模型 mbed 段（将它们转换为表示含义的向量）
         EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
         EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
+//        EmbeddingStore<TextSegment> embeddingStore = PineconeEmbeddingStore.builder()
+//            .apiKey("505fa1b8-d32d-4b4b-bee4-aa4a948ff167")
+//            .environment("us-west4-gcp-free")
+//            // Project ID can be found in the Pinecone url:
+//            // https://app.pinecone.io/organizations/{organization}/projects/{environment}:{projectId}/indexes
+//            .projectId("9bedf0a")
+//            // Make sure the dimensions of the Pinecone index match the dimensions of the embedding model
+//            // (384 for all-MiniLM-L6-v2, 1536 for text-embedding-ada-002, etc.)
+//            .index("langc")
+//            .build();
+
+
 
         for (DatasetDocParagraphs item : docParagraphs) {
             //将嵌入存储到嵌入存储中以供进一步搜索检索
@@ -166,6 +178,10 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
         }
+
+
+
+
 
         String question = messageInfoBo.getQuery();
 
@@ -177,15 +193,14 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         double minScore = 0.7;
         List<EmbeddingMatch<TextSegment>> relevantEmbeddings
             = embeddingStore.findRelevant(questionEmbedding, maxResults, minScore);
-
         //为包含问题和相关嵌入的模型创建提示
         PromptTemplate promptTemplate = PromptTemplate.from(
-            "Answer the following question to the best of your ability:\n"
+            "尽你所能回答以下问题:\n"
                 + "\n"
-                + "Question:\n"
+                + "问题:\n"
                 + "{{question}}\n"
                 + "\n"
-                + "Base your answer on the following information:\n"
+                + "如果以下信息中有答案你可以使用:\n"
                 + "{{information}}");
 
         String information = relevantEmbeddings.stream()

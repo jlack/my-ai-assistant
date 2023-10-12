@@ -123,7 +123,6 @@ const sendMessage = async () => {
   let form: MessageInfoForm = {
     conversationId: props.conversationId,
     query: newMessage.value,
-    wsType: 'chatMsg',
     msgLocalId: uuidv4()
   }
   msgInfoList.value.push(form as MessageInfoVO)
