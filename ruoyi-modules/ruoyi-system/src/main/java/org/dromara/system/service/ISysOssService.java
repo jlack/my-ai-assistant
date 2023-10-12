@@ -1,9 +1,7 @@
 package org.dromara.system.service;
 
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.dromara.common.core.utils.StringUtils;
+
+import dev.langchain4j.data.document.Document;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.system.domain.bo.SysOssBo;
@@ -11,8 +9,8 @@ import org.dromara.system.domain.vo.SysOssVo;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,7 +35,9 @@ public interface ISysOssService {
 
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
-    public Long calculateCharNum(Long ossId);
+    Long calculateCharNum(Long ossId);
 
-    public Long getFileSize(Long ossId);
+    Long getFileSize(Long ossId);
+
+    Document getDocumentById(Long ossId);
 }

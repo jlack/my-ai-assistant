@@ -83,6 +83,16 @@ export const delDoc = (id: string | number | Array<string | number>) => {
   });
 };
 
+export const getDocSegResult = (data: addSplitedParasBo) => {
+  if (!data.maxSegmentSizeInTokens || data.maxSegmentSizeInTokens === 0) {
+    data.maxSegmentSizeInTokens = 400;
+  }
+  return request({
+    url: '/witdock/docParagraphs/getDocSegResult',
+    method: 'post',
+    data: data
+  });
+}
 
 export const splitDocToPara = (data: addSplitedParasBo) => {
   if (!data.maxSegmentSizeInTokens || data.maxSegmentSizeInTokens === 0) {

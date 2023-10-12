@@ -1,5 +1,6 @@
 package org.dromara.witdock.service;
 
+import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.segment.TextSegment;
 import org.dromara.system.domain.vo.SysOssVo;
 import org.dromara.witdock.domain.DatasetDocParagraphs;
@@ -56,4 +57,9 @@ public interface IDatasetDocParagraphsService {
      * 批量新增文本段落
      */
     void insertSplitedParas(DocParaSplitBo docParaSplitBo);
+
+    List<TextSegment> getSegsByOssId(Long ossId, DocumentSplitter splitter);
+
+
+   List<Long> getIdLongList(String ossIds);
 }

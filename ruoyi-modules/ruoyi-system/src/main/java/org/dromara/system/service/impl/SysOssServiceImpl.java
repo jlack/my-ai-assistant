@@ -4,6 +4,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import dev.langchain4j.data.document.Metadata;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -45,9 +46,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import dev.langchain4j.data.document.Document;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 文件上传 服务层实现
@@ -285,5 +288,24 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
             System.out.println(e.getMessage());
         }
         return size;
+    }
+
+    @Override
+    public Document getDocumentById(Long ossId) {
+        SysOssVo oss = getById(ossId);
+        OssClient storage = OssFactory.instance(oss.getService());
+        InputStream inputStream = storage.getObjectContent(oss.getUrl());
+        Map<String, Object> rawMetadata = storage.getObjectMetadata(oss.getUrl()).getRawMetadata();
+        Map<String, String> stringMap = new HashMap<>();
+        for (Map.Entry<String, Object> entry : rawMetadata.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue().toString();
+            stringMap.put(key, value);
+        }
+        String text = new BufferedReader(new InputStreamReader(inputStream))
+            .lines().collect(Collectors.joining(System.lineSeparator()));
+
+        Document document = new Document(text, new Metadata(stringMap));
+        return document;
     }
 }

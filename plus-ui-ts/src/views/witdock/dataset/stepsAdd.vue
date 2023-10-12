@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <el-button @click="splitTest">split-test</el-button>
     <el-steps :active="active" finish-status="success">
       <el-step title="选择数据源"/>
       <el-step title="文本分段与清洗"/>
       <el-step title="处理与完成"/>
     </el-steps>
+    <br>
     <div v-if="active==0">
       <file-upload :fileType="['txt','html','md','pdf','xlsx','csv','docx']" v-model="docForm.ossIds"/>
       <el-button :disabled="docForm.ossIds === undefined || docForm.ossIds.length === 0"
@@ -13,8 +13,41 @@
       </el-button>
     </div>
     <div v-if="active==1">
-      {{maxSegSize}}
-      <el-input label="输入分段尺寸" v-model="maxSegSize"/>
+      <el-row class="mt10" :gutter="20">
+        <el-col :span="16">
+          <!--        {{'segResultList : ' + segResult}}-->
+          <h2>分段参数</h2>
+          <label>分段尺寸</label>
+          <el-input style="width: 40%;" class="ml10" placeholder="请输入输入分段尺寸token值" v-model="maxSegSize"/>
+          <el-button type="primary" plain class="ml20" @click="previewSegResult">预览分段结果</el-button>
+
+          <el-divider></el-divider>
+          <div class="mt20">
+            <h2>待处理的文件</h2>
+            <el-table :data="ossList" stripe>
+              <el-table-column label="序号" width="70" type="index" align="center">
+                <template #default="scope">
+                  <span>{{ scope.$index + 1 }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="originalName" label="文件名" width="250" align="center"/>
+            </el-table>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <h2>分段预览</h2>
+          <div class="para-card-container">
+            <template v-for="(paragraphs, index) in segResult" :key="index">
+              <el-card class="mt10" v-for="(content, contentIndex) in paragraphs" :key="contentIndex">
+                <template #header>{{ '#' + (contentIndex + 1) }}</template>
+                {{ content }}
+              </el-card>
+              <el-divider>文件分界线</el-divider>
+            </template>
+          </div>
+        </el-col>
+      </el-row>
+
       <el-button style="margin-top: 12px" @click="pre">上一步</el-button>
       <el-button style="margin-top: 12px" @click="next">下一步</el-button>
     </div>
@@ -41,8 +74,10 @@ import {ref} from "vue";
 import {AddDocsBo} from "@/api/witdock/datasetDoc/type";
 import {DatasetForm} from "@/api/witdock/dataset/types";
 import {addDataset, addDatasetWithDocs} from "@/api/witdock/dataset";
-import {addDocs, splitDocToPara} from "@/api/witdock/datasetDoc/api";
+import {addDocs, getDocSegResult, splitDocToPara} from "@/api/witdock/datasetDoc/api";
 import {showResultMsg} from "@/utils/message";
+import {listByIds} from "@/api/system/oss";
+import {OssVO} from "@/api/system/oss/types";
 
 
 const props = defineProps({
@@ -59,6 +94,8 @@ const dataSetForm = ref<Partial<DatasetForm>>({});
 const active = ref(0)
 const buttonLoading = ref(false);
 const datasetFormRef = ref<ElFormInstance>();
+const segResult = ref([]);
+const ossList = ref<OssVO[]>([]);
 
 const next = () => {
   if (active.value++ > 2)
@@ -78,21 +115,21 @@ function addDS() {
 async function handleDocSplit() {
   let res = await splitDocToPara({
     ossIds: docForm.value.ossIds as string,
-    maxSegmentSizeInTokens: 200
-  });
-  console.log(res.msg);
-}
-
-async function splitTest() {
-  let res = await splitDocToPara({
-    ossIds: '1712023518775406594',
     maxSegmentSizeInTokens: maxSegSize.value
   });
-  console.log(res.msg);
+}
+
+async function previewSegResult() {
+  let ossListRes = await listByIds(docForm.value.ossIds as string);
+  let res = await getDocSegResult({
+    ossIds: docForm.value.ossIds as string,
+    maxSegmentSizeInTokens: maxSegSize.value
+  })
+  segResult.value = res.data;
+  ossList.value = ossListRes.data;
 }
 
 async function handleComplete() {
-  console.log("call handleCom" + props.datasetId)
   if (!props.datasetId) {
     datasetFormRef.value?.validate(async (valid: boolean) => {
       if (valid) {
@@ -107,7 +144,7 @@ async function handleComplete() {
             }
           })
           .finally(() => buttonLoading.value = false);
-        await handleDocSplit();
+
       } else {
         ElMessage.error("请填写必要数据")
       }
@@ -124,7 +161,8 @@ async function handleComplete() {
       })
       .finally(() => buttonLoading.value = false);
   }
-
+  // 上传doc后添加对应doc的分段
+  await handleDocSplit();
 }
 
 const rules = ref({
@@ -146,5 +184,8 @@ const rules = ref({
 </script>
 
 <style scoped>
-
+.para-card-container {
+  height: 500px; /* 替换为你希望的固定高度 */
+  overflow-y: auto;
+}
 </style>

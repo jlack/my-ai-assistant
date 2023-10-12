@@ -1,7 +1,13 @@
 package org.dromara.witdock.controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import cn.hutool.core.collection.CollectionUtil;
+import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.segment.TextSegment;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -22,6 +28,8 @@ import org.dromara.witdock.domain.vo.DatasetDocParagraphsVo;
 import org.dromara.witdock.domain.bo.DatasetDocParagraphsBo;
 import org.dromara.witdock.service.IDatasetDocParagraphsService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+
+import javax.swing.text.Segment;
 
 /**
  * 文档段落表
@@ -115,5 +123,28 @@ public class DatasetDocParagraphsController extends BaseController {
     public R<Void> splitDocToPara(@RequestBody DocParaSplitBo docParaSplitBo) throws Exception {
         datasetDocParagraphsService.insertSplitedParas(docParaSplitBo);
         return R.ok("分段成功");
+    }
+
+    /**
+     * 返回doc分段预览
+     */
+    @SaCheckPermission("witdock:docParagraphs:add")
+    @Log(title = "文档段落表", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/getDocSegResult")
+    public R<List<List<String>>> getDocSegResult(@RequestBody DocParaSplitBo docParaSplitBo) throws Exception {
+        List<List<String>> result = new ArrayList<>();
+        DocumentSplitter splitter = DocumentSplitters.recursive(
+            docParaSplitBo.getMaxSegmentSizeInTokens(),
+            0
+        );
+        for (Long ossId : datasetDocParagraphsService.getIdLongList(docParaSplitBo.getOssIds())) {
+            List<String> segContents = new ArrayList<>();
+            for (TextSegment seg : datasetDocParagraphsService.getSegsByOssId(ossId, splitter)) {
+                segContents.add(seg.text());
+            }
+            result.add(segContents);
+        }
+        return R.ok(result);
     }
 }
