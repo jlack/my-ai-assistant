@@ -15,7 +15,6 @@ import org.dromara.witdock.domain.bo.DatasetDocBo;
 import org.dromara.witdock.domain.vo.DatasetDocVo;
 import org.dromara.witdock.enums.DocStatusEnum;
 import org.dromara.witdock.service.IDatasetDocService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;

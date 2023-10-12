@@ -11,7 +11,7 @@ import {addSplitedParasBo} from "@/api/witdock/docParagraphs/types";
 
 export const listDoc = (query?: DocQuery): AxiosPromise<DocVO[]> => {
   return request({
-    url: '/witdock/docParagraphs/list',
+    url: '/witdock/doc/list',
     method: 'get',
     params: query
   });
