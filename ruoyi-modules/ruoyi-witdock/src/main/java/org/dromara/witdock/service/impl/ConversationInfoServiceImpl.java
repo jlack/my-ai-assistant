@@ -45,7 +45,7 @@ public class ConversationInfoServiceImpl implements IConversationInfoService {
     public TableDataInfo<ConversationInfoVo> queryUserPageList(ConversationInfoBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<ConversationInfo> lqw = buildQueryWrapper(bo);
         lqw.ne(bo.getChatToken() != null, ConversationInfo::getChatToken, bo.getChatToken());
-        lqw.isNull(bo.getChatToken() == null, ConversationInfo::getChatToken).or().eq(ConversationInfo::getChatToken, "");
+        lqw.eq(ConversationInfo::getChatToken, "");
         Page<ConversationInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         for (ConversationInfoVo vo : result.getRecords()) {
             vo.setMsgNum(msgInfoMapper.countMsgNumByConversationId(vo.getId()));

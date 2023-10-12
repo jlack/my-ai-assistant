@@ -42,7 +42,6 @@ const init = async () => {
 
 const chooseApp = async (item: AppVO) => {
   currentAppId.value = item.id as string
-  // await initConversationList()
 }
 
 init()
