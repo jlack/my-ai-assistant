@@ -86,7 +86,7 @@ export const delDoc = (id: string | number | Array<string | number>) => {
 
 export const splitDocToPara = (data: addSplitedParasBo) => {
   if (!data.maxSegmentSizeInTokens || data.maxSegmentSizeInTokens === 0) {
-    data.maxSegmentSizeInTokens = 400;
+    data.maxSegmentSizeInTokens = 500;
   }
   return request({
     url: '/witdock/docParagraphs/splitDocToPara',

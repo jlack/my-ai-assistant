@@ -12,7 +12,7 @@ public class MyCLLModel {
     public static OpenAiChatModel getOpenAI() {
         return OpenAiChatModel
             .builder()
-            .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("172.30.164.133", 10809)))
+            .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("172.30.164.55", 10809)))
             .timeout(Duration.ofSeconds(60))
             .apiKey(OPENAI_API_KEY)
             .build();

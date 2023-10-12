@@ -9,6 +9,7 @@ import dev.langchain4j.data.document.FileSystemDocumentLoader;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.openai.OpenAiTokenizer;
 import org.apache.commons.lang3.ArrayUtils;
 import cn.hutool.core.util.ArrayUtil;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
@@ -48,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import static dev.langchain4j.model.openai.OpenAiModelName.GPT_3_5_TURBO;
 
 /**
  * 文档段落表Service业务层处理
@@ -180,7 +183,8 @@ public class DatasetDocParagraphsServiceImpl implements IDatasetDocParagraphsSer
 
         DocumentSplitter splitter = DocumentSplitters.recursive(
             docParaSplitBo.getMaxSegmentSizeInTokens(),
-            0
+            0,
+            new OpenAiTokenizer(GPT_3_5_TURBO)
         );
 
         List<SysOssVo> ossVoList = ossService.listByIds(ossIdList);

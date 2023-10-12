@@ -78,7 +78,7 @@ function addDS() {
 async function handleDocSplit() {
   let res = await splitDocToPara({
     ossIds: docForm.value.ossIds as string,
-    maxSegmentSizeInTokens: 200
+    maxSegmentSizeInTokens: 500
   });
   console.log(res.msg);
 }
