@@ -33,6 +33,11 @@
               <el-table-column prop="originalName" label="文件名" width="250" align="center"/>
             </el-table>
           </div>
+          <div class="mt20">
+            <el-button style="margin-top: 12px" @click="pre">上一步</el-button>
+            <el-button style="margin-top: 12px" @click="next">下一步</el-button>
+          </div>
+
         </el-col>
         <el-col :span="8">
           <h2>分段预览</h2>
@@ -48,8 +53,7 @@
         </el-col>
       </el-row>
 
-      <el-button style="margin-top: 12px" @click="pre">上一步</el-button>
-      <el-button style="margin-top: 12px" @click="next">下一步</el-button>
+
     </div>
     <div v-if="active==2">
       <el-form v-if="!props.datasetId" ref="datasetFormRef" :model="dataSetForm" title="新增数据集" :rules="rules"
@@ -88,7 +92,7 @@ const props = defineProps({
 })
 
 const router = useRouter();
-const maxSegSize = ref(0);
+const maxSegSize = ref(500);
 const docForm = ref<Partial<AddDocsBo>>({});
 const dataSetForm = ref<Partial<DatasetForm>>({});
 const active = ref(0)
