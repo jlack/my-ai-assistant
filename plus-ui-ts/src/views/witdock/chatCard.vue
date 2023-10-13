@@ -121,7 +121,7 @@ const conversationRenameRef = ref(null);
 const selectedConversation = ref({conversationTitle: ''});
 const openRename = ref(false);
 const buttonLoading = ref(false);
-const currApp = ref<AppVO>({})
+const currApp = ref<AppVO | null>(null);
 
 async function startConversation() {
   await newConversation();

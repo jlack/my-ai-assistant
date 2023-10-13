@@ -74,7 +74,7 @@ export interface MessageInfoForm extends BaseEntity {
   /**
    * 本地客户端生成的id
    */
-  msgLocalId: string;
+  msgLocalId?: string;
 }
 
 export interface MessageInfoQuery extends PageQuery {

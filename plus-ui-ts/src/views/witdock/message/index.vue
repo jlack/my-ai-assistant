@@ -1,16 +1,20 @@
 <template>
   <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+    <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
+                :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
           <el-form-item label="对话id" prop="conversationId">
-            <el-input v-model="queryParams.conversationId" placeholder="请输入对话id" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.conversationId" placeholder="请输入对话id" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item label="提问内容" prop="query">
-            <el-input v-model="queryParams.query" placeholder="请输入提问内容" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.query" placeholder="请输入提问内容" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item label="回答内容" prop="answer">
-            <el-input v-model="queryParams.answer" placeholder="请输入回答内容" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.answer" placeholder="请输入回答内容" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item label="回答时间" prop="reDatetime">
             <el-date-picker clearable
@@ -21,7 +25,8 @@
             />
           </el-form-item>
           <el-form-item label="花费token" prop="msgToken">
-            <el-input v-model="queryParams.msgToken" placeholder="请输入花费token" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.msgToken" placeholder="请输入花费token" clearable style="width: 240px"
+                      @keyup.enter="handleQuery"/>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -35,40 +40,50 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['witdock:messageInfo:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['witdock:messageInfo:add']">
+              新增
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['witdock:messageInfo:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()"
+                       v-hasPermi="['witdock:messageInfo:edit']">修改
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['witdock:messageInfo:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()"
+                       v-hasPermi="['witdock:messageInfo:remove']">删除
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['witdock:messageInfo:export']">导出</el-button>
+            <el-button type="warning" plain icon="Download" @click="handleExport"
+                       v-hasPermi="['witdock:messageInfo:export']">导出
+            </el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
 
       <el-table v-loading="loading" :data="messageInfoList" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="" align="center" prop="id" v-if="true" />
-        <el-table-column label="对话id" align="center" prop="conversationId" />
-        <el-table-column label="提问内容" align="center" prop="query" />
-        <el-table-column label="回答内容" align="center" prop="answer" />
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column label="" align="center" prop="id" v-if="true"/>
+        <el-table-column label="对话id" align="center" prop="conversationId"/>
+        <el-table-column label="提问内容" align="center" prop="query"/>
+        <el-table-column label="回答内容" align="center" prop="answer"/>
         <el-table-column label="回答时间" align="center" prop="reDatetime" width="180">
           <template #default="scope">
             <span>{{ parseTime(scope.row.reDatetime, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="花费token" align="center" prop="msgToken" />
+        <el-table-column label="花费token" align="center" prop="msgToken"/>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['witdock:messageInfo:edit']"></el-button>
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+                         v-hasPermi="['witdock:messageInfo:edit']"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['witdock:messageInfo:remove']"></el-button>
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+                         v-hasPermi="['witdock:messageInfo:remove']"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -86,13 +101,13 @@
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
       <el-form ref="messageInfoFormRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="对话id" prop="conversationId">
-          <el-input v-model="form.conversationId" placeholder="请输入对话id" />
+          <el-input v-model="form.conversationId" placeholder="请输入对话id"/>
         </el-form-item>
         <el-form-item label="提问内容" prop="query">
-          <el-input v-model="form.query" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.query" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="回答内容" prop="answer">
-          <el-input v-model="form.answer" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.answer" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="回答时间" prop="reDatetime">
           <el-date-picker clearable
@@ -103,7 +118,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="花费token" prop="msgToken">
-          <el-input v-model="form.msgToken" placeholder="请输入花费token" />
+          <el-input v-model="form.msgToken" placeholder="请输入花费token"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -117,7 +132,7 @@
 </template>
 
 <script setup name="MessageInfo" lang="ts">
-import { MessageInfoVO, MessageInfoQuery, MessageInfoForm } from '@/api/witdock/messageInfo/types';
+import {MessageInfoVO, MessageInfoQuery, MessageInfoForm} from '@/api/witdock/messageInfo/types';
 import {
   addMessageInfo,
   delMessageInfo,
@@ -126,7 +141,7 @@ import {
   updateMessageInfo
 } from "@/api/witdock/messageInfo/api";
 
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 
 const messageInfoList = ref<MessageInfoVO[]>([]);
 const buttonLoading = ref(false);
@@ -152,6 +167,7 @@ const initFormData: MessageInfoForm = {
   answer: undefined,
   reDatetime: undefined,
   msgToken: undefined,
+  msgLocalId: '',
 }
 const data = reactive<PageData<MessageInfoForm, MessageInfoQuery>>({
   form: {...initFormData},
@@ -163,32 +179,31 @@ const data = reactive<PageData<MessageInfoForm, MessageInfoQuery>>({
     answer: undefined,
     reDatetime: undefined,
     msgToken: undefined,
-    params: {
-    }
+    params: {}
   },
   rules: {
     id: [
-      { required: true, message: "不能为空", trigger: "blur" }
+      {required: true, message: "不能为空", trigger: "blur"}
     ],
     conversationId: [
-      { required: true, message: "对话id不能为空", trigger: "blur" }
+      {required: true, message: "对话id不能为空", trigger: "blur"}
     ],
     query: [
-      { required: true, message: "提问内容不能为空", trigger: "blur" }
+      {required: true, message: "提问内容不能为空", trigger: "blur"}
     ],
     answer: [
-      { required: true, message: "回答内容不能为空", trigger: "blur" }
+      {required: true, message: "回答内容不能为空", trigger: "blur"}
     ],
     reDatetime: [
-      { required: true, message: "回答时间不能为空", trigger: "blur" }
+      {required: true, message: "回答时间不能为空", trigger: "blur"}
     ],
     msgToken: [
-      { required: true, message: "花费token不能为空", trigger: "blur" }
+      {required: true, message: "花费token不能为空", trigger: "blur"}
     ],
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const {queryParams, form, rules} = toRefs(data);
 
 /** 查询对话消息列表 */
 const getList = async () => {
@@ -253,9 +268,9 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateMessageInfo(form.value).finally(() =>  buttonLoading.value = false);
+        await updateMessageInfo(form.value).finally(() => buttonLoading.value = false);
       } else {
-        await addMessageInfo(form.value).finally(() =>  buttonLoading.value = false);
+        await addMessageInfo(form.value).finally(() => buttonLoading.value = false);
       }
       proxy?.$modal.msgSuccess("修改成功");
       dialog.visible = false;
