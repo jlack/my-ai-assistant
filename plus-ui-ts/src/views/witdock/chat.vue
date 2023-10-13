@@ -132,7 +132,7 @@ const sendMessage = async () => {
   }
   msgInfoList.value.push(form as MessageInfoVO)
   //滚动聊天窗口到最下面
-  scrollToBottom()
+  await scrollToBottom()
   newMessage.value = ''
   let isSuccess = webSocket.send(JSON.stringify(form));
   if (!isSuccess) {

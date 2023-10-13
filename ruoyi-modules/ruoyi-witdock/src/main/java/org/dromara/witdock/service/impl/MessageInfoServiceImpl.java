@@ -5,10 +5,13 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.embedding.BGE_SMALL_ZH_EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
@@ -40,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.stream.Collectors.joining;
 
@@ -147,9 +151,13 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         List<DatasetDocParagraphs> docParagraphs = datasetDocParagraphsMapper.listByConversationId(messageInfoBo.getConversationId());
 
         //使用嵌入模型 mbed 段（将它们转换为表示含义的向量）
-        EmbeddingModel embeddingModel = MyCLLModel.getOpenAiEmbeddingModel();
+//        EmbeddingModel embeddingModel = MyCLLModel.getOpenAiEmbeddingModel();
+//        换中文分词向量模型
+//        todo: 新建模型处线程挂起？？？？
+        EmbeddingModel embeddingModel = new BGE_SMALL_ZH_EmbeddingModel();
         //将嵌入存储到嵌入存储中以供进一步搜索检索
         EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
+
         for (DatasetDocParagraphs item : docParagraphs) {
             TextSegment segment1 = TextSegment.from(item.getContent());
             Embedding embedding1 = embeddingModel.embed(segment1).content();

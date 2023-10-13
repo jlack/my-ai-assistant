@@ -12,7 +12,7 @@ public class MyCLLModel {
     public static final String OPENAI_API_KEY = "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";
     public static final String PROXY_URL = "172.30.164.83";
     public static final int PROXY_PORT = 10809;
-    public static final int TIME_OUT = 60;
+    public static final int TIME_OUT = 600;
 
     public static OpenAiChatModel getOpenAiChatModel() {
         return OpenAiChatModel
