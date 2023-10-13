@@ -158,7 +158,7 @@ const appUrlRef = ref();
 const visitUrl = ref('');
 
 function handlePreview() {
-  router.push("/chatPage/" + app.value.code);
+  window.open("/chatPage/" + app.value.code, "_blank");
 }
 
 async function copyVisitUrl() {

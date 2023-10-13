@@ -172,6 +172,7 @@ watch(() => props.propAppId, async () => {
     let res = await getApp(currAppId.value);
     currApp.value = res.data;
     await initConversationList();
+    currConversationId.value = '';
   }
 }, {immediate: true});
 
