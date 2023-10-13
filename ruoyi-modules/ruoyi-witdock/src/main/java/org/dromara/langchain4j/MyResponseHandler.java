@@ -1,4 +1,4 @@
-package org.dromara.witdock.service;
+package org.dromara.langchain4j;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
@@ -16,7 +16,6 @@ import org.springframework.web.socket.WebSocketSession;
 public class MyResponseHandler implements StreamingResponseHandler<AiMessage> {
     private WebSocketSession session;
     private MessageInfoBo messageInfoBo;
-
     private MessageInfoMapper messageInfoMapper;
 
     public MyResponseHandler(WebSocketSession session, MessageInfoBo messageInfoBo, MessageInfoMapper baseMapper) {

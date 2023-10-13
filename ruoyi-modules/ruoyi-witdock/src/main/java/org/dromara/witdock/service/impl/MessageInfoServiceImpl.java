@@ -1,18 +1,14 @@
 package org.dromara.witdock.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.StreamingResponseHandler;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
-import dev.langchain4j.model.output.Response;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
@@ -30,7 +26,7 @@ import org.dromara.langchain4j.MyCLLModel;
 import org.dromara.witdock.domain.DatasetDocParagraphs;
 import org.dromara.witdock.mapper.AppInfoMapper;
 import org.dromara.witdock.mapper.DatasetDocParagraphsMapper;
-import org.dromara.witdock.service.MyResponseHandler;
+import org.dromara.langchain4j.MyResponseHandler;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.MessageInfoBo;
 import org.dromara.witdock.domain.vo.MessageInfoVo;
@@ -44,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.stream.Collectors.joining;
 
