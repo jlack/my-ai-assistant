@@ -2,24 +2,19 @@ package org.dromara.witdock.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.thread.AsyncUtil;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.IdUtil;
-import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
-import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
-import org.dromara.common.core.constant.CacheConstants;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -28,8 +23,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.redis.utils.CacheUtils;
-import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.websocket.service.MsgService;
 import org.dromara.common.websocket.utils.WebSocketUtils;
 import org.dromara.langchain4j.MyCLLModel;
@@ -45,6 +38,8 @@ import org.dromara.witdock.service.IMessageInfoService;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -153,38 +148,22 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
      * @return
      */
     public String answer(MessageInfoBo messageInfoBo) {
-        //根据消息查所属的会话，再根据会话查所属的APP，再根据APP查包含的数据集文档段落，再请求LLM
+        //根据会话查所属的APP，再根据APP查包含的数据集文档段落，再请求LLM
         List<DatasetDocParagraphs> docParagraphs = datasetDocParagraphsMapper.listByConversationId(messageInfoBo.getConversationId());
 
         //使用嵌入模型 mbed 段（将它们转换为表示含义的向量）
-        EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
+        EmbeddingModel embeddingModel = MyCLLModel.getOpenAiEmbeddingModel();
+        //将嵌入存储到嵌入存储中以供进一步搜索检索
         EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
-//        EmbeddingStore<TextSegment> embeddingStore = PineconeEmbeddingStore.builder()
-//            .apiKey("505fa1b8-d32d-4b4b-bee4-aa4a948ff167")
-//            .environment("us-west4-gcp-free")
-//            // Project ID can be found in the Pinecone url:
-//            // https://app.pinecone.io/organizations/{organization}/projects/{environment}:{projectId}/indexes
-//            .projectId("9bedf0a")
-//            // Make sure the dimensions of the Pinecone index match the dimensions of the embedding model
-//            // (384 for all-MiniLM-L6-v2, 1536 for text-embedding-ada-002, etc.)
-//            .index("langc")
-//            .build();
-
-
-
         for (DatasetDocParagraphs item : docParagraphs) {
-            //将嵌入存储到嵌入存储中以供进一步搜索检索
             TextSegment segment1 = TextSegment.from(item.getContent());
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
         }
 
-
-
-
-
         String question = messageInfoBo.getQuery();
-
+        //提示词
+        Prompt prompt = null;
         // 嵌入问题
         Embedding questionEmbedding = embeddingModel.embed(question).content();
         // 通过语义相似度在嵌入存储中查找相关嵌入
@@ -193,31 +172,45 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         double minScore = 0.7;
         List<EmbeddingMatch<TextSegment>> relevantEmbeddings
             = embeddingStore.findRelevant(questionEmbedding, maxResults, minScore);
-        //为包含问题和相关嵌入的模型创建提示
-        PromptTemplate promptTemplate = PromptTemplate.from(
-            "尽你所能回答以下问题:\n"
-                + "\n"
-                + "问题:\n"
-                + "{{question}}\n"
-                + "\n"
-                + "如果以下信息中有答案你可以使用:\n"
-                + "{{information}}");
 
-        String information = relevantEmbeddings.stream()
-            .map(match -> match.embedded().text())
-            .collect(joining("\n\n"));
+        //如果找到上下文，则通过提示词让chatGPT根据上下文回答，否则直接回答
+        if (!relevantEmbeddings.isEmpty()) {
+            //为包含问题和相关嵌入的模型创建提示
+            PromptTemplate promptTemplate = PromptTemplate.from(
+                "尽你所能回答以下问题:\n"
+                    + "\n"
+                    + "问题:\n"
+                    + "{{question}}\n"
+                    + "\n"
+                    + "如果以下信息中有答案你可以使用:\n"
+                    + "{{information}}");
 
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("question", question);
-        variables.put("information", information);
+            String information = relevantEmbeddings.stream()
+                .map(match -> match.embedded().text())
+                .collect(joining("\n"));
 
-        Prompt prompt = promptTemplate.apply(variables);
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("question", question);
+            variables.put("information", information);
+
+            prompt = promptTemplate.apply(variables);
+
+        }
 
         // 将提示发送到 OpenAI 聊天模型
-        ChatLanguageModel chatModel = MyCLLModel.getOpenAI();
-        AiMessage aiMessage = chatModel.generate(prompt.toUserMessage()).content();
-        //答案
-        return aiMessage.text();
+        ChatLanguageModel chatModel = MyCLLModel.getOpenAiChatModel();
+//        System.out.println("Nr of chars: " + prompt.toAiMessage().text());
+//        System.out.println("Nr of tokens: " + chatModel.estimateTokenCount(prompt));
+        if (prompt == null) {
+            System.out.println("直接提问");
+            return chatModel.generate(question);
+        } else {
+            System.out.println("带提示词提问");
+            AiMessage aiMessage = chatModel.generate(prompt.toUserMessage()).content();
+            return aiMessage.text();
+        }
+
+
     }
 
     @Override
@@ -227,8 +220,6 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         messageInfoBo.setCreateBy(userId);
         //把问题保存到数据库，先返回给前端，再进行回答
         Boolean b = insertByBo(messageInfoBo);
-//        RedisUtils.setCacheObject(CacheConstants.MSG_WS_SESSION_KEY + messageInfoBo.getId(), session);
-//        CacheUtils.put(CacheConstants.MSG_WS_SESSION_KEY, messageInfoBo.getId(), session);
         WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(BeanUtil.toBean(messageInfoBo, MessageInfoVo.class)));
         if (b) {
             //异步执行
@@ -236,31 +227,15 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
                 //休眠2秒钟模拟调用chatGpt
 //                ThreadUtil.sleep(2000);
 //                messageInfoBo.setAnswer("自动回答" + IdUtil.simpleUUID());
-
                 messageInfoBo.setAnswer(answer(messageInfoBo));
                 messageInfoBo.setReDatetime(DateUtil.date());
                 //发送回答内容
                 MessageInfoVo vo = BeanUtil.toBean(messageInfoBo, MessageInfoVo.class);
-//                WebSocketSession session1 = CacheUtils.get(CacheConstants.MSG_WS_SESSION_KEY, messageInfoBo.getId());
-//                CacheUtils.evict(CacheConstants.MSG_WS_SESSION_KEY, messageInfoBo.getId());
-//                System.out.println("b");
-//                try {
-//                    String str = RedisUtils.getCacheObject(CacheConstants.MSG_WS_SESSION_KEY + messageInfoBo.getId());
-//                    if (str != null) {
-//                        System.out.println("a" + str);
-//                    } else {
-//                        System.out.println("WebSocketSession is null.");
-//                    }
-//                    WebSocketSession bean = JSONUtil.toBean(str, WebSocketSession.class);
-//
-//                } catch (Exception e) {
-//                    System.out.println(e);
-//                }
+
                 WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(vo));
                 //更新数据库
                 updateByBo(messageInfoBo);
             });
         }
-        System.out.println("addMsg结束");
     }
 }
