@@ -7,7 +7,7 @@
     </el-steps>
     <br>
     <div v-if="active==0">
-      <file-upload :fileType="['txt','html','md','pdf','xlsx','csv','docx']" v-model="docForm.ossIds"/>
+      <file-upload :fileType="['txt','html','md','xlsx','csv','docx']" v-model="docForm.ossIds"/>
       <el-button :disabled="docForm.ossIds === undefined || docForm.ossIds.length === 0"
                  style="margin-top: 12px" @click="next">下一步
       </el-button>
@@ -101,9 +101,13 @@ const datasetFormRef = ref<ElFormInstance>();
 const segResult = ref([]);
 const ossList = ref<OssVO[]>([]);
 
-const next = () => {
+const next = async () => {
   if (active.value++ > 2)
     active.value = 0
+  if (active.value === 1) {
+    let ossListRes = await listByIds(docForm.value.ossIds as string);
+    ossList.value = ossListRes.data;
+  }
 }
 
 const pre = () => {
@@ -124,13 +128,11 @@ async function handleDocSplit() {
 }
 
 async function previewSegResult() {
-  let ossListRes = await listByIds(docForm.value.ossIds as string);
   let res = await getDocSegResult({
     ossIds: docForm.value.ossIds as string,
     maxSegmentSizeInTokens: maxSegSize.value
   })
   segResult.value = res.data;
-  ossList.value = ossListRes.data;
 }
 
 async function handleComplete() {

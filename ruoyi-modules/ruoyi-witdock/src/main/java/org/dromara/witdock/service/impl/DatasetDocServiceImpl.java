@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.witdock.domain.DatasetDoc;
 import org.dromara.witdock.domain.bo.DatasetDocBo;
 import org.dromara.witdock.domain.vo.DatasetDocVo;
-import org.dromara.witdock.domain.vo.DatasetInfoVo;
 import org.dromara.witdock.mapper.DatasetDocMapper;
+import org.dromara.witdock.mapper.DatasetDocParagraphsMapper;
 import org.dromara.witdock.service.IDatasetDocService;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +32,7 @@ public class DatasetDocServiceImpl implements IDatasetDocService {
 
     private final DatasetDocMapper baseMapper;
 
+    private final DatasetDocParagraphsMapper paraMapper;
 
     @Override
     public Integer countCharNumById(Long id) {
@@ -121,9 +122,20 @@ public class DatasetDocServiceImpl implements IDatasetDocService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
-            //TODO 做一些业务上的校验,判断是否需要校验
-        }
+//        删除doc时连带删除对应paras
+        paraMapper.deleteByDocIds(ids);
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public Integer deleteByDatasetIds(Collection<Long> datasetIds) {
+        //        删除doc时连带删除对应paras
+        Collection<Long> docIds = listDocIdsByDatasetIds(datasetIds);
+        paraMapper.deleteByDocIds(docIds);
+        return baseMapper.deleteByDatasetIds(datasetIds);
+    }
+
+    public Collection<Long> listDocIdsByDatasetIds(Collection<Long> datasetIds) {
+        return baseMapper.listDocIdsByDatasetIds(datasetIds);
     }
 }

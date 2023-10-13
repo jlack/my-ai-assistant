@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.witdock.domain.bo.DatasetDocBo;
 import org.dromara.witdock.domain.vo.DatasetDocVo;
+import org.dromara.witdock.mapper.AppDatasetMapper;
 import org.dromara.witdock.service.IDatasetDocService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ import java.util.Collection;
 public class DatasetInfoServiceImpl implements IDatasetInfoService {
 
     private final DatasetInfoMapper baseMapper;
+    private final AppDatasetMapper appDatesetMapper;
 
     @Autowired
     private IDatasetDocService docService;
@@ -124,9 +126,9 @@ public class DatasetInfoServiceImpl implements IDatasetInfoService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
-            //TODO 做一些业务上的校验,判断是否需要校验
-        }
+//        删除dataset时同时删除 dataset_app 中间表的对应数据 , 删除对应doc，以及doc对应的paras
+        appDatesetMapper.deleteBatchDatasetIds(ids);
+        docService.deleteByDatasetIds(ids);
         return baseMapper.deleteBatchIds(ids) > 0;
     }
 }

@@ -151,10 +151,10 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         List<DatasetDocParagraphs> docParagraphs = datasetDocParagraphsMapper.listByConversationId(messageInfoBo.getConversationId());
 
         //使用嵌入模型 mbed 段（将它们转换为表示含义的向量）
-//        EmbeddingModel embeddingModel = MyCLLModel.getOpenAiEmbeddingModel();
+        EmbeddingModel embeddingModel = MyCLLModel.getOpenAiEmbeddingModel();
 //        换中文分词向量模型
-//        todo: 新建模型处线程挂起？？？？
-        EmbeddingModel embeddingModel = new BGE_SMALL_ZH_EmbeddingModel();
+//        todo: 新建模型处线程挂起？？？？ embeddingStore.add(embedding1, segment1);卡住， 改为addAll试试
+//        EmbeddingModel embeddingModel = new BGE_SMALL_ZH_EmbeddingModel();
         //将嵌入存储到嵌入存储中以供进一步搜索检索
         EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
 

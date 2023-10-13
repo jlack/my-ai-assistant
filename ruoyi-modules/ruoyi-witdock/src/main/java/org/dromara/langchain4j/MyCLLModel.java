@@ -26,7 +26,7 @@ public class MyCLLModel {
     public static OpenAiEmbeddingModel getOpenAiEmbeddingModel() {
         return OpenAiEmbeddingModel.builder()
             .apiKey(OPENAI_API_KEY)
-//            .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXY_URL, PROXY_PORT)))
+            .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXY_URL, PROXY_PORT)))
             .timeout(Duration.ofSeconds(TIME_OUT))
             .build();
     }

@@ -127,9 +127,9 @@ public class AppInfoServiceImpl implements IAppInfoService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if (isValid) {
-            //TODO 做一些业务上的校验,判断是否需要校验
-        }
+//        删除app时同时删除 dataset_app 中间表的对应数据
+        appDatesetMapper.deleteBatchAppIds(ids);
+
         return baseMapper.deleteBatchIds(ids) > 0;
     }
 

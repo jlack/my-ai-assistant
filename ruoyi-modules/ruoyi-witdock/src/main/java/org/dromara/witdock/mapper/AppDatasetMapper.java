@@ -6,6 +6,7 @@ import org.dromara.witdock.domain.AppDataset;
 import org.dromara.witdock.domain.vo.AppDatasetVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,4 +21,20 @@ public interface AppDatasetMapper extends BaseMapperPlus<AppDataset, AppDatasetV
 
     @Select("select * from app_dataset where app_id=#{appId}")
     List<AppDataset> listByAppId(Long appId);
+
+    @Delete("<script>" +
+        "DELETE FROM app_dataset WHERE dataset_id IN " +
+        "<foreach item='item' index='index' collection='datasetIds' open='(' separator=',' close=')'>" +
+        "#{item}" +
+        "</foreach>" +
+        "</script>")
+    int deleteBatchDatasetIds(Collection<Long> datasetIds);
+
+    @Delete("<script>" +
+        "DELETE FROM app_dataset WHERE app_id IN " +
+        "<foreach item='item' index='index' collection='appIds' open='(' separator=',' close=')'>" +
+        "#{item}" +
+        "</foreach>" +
+        "</script>")
+    int deleteBatchAppIds(Collection<Long> appIds);
 }
