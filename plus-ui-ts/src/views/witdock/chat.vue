@@ -77,6 +77,7 @@ watch(webSocket.status, (status) => {
 
 // 监听 WebSocket 数据
 watch(webSocket.data, (newData) => {
+  console.log(newData)
   if (newData) {
     // 处理收到的数据
     const res = JSON.parse(newData) as MessageInfoVO;
@@ -85,7 +86,11 @@ watch(webSocket.data, (newData) => {
       const item = msgInfoList.value[i];
       if (item.msgLocalId === res.msgLocalId) {
         item.id = res.id
-        item.answer = res.answer;
+        if (res.streamText) {
+          item.answer = item.answer + res.streamText
+        } else {
+          item.answer = res.answer;
+        }
         item.reDatetime = res.reDatetime;
         waitServerRes.value = false
         //滚动聊天窗口到最下面

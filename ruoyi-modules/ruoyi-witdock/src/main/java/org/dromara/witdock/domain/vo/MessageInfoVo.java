@@ -2,19 +2,15 @@ package org.dromara.witdock.domain.vo;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import org.dromara.witdock.domain.MessageInfo;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import org.dromara.common.excel.annotation.ExcelDictFormat;
-import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-
 
 
 /**
@@ -71,4 +67,9 @@ public class MessageInfoVo implements Serializable {
      * 本地客户端生成唯一ID
      */
     private String msgLocalId;
+    /**
+     * 流
+     */
+    private String streamText;
+
 }

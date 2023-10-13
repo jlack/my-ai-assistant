@@ -7,11 +7,12 @@ import cn.hutool.json.JSONUtil;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.StreamingResponseHandler;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
-import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
+import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.model.output.Response;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
@@ -29,6 +30,7 @@ import org.dromara.langchain4j.MyCLLModel;
 import org.dromara.witdock.domain.DatasetDocParagraphs;
 import org.dromara.witdock.mapper.AppInfoMapper;
 import org.dromara.witdock.mapper.DatasetDocParagraphsMapper;
+import org.dromara.witdock.service.MyResponseHandler;
 import org.springframework.stereotype.Service;
 import org.dromara.witdock.domain.bo.MessageInfoBo;
 import org.dromara.witdock.domain.vo.MessageInfoVo;
@@ -38,13 +40,11 @@ import org.dromara.witdock.service.IMessageInfoService;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.stream.Collectors.joining;
 
@@ -147,7 +147,7 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
      *
      * @return
      */
-    public String answer(MessageInfoBo messageInfoBo) {
+    public void answer(MessageInfoBo messageInfoBo, WebSocketSession session) {
         //根据会话查所属的APP，再根据APP查包含的数据集文档段落，再请求LLM
         List<DatasetDocParagraphs> docParagraphs = datasetDocParagraphsMapper.listByConversationId(messageInfoBo.getConversationId());
 
@@ -195,23 +195,18 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
 
             prompt = promptTemplate.apply(variables);
 
+        } else {
+            prompt = new Prompt(question);
         }
 
         // 将提示发送到 OpenAI 聊天模型
-        ChatLanguageModel chatModel = MyCLLModel.getOpenAiChatModel();
+        OpenAiStreamingChatModel chatModel = MyCLLModel.getOpenAiStreamingChatModel();
 //        System.out.println("Nr of chars: " + prompt.toAiMessage().text());
 //        System.out.println("Nr of tokens: " + chatModel.estimateTokenCount(prompt));
-        if (prompt == null) {
-            System.out.println("直接提问");
-            return chatModel.generate(question);
-        } else {
-            System.out.println("带提示词提问");
-            AiMessage aiMessage = chatModel.generate(prompt.toUserMessage()).content();
-            return aiMessage.text();
-        }
 
-
+        chatModel.generate(prompt.text(), new MyResponseHandler(session, messageInfoBo, baseMapper));
     }
+
 
     @Override
     public void addMsg(WebSocketSession session, TextMessage msg, Long userId) {
@@ -224,17 +219,12 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         if (b) {
             //异步执行
             ThreadUtil.execAsync(() -> {
+
+                answer(messageInfoBo, session);
                 //休眠2秒钟模拟调用chatGpt
 //                ThreadUtil.sleep(2000);
 //                messageInfoBo.setAnswer("自动回答" + IdUtil.simpleUUID());
-                messageInfoBo.setAnswer(answer(messageInfoBo));
-                messageInfoBo.setReDatetime(DateUtil.date());
-                //发送回答内容
-                MessageInfoVo vo = BeanUtil.toBean(messageInfoBo, MessageInfoVo.class);
 
-                WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(vo));
-                //更新数据库
-                updateByBo(messageInfoBo);
             });
         }
     }

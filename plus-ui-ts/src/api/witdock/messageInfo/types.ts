@@ -33,6 +33,11 @@ export interface MessageInfoVO {
    * 本地客户端生成的id
    */
   msgLocalId: string;
+
+  /**
+   * 流式回答文本内容
+   */
+  streamText: string;
 }
 
 export interface MessageInfoForm extends BaseEntity {
