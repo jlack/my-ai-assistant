@@ -1,79 +1,77 @@
 <template>
-  <div style="height: 100%;">
-    <el-card class="box-card" :body-style="{height: '100%'}" style="height: 100%;" v-loading="loading" v-if="currAppId">
-      <el-row :gutter="10" style="height: 100%">
-        <el-col :span="4">
-          <el-menu class="el-menu-demo">
-            <el-menu-item>
-              <el-button type="primary" @click="newConversation()">新建会话</el-button>
-            </el-menu-item>
-            <div v-for="(conversationItem, index) in conversationList">
-              <el-menu-item :index="conversationItem.id"
-                            @click="chooseConversation(conversationItem)"
-                            style="width: 100%">
-                {{ conversationItem.conversationTitle }}
-                <el-dropdown style="position: absolute; right: 4%;">
-                  <el-button>...</el-button>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item v-if="!conversationItem.topping" icon="CaretTop"
-                                        @click="handleTopPost(conversationItem.id, true)">置顶
-                      </el-dropdown-item>
-                      <el-dropdown-item v-if="conversationItem.topping" icon="CaretBottom"
-                                        @click="handleTopPost(conversationItem.id, false)">取消置顶
-                      </el-dropdown-item>
-                      <el-dropdown-item icon="EditPen"
-                                        @click="handleRename(conversationItem.id, conversationItem.conversationTitle)">
-                        重命名
-                      </el-dropdown-item>
-                      <el-dropdown-item icon="Delete" @click="handleDelete(conversationItem.id)">删除
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-              </el-menu-item>
-              <el-divider content-class="custom-divider" v-if="index === topConversationNum - 1"/>
-            </div>
-          </el-menu>
-        </el-col>
-        <el-col :span="20">
-          <div style="height: 100%;">
-            <chat style="height: 100%" v-if="currConversationId" :conversation-id="currConversationId"/>
-            <div v-if="!conversationList?.length > 0 && loading === false"
-                 style="height: 100%; display: flex; justify-content: center; align-items: center">
-              <el-card :header="currApp.appName" style="height: 110px; width: 50%; margin: auto; border-radius: 20px">
-                <el-button type="primary" style="border-radius: 12px"
-                           @click="startConversation()">
-                  <el-icon class="mr5">
-                    <ChatDotSquare/>
-                  </el-icon>
-                  开始对话
-                </el-button>
-              </el-card>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </el-card>
-
-    <el-dialog title="会话重命名" v-model="openRename" width="500px" :append-to-body="true">
-      <!--    @submit.native.prevent 可以阻止按回车刷新页面-->
-      <el-form ref="conversationRenameRef" :model="selectedConversation" :rules="renameRules" label-width="100px"
-               @submit.native.prevent>
-        <el-form-item label="会话名称" prop="conversationTitle">
-          <el-input style="width: 85%;" clearable v-model="selectedConversation.conversationTitle"
-                    placeholder="请输入会话名称" @keyup.enter="submitRenameForm"/>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button :loading="buttonLoading" type="primary" @click="submitRenameForm">确 定</el-button>
-          <el-button @click="() => {openRename = false}">取 消</el-button>
+  <div class="chat-card" v-loading="loading" v-if="currAppId">
+    <div class="chat-list">
+      <el-button type="primary" plain @click="newConversation()" icon="Edit">新建会话</el-button>
+      <div
+        v-for="(conversationItem, index) in conversationList"
+        :key="index"
+        :index="(conversationItem.id as string)"
+        class="chat-item"
+        :class="currConversationId === conversationItem.id ? 'active-chat' : ''"
+        @click="chooseConversation(conversationItem)"
+      >
+        <div class="title">
+          <!-- <ChatLineRound /> -->
+          <span>{{ conversationItem.conversationTitle }}</span>
         </div>
-      </template>
-    </el-dialog>
+        <div class="btn-group">
+          <el-tooltip v-if="!conversationItem.topping" effect="dark" content="置顶" placement="top">
+            <el-icon>
+              <Top @click="handleTopPost(conversationItem.id, true)" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip v-if="conversationItem.topping" effect="dark" content="取消置顶" placement="top">
+            <el-icon>
+              <Bottom @click="handleTopPost(conversationItem.id, false)" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="编辑" placement="top">
+            <el-icon>
+              <EditPen @click="handleRename(conversationItem.id, conversationItem.conversationTitle)" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="删除" placement="top">
+            <el-icon class="delete">
+              <Delete @click="handleDelete(conversationItem.id)" />
+            </el-icon>
+          </el-tooltip>
+        </div>
+      </div>
+    </div>
 
+    <chat v-if="currConversationId" :conversation-id="currConversationId" />
+
+    <div v-if="conversationList?.length === 0 && !loading" class="new-chat">
+      <div class="app-name">{{ currApp.appName }}</div>
+      <el-button type="primary" @click="startConversation()">
+        <el-icon class="mr5">
+          <ChatDotSquare />
+        </el-icon>
+        开始对话
+      </el-button>
+    </div>
   </div>
+
+  <el-dialog title="会话重命名" v-model="openRename" width="500px" :append-to-body="true">
+    <!--    @submit.native.prevent 可以阻止按回车刷新页面-->
+    <el-form ref="conversationRenameRef" :model="selectedConversation" :rules="renameRules" label-width="100px" @submit.native.prevent>
+      <el-form-item label="会话名称" prop="conversationTitle">
+        <el-input
+          style="width: 85%;"
+          clearable
+          v-model="selectedConversation.conversationTitle"
+          placeholder="请输入会话名称"
+          @keyup.enter="submitRenameForm"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button :loading="buttonLoading" type="primary" @click="submitRenameForm">确 定</el-button>
+        <el-button @click="() => {openRename = false}">取 消</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -114,7 +112,6 @@ const renameRules = reactive({
   ]
 })
 
-const topConversationNum = ref(0);
 const conversationList = ref<ConversationInfoVO[]>([]);
 const loading = ref(false);
 const currConversationId = ref('')
@@ -157,7 +154,6 @@ const initConversationList = async () => {
     } as ConversationInfoQuery,
   );
   conversationList.value = res.rows
-  topConversationNum.value = res.rows.filter(conversationItem => conversationItem.topping === true).length;
   loading.value = false
 }
 
@@ -222,6 +218,4 @@ const submitRenameForm = () => {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
