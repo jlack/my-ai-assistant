@@ -72,4 +72,6 @@ public class MessageInfoVo implements Serializable {
      */
     private String streamText;
 
+    private Date createTime;
+
 }

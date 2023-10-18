@@ -1,6 +1,7 @@
 package org.dromara.witdock.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import dev.langchain4j.data.embedding.Embedding;
@@ -39,6 +40,7 @@ import org.dromara.witdock.service.IMessageInfoService;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,7 +155,7 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
         //使用嵌入模型 mbed 段（将它们转换为表示含义的向量）
         EmbeddingModel embeddingModel = MyCLLModel.getOpenAiEmbeddingModel();
 //        换中文分词向量模型
-//        todo: 新建模型处线程挂起？？？？ embeddingStore.add(embedding1, segment1);卡住， 改为addAll试试
+//        todo: 新建模型处线程挂起？？？？
 //        EmbeddingModel embeddingModel = new BGE_SMALL_ZH_EmbeddingModel();
         //将嵌入存储到嵌入存储中以供进一步搜索检索
         EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
@@ -185,7 +187,7 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
                     + "问题:\n"
                     + "{{question}}\n"
                     + "\n"
-                    + "如果以下信息中有答案你可以使用:\n"
+                    + "如果以下信息有答案你可以使用，否则你自己回答:\n"
                     + "{{information}}");
 
             String information = relevantEmbeddings.stream()
@@ -204,8 +206,9 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
 
         // 将提示发送到 OpenAI 聊天模型
         OpenAiStreamingChatModel chatModel = MyCLLModel.getOpenAiStreamingChatModel();
-//        System.out.println("Nr of chars: " + prompt.toAiMessage().text());
-//        System.out.println("Nr of tokens: " + chatModel.estimateTokenCount(prompt));
+        //记录估算的token值
+        int msgTokenCount = chatModel.estimateTokenCount(prompt);
+        messageInfoBo.setMsgToken(BigDecimal.valueOf(msgTokenCount));
 
         chatModel.generate(prompt.text(), new MyResponseHandler(session, messageInfoBo, baseMapper));
     }
@@ -216,19 +219,10 @@ public class MessageInfoServiceImpl implements IMessageInfoService, MsgService {
 
         MessageInfoBo messageInfoBo = JSONUtil.toBean(msg.getPayload(), MessageInfoBo.class);
         messageInfoBo.setCreateBy(userId);
-        //把问题保存到数据库，先返回给前端，再进行回答
-        Boolean b = insertByBo(messageInfoBo);
+        //把问题保存到数据库，先返回给前端，再进行回答.提前设置createTime并返回前端，减少一次查库
+        messageInfoBo.setCreateTime(DateUtil.date());
+        insertByBo(messageInfoBo);
         WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(BeanUtil.toBean(messageInfoBo, MessageInfoVo.class)));
-        if (b) {
-            //异步执行
-            ThreadUtil.execAsync(() -> {
-
-                answer(messageInfoBo, session);
-                //休眠2秒钟模拟调用chatGpt
-//                ThreadUtil.sleep(2000);
-//                messageInfoBo.setAnswer("自动回答" + IdUtil.simpleUUID());
-
-            });
-        }
+        answer(messageInfoBo, session);
     }
 }

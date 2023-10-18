@@ -27,8 +27,10 @@ public class MyResponseHandler implements StreamingResponseHandler<AiMessage> {
     @Override
     public void onNext(String s) {
         //发送回答内容
-        MessageInfoVo vo = BeanUtil.toBean(messageInfoBo, MessageInfoVo.class);
+        MessageInfoVo vo = new MessageInfoVo();
         vo.setStreamText(s);
+
+        vo.setMsgLocalId(messageInfoBo.getMsgLocalId());
         WebSocketUtils.sendMessage(session, JSONUtil.toJsonStr(vo));
     }
 

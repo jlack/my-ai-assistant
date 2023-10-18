@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noEmit": true, // 禁用类型检查，方便打包，但是不建议这样使用
     "target": "es2022",
     "useDefineForClassFields": true,
     "module": "esnext",

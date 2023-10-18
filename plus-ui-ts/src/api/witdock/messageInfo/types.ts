@@ -38,6 +38,11 @@ export interface MessageInfoVO {
    * 流式回答文本内容
    */
   streamText: string;
+
+  /**
+   * 流式回答文本内容
+   */
+  createTime: string;
 }
 
 export interface MessageInfoForm extends BaseEntity {

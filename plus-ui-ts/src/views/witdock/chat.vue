@@ -20,9 +20,11 @@
           </div>
           <div class="message-content">
             <div v-if="message.answer">{{ message.answer }}</div>
-            <el-icon v-else class="is-loading">
-              <Loading/>
-            </el-icon>
+            <div v-else>
+              <el-icon class="is-loading">
+                <Loading/>
+              </el-icon>
+            </div>
           </div>
 
         </div>
@@ -58,12 +60,12 @@ const props = defineProps({
 })
 const chatMessages = ref<HTMLElement | null>(null);
 const newMessage = ref('');
-const webSocketUrl = "ws://localhost:8080/websocket/chat?clientid="
+const webSocketUrl = "ws://" + window.location.hostname + ":8080/websocket/chat?clientid="
   + import.meta.env.VITE_APP_CLIENT_ID
   + "&Authorization="
   + "Bearer " + getToken();
 
-const webSocket = useWebSocket(webSocketUrl);
+const webSocket = useWebSocket(webSocketUrl,);
 
 watch(webSocket.status, (status) => {
   if (status.valueOf() === 'CLOSED') {
@@ -78,26 +80,22 @@ watch(webSocket.status, (status) => {
 // 监听 WebSocket 数据
 watch(webSocket.data, (newData) => {
   console.log(newData)
-  if (newData) {
-    // 处理收到的数据
-    const res = JSON.parse(newData) as MessageInfoVO;
-    //遍历msgInfoList
-    for (let i = msgInfoList.value.length - 1; i >= 0; i--) {
-      const item = msgInfoList.value[i];
-      if (item.msgLocalId === res.msgLocalId) {
-        item.id = res.id
-        if (res.streamText) {
-          item.answer = item.answer + res.streamText
-        } else {
-          item.answer = res.answer;
-        }
-        item.reDatetime = res.reDatetime;
-        waitServerRes.value = false
-        //滚动聊天窗口到最下面
-        scrollToBottom()
-        break; // 找到匹配元素后跳出循环
-      }
+  const res = JSON.parse(newData) as MessageInfoVO;
+  //找到需要更新的msgItem
+  const itemToUpdate = msgInfoList.value.find(item => item.msgLocalId === res.msgLocalId);
+  if (itemToUpdate) {
+    if (res.streamText) {
+      itemToUpdate.answer += res.streamText;
+    } else {
+      itemToUpdate.id = res.id;
+      itemToUpdate.answer = res.answer;
+      itemToUpdate.reDatetime = res.reDatetime;
+      itemToUpdate.msgToken = res.msgToken;
+      itemToUpdate.createTime = res.createTime;
     }
+    waitServerRes.value = false;
+    // 滚动聊天窗口到最下面
+    scrollToBottom();
   }
 });
 
