@@ -1,29 +1,22 @@
 <template>
-  <div>
-    <h2 class="mb-2">工作区</h2>
-    <el-row :gutter="10" style="height: 100%">
-      <el-col :span="4">
-        <el-menu class="el-menu-vertical-demo">
-          <el-menu-item :index="appItem.id" v-for="appItem in appList" @click="chooseApp(appItem)">
-            <el-icon>
-              <House/>
-            </el-icon>
-            <span>{{ appItem.appName }}</span>
-          </el-menu-item>
-        </el-menu>
-      </el-col>
-      <el-col :span="20">
-          <chat-card style="height: 600px" :is-user="false" :prop-app-id="currentAppId"/>
-      </el-col>
-    </el-row>
-
+  <div class="wit-explore">
+    <div class="wit-app-list">
+      <div class="explore-title">工作区</div>
+      <div
+        v-for="appItem in appList"
+        :key="appItem.id"
+        class="wit-app"
+        :class="appItem.id === currentAppId ? 'active-app' : ''"
+        @click="chooseApp(appItem)"
+      >
+        <img src="@/assets/images/app.png" />
+        <span>{{ appItem.appName }}</span>
+      </div>
+    </div>
+    <chat-card :is-user="false" :prop-app-id="currentAppId" />
   </div>
-
-
 </template>
 <script setup lang="ts">
-
-
 import {listApp} from "@/api/witdock/app";
 import {AppVO} from "@/api/witdock/app/type";
 import ChatCard from "@/views/witdock/chatCard.vue";
@@ -32,8 +25,6 @@ import ChatCard from "@/views/witdock/chatCard.vue";
 const appList = ref<AppVO[]>([])
 
 const currentAppId = ref('')
-const currentAppName = ref('')
-
 
 const init = async () => {
   let res = await listApp();
@@ -45,8 +36,8 @@ const chooseApp = async (item: AppVO) => {
 }
 
 init()
-
 </script>
-<style scoped lang="scss">
 
+<style lang="scss">
+@import "./explore.scss";
 </style>

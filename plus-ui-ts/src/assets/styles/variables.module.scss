@@ -38,6 +38,7 @@ html.dark {
 // base color
 $blue: #324157;
 $light-blue: #3a71a8;
+$orange: #FA8628;
 $red: #c03639;
 $pink: #e65d6e;
 $green: #30b08f;
@@ -46,25 +47,26 @@ $yellow: #fec171;
 $panGreen: #30b08f;
 
 // 默认菜单主题风格
-$base-menu-color: var(--menuColor);
-$base-menu-hover: var(--menuHover);
-$base-menu-color-active: var(--menuActiveText);
-$base-menu-background: var(--menuBg);
+$base-menu-color:#bfcbd9;
+$base-menu-color-active:#f4f4f5;
+$base-menu-background-active: #6E6E6E;
+$base-menu-background: #3A3D4D;
 $base-logo-title-color: #ffffff;
 
-$base-menu-light-color: rgba(0, 0, 0, 0.7);
-$base-menu-light-background: #ffffff;
+$base-menu-light-color:rgba(0,0,0,.70);
+$base-menu-light-background:#ffffff;
 $base-logo-light-title-color: #001529;
 
-$base-sub-menu-background: var(--subMenuBg);
-$base-sub-menu-hover: var(--subMenuHover);
+$base-sub-menu-background:#1f2d3d;
+$base-sub-menu-hover:#001528;
 $base-sub-menu-title-hover: var(--subMenuTitleHover);
+
 // 表单头背景色和标题颜色
 $fixed-header-bg: var(--fixedHeaderBg);
 $table-header-bg: var(--tableHeaderBg);
 $table-header-text-color: var(--tableHeaderTextColor);
 
-$--color-primary: #409eff;
+$--color-primary: #165DFF;
 $--color-success: #67c23a;
 $--color-warning: #e6a23c;
 $--color-danger: #f56c6c;
