@@ -188,7 +188,12 @@ const currDoc = ref<DocVO>({
   docName: '',
   ossId: '',
   charNum: 0,
-  status: ''
+  status: '',
+  fileSize: 0,
+  createTime: '',
+  createByName: '',
+  updateTime: '',
+  updateByName: ''
 });
 
 const initFormData: DocParagraphsForm = {

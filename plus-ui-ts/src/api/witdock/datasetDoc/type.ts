@@ -36,6 +36,13 @@ export interface DocVO {
    */
   status: string;
 
+  fileSize: number | string
+
+  createTime: string
+
+  createByName: string
+  updateTime: string
+  updateByName: string
 }
 
 export interface DocForm extends BaseEntity {
